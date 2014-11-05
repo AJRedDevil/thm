@@ -1,0 +1,84 @@
+##### OSX related start#####
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must ends with two \r.
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+##### OSX related end#####
+
+##### SublimeText related start #####
+*.sublime-project
+##### SublimeText related end #####
+
+##### Python/Django related #####
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.py.old.*
+
+# Local Settings
+local_setting.py
+Procfile.dev
+staticfiles
+
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+
+# Django stuff:
+*.log
+*.pot
+
+#Foreman stuff:
+.env*
+
+# Sphinx documentation
+docs/_build/
+
+##### Python/Django end #####
+
+##### thm ####
+localtemplates/
+thm/media/
+
+beta/static/assets/img/aid.jpg
