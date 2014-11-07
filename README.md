@@ -14,6 +14,15 @@ This README would normally document whatever steps are necessary to get your app
 * Configuration
 * Dependencies
 * Database configuration
+** Create Database for Development
+
+```
+gaumire=# create user thm with password 'thm';
+CREATE ROLE
+gaumire=# create database thm owner thm;
+CREATE DATABASE
+```
+
 * How to run tests
 * Deployment instructions
 
