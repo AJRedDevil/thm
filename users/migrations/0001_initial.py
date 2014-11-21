@@ -8,13 +8,46 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'UserProfile', fields ['email']
-        db.delete_unique(u'users_userprofile', ['email'])
+        # Adding model 'UserProfile'
+        db.create_table(u'users_userprofile', (
+            ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
+            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('displayname', self.gf('django.db.models.fields.CharField')(unique=True, max_length=30)),
+            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=100)),
+            ('phone_status', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('phone', self.gf('phonenumber_field.modelfields.PhoneNumberField')(unique=True, max_length=16)),
+            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('profile_image', self.gf('django.db.models.fields.files.ImageField')(default='', max_length=1024, blank=True)),
+            ('account_status', self.gf('django.db.models.fields.IntegerField')(default=1, max_length=1, blank=True)),
+            ('user_type', self.gf('django.db.models.fields.IntegerField')(default=2)),
+            ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('address', self.gf('jsonfield.fields.JSONField')(default='{}', max_length=9999)),
+            ('extrainfo', self.gf('jsonfield.fields.JSONField')(default='{}', max_length=9999)),
+        ))
+        db.send_create_signal(u'users', ['UserProfile'])
+
+        # Adding model 'UserEvents'
+        db.create_table(u'users_userevents', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['users.UserProfile'])),
+            ('event', self.gf('django.db.models.fields.IntegerField')(default=1, max_length=2)),
+            ('updated_on', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('extrainfo', self.gf('jsonfield.fields.JSONField')(default='{}', max_length=9999)),
+        ))
+        db.send_create_signal(u'users', ['UserEvents'])
 
 
     def backwards(self, orm):
-        # Adding unique constraint on 'UserProfile', fields ['email']
-        db.create_unique(u'users_userprofile', ['email'])
+        # Deleting model 'UserProfile'
+        db.delete_table(u'users_userprofile')
+
+        # Deleting model 'UserEvents'
+        db.delete_table(u'users_userevents')
 
 
     models = {

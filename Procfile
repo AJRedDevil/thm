@@ -1,1 +1,1 @@
-web: gunicorn therighthandyman.wsgi
+web: gunicorn thm.wsgi
