@@ -4,6 +4,8 @@
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.utils import six
@@ -13,9 +15,12 @@ import hashlib
 import jsonfield
 import logging
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework.authtoken.models import Token
 
 # Init Logger
 logger = logging.getLogger(__name__)
+
+CITY_SELECTION = (('Kathmandu','Kathmandu'),)
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -70,11 +75,11 @@ class UserProfile(AbstractBaseUser):
         error_messages={'unique' : 'The username provided is already taken !'})
     first_name = models.CharField(_('first_name'), max_length=30)
     last_name = models.CharField(_('last_name'), max_length=30)
-    email = models.EmailField(_('email'), max_length=100, unique=True,
+    email = models.EmailField(_('email'), max_length=100,
         error_messages={'unique' : 'It seems you already have an account registered with that email!'})
 
     phone_status = models.BooleanField(_('phone_status'), default=False)
-    phone = PhoneNumberField(_('phone'), max_length=10, unique=True)
+    phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     profile_image = models.ImageField(max_length=1024, upload_to=upload_pp_path, blank=True, default='')
     account_status = models.IntegerField(_('account_status'), max_length=1, blank=True, default=1)
@@ -97,7 +102,7 @@ class UserProfile(AbstractBaseUser):
     objects = UserManager()
 
     def __unicode__(self):
-        return self.phone 
+        return str(self.phone) 
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -176,4 +181,26 @@ class UserProfile(AbstractBaseUser):
         super(UserProfile, self).save(*args, **kwargs)
         if self.profile_image:
             self.create_thumbnail(500)
-            
+
+# Create Token for users when a user is created
+@receiver(post_save, sender=UserProfile)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
+
+class UserEvents(models.Model):
+    """Models for Users UserEvents"""
+    current_time = timezone.now
+
+    user = models.ForeignKey(UserProfile)
+    event = models.IntegerField(_('event'), max_length=2, default=1)
+    updated_on = models.DateTimeField(_('updated_on'), 
+        default=current_time)
+    extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
+
+    
+    def save(self, *args, **kwargs):
+        if not self.updated_on:
+            self.updated_on = timezone.now
+        super(UserEvents, self).save(*args, **kwargs)

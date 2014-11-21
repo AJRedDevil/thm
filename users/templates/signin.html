@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>THM - Signin</title>
+</head>
+<body>
+    <h1>Login Here</h1>
+    <form action="{% url 'signin' %}" method="POST">{% csrf_token %}
+        <input name='username' type='text'><br>
+        <input name='password' type='password'>
+        <input type='submit'>
+        {% if auth_form.password.errors %}
+        {{ auth_form.password.errors }}
+        {% endif %}
+        {% if auth_form.errors %}
+            {{ auth_form.non_field_errors }}
+        {% endif %}
+    </form>
+</body>
+</html>
