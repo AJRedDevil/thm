@@ -101,8 +101,12 @@ DATABASES = {
 
 # Static asset configuration
 # STATIC_URL = 'http://s3.amazonaws.com/%s/' % AWS_STATIC_BUCKET
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = 'staticfiles'
+STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 # CONFIGURING QUESTRUSERPROFILE AS THE AUTH BACKEND
 AUTH_USER_MODEL = 'users.UserProfile'

@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
-
 # from django.contrib import admin
 # admin.autodiscover()
 
@@ -19,3 +19,7 @@ urlpatterns = patterns('',
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
     url(r'^$', index, name='index'),
 )
+
+urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    )
