@@ -1,0 +1,22 @@
+<form action="{% url 'createhandymen' %}" method="post">{% csrf_token %}
+<input id="email" name="email" type="email" ng-model="user.email" placeholder="johndoe@example.com"/>
+{{user_form.email.errors}}                        
+<input id="phone" name="phone" type="phone" placeholder="+9779846464646"/>
+{{user_form.phone.errors}}                        
+<input id="password1" type="password" name="password1" placeholder="minimum 6 chars"/>
+<input id="password2" type="password" name="password2" placeholder="re-enter password"/>
+{{user_form.password1.errors}}              
+{{user_form.password2.errors}}
+<input type="text" placeholder="johndoe" name="displayname" id="displayname" />
+{{user_form.displayname.errors}}
+<input type="text" name="first_name" id="first_name" placeholder="Anil" />   
+{{user_form.first_name.errors}}
+<input type="text" name="last_name" id="last_name" placeholder="Chaulagain" />
+{{user_form.last_name.errors}}
+<select id="city" class="btn-classic" data-size="5" name="city" default="Kathmandu">
+    <option>Kathmandu</option>
+</select>
+<input type="text" name="streetaddress" id="streetaddress" placeholder="Street Address, P.O box, company name, etc" />
+<br><br>
+<button type="submit" class="btn btn-fatty btn-lg" id="createAccBtn">CREATE ACCOUNT</button>
+</form>
