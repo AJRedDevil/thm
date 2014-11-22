@@ -204,3 +204,31 @@ class UserEvents(models.Model):
         if not self.updated_on:
             self.updated_on = timezone.now
         super(UserEvents, self).save(*args, **kwargs)
+
+class EarlyBirdUser(models.Model):
+    """
+    List of customers who registered in the early phase
+    """
+    current_time = timezone.now
+    phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
+    registered_on = models.DateTimeField(_('updated_on'), 
+        default=current_time)
+
+    def save(self, *args, **kwargs):
+        if not self.registered_on:
+            self.registered_on = timezone.now
+        super(EarlyBirdUser, self).save(*args, **kwargs)
+
+class EarlyBirdHandymen(models.Model):
+    """
+    List of Handymen who registered in the early phase
+    """
+    current_time = timezone.now
+    phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
+    registered_on = models.DateTimeField(_('updated_on'), 
+        default=current_time)
+
+    def save(self, *args, **kwargs):
+        if not self.registered_on:
+            self.registered_on = timezone.now
+        super(EarlyBirdHandymen, self).save(*args, **kwargs)

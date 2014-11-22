@@ -9,11 +9,79 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
-from .models import UserProfile, CITY_SELECTION
+from .models import UserProfile, CITY_SELECTION, EarlyBirdUser, EarlyBirdHandymen
 
 import os
+from phonenumber_field.formfields import PhoneNumberField
 import logging
 logger = logging.getLogger(__name__)
+
+
+class EBUserPhoneNumberForm(forms.ModelForm):
+    """
+    A form that takes phone number as the data
+    """
+    phone = PhoneNumberField()
+
+    error_messages = {
+        'country_notsupported': _("Your country is not supported right now!"),
+        'duplicate_phone': _("You have already registered!"),
+        }
+
+    class Meta:
+        model = EarlyBirdUser
+        fields = ['phone']
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        signedupusers = EarlyBirdUser.objects.all()
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        if phone in signedupusers:
+            raise forms.ValidationError(
+                self.error_messages['duplicate_phone'],
+                code='duplicate_phone',
+            )
+        return phone
+
+    def save(self, commit=True):
+        data = super(EBUserPhoneNumberForm, self).save(commit=False)
+        if commit:
+            data.save()
+        return data
+
+class HMUserPhoneNumberForm(forms.ModelForm):
+    """
+    A form that takes phone number as the data
+    """
+    phone = PhoneNumberField()
+
+    error_messages = {
+        'country_notsupported': _("Your country is not supported right now!"),
+        }
+
+    class Meta:
+        model = EarlyBirdHandymen
+        fields = ['phone']
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+        return phone
+
+    def save(self, commit=True):
+        data = super(HMUserPhoneNumberForm, self).save(commit=False)
+        if commit:
+            data.save()
+        return data
 
 class UserCreationForm(forms.ModelForm):
     """
@@ -53,6 +121,7 @@ class UserCreationForm(forms.ModelForm):
 
     error_messages = {
         'password_mismatch': _("The two password fields didn't match. Please re-verify your passwords !"),
+        'country_notsupported': _("Your country is not supported right now!"),
         }
 
     class Meta:
@@ -68,6 +137,15 @@ class UserCreationForm(forms.ModelForm):
                 code='password_mismatch',
             )
         return password2
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+        return phone
 
     def clean_email(self):
         # Since User.username is unique, this check is redundant,

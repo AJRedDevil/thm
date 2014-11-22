@@ -8,7 +8,6 @@
 	
 
 	<link rel="stylesheet" type="text/css" href={% static "css/jquery.fullPage.css" %} />
-	<link rel="stylesheet" type="text/css" href={% static "css/examples.css" %} />
 	<link rel="stylesheet" type="text/css" href={% static "css/hm.css" %} />
 	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 	<style>
@@ -318,7 +317,6 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 
 	<script type="text/javascript" src={% static "js/jquery.fullPage.min.js" %}></script>
-	<script type="text/javascript" src={% static "js/examples.js" %}></script>
 
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -376,10 +374,12 @@
 
 			<div class="box">
 				<h2 class='monte'>Coming Soon</h2>
-				 <strong>The Handyman</strong> is comming soon on iOS and Android platform. Drop us your email or phone number, We will keep you informed!
+				 <strong>The Handyman</strong> is comming soon on iOS and Android platform. Drop us your or phone number, We will keep you informed!
 				 <div class='hm-form'>
-				 <input class='hm-input' type='email' placeholder='Email OR Phone number'>
+				 <form action="{% url 'register' %}" method="POST">
+				 <input class='hm-input' name="phone" placeholder='+97798XXXXXXXX'>
 				 <input class='hm-btn' type='submit'>
+				 </form>
 					</div>
 			</div>
 		</div>
@@ -391,9 +391,11 @@
 				<h2 class='monte'>Become a Handyman</h2>
 				Join the handyan crew right away! Drop us your phone number to get started!
 				<div class='hm-form'>
-				 <input class='hm-input' type='telephone' placeholder='Phone Number'>
-				 <input class='hm-btn' type='submit'>
-					</div>
+					<form action="{% url 'joinus' %}" method="POST">
+					<input class='hm-input' name="phone" placeholder='+97798XXXXXXXX'>
+					<input class='hm-btn' type='submit'>
+					</form>
+				</div>
 <br>
 			</div>
 

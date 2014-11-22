@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     url(r'^logout/$', userviews.logout, name='logout'),
     url(r'^home/$', userviews.home, name='home'),
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
+    url(r'^register/$', userviews.joinasuser, name='register'),
+    url(r'^joinus/$', userviews.joinashandymen, name='joinus'),
     url(r'^$', index, name='index'),
 )
 

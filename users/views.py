@@ -9,14 +9,16 @@ from django.contrib.auth import login as auth_login
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 #All local imports (libs, contribs, models)
 import handler as user_handler
 from thm.decorators import is_superuser
-# from .models import UserProfile
-from .forms import UserCreationForm, LocalAuthenticationForm
+from .models import UserProfile
+from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm
 
 #All external imports (libs, packages)
+from libs.sparrow_handler import Sparrow
 from ipware.ip import get_real_ip, get_ip
 import simplejson as json
 import logging
@@ -98,6 +100,10 @@ def createhandymen(request):
             password = user_form.cleaned_data['password1']
             userdata.set_password(password)
             userdata.save()
+            vas = Sparrow()
+            msg = "Thankyou {0} for registering with The Right Handyman! Your account is being processed!".format(userdata.first_name)
+            status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
+            logger.warn(status)
             return redirect('home')
 
         if user_form.errors:
@@ -108,3 +114,50 @@ def createhandymen(request):
         user_form = UserCreationForm()
         pagetitle = "Create a Handymen"
         return render(request, 'createhandymen.html', locals())
+
+@csrf_exempt
+def joinasuser(request):
+    """
+    Early bird Register as a user 
+    """
+    if request.method == "POST":
+        user_form = EBUserPhoneNumberForm(request.POST)
+        if user_form.is_valid():
+            phone = user_form.cleaned_data['phone']
+            userdata = user_form.save(commit=False)
+            userdata.save()
+            logger.warn("{0} just registered their number as a user".format(phone))
+            vas = Sparrow()
+            msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+            status = vas.sendDirectMessage(msg, phone)
+            logger.warn(status)
+            return redirect('index')
+
+        if user_form.errors:
+            logger.debug("Login Form has errors, %s ", user_form.errors)
+        return redirect('index')
+    return redirect('index')
+
+
+@csrf_exempt
+def joinashandymen(request):
+    """
+    Early bird Register as a handymen 
+    """
+    if request.method == "POST":
+        user_form = HMUserPhoneNumberForm(request.POST)
+        if user_form.is_valid():
+            phone = user_form.cleaned_data['phone']
+            userdata = user_form.save(commit=False)
+            userdata.save()
+            logger.warn("{0} just registered their number as a handymen".format(phone))
+            vas = Sparrow()
+            msg = "Thankyou for registering with The Right Handyman! Please expect a call soon for further processing!"
+            status = vas.sendDirectMessage(msg, phone)
+            logger.warn(status)
+            return redirect('index')
+
+        if user_form.errors:
+            logger.debug("Login Form has errors, %s ", user_form.errors)
+        return redirect('index')
+    return redirect('index')
