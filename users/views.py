@@ -5,8 +5,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
+from django.db import IntegrityError
 # from django.contrib.auth import authenticate
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -14,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 #All local imports (libs, contribs, models)
 import handler as user_handler
 from thm.decorators import is_superuser
-from .models import UserProfile
+from .models import UserProfile, EarlyBirdUser
 from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm
 
 #All external imports (libs, packages)
@@ -120,6 +121,7 @@ def joinasuser(request):
     """
     Early bird Register as a user 
     """
+    # If a user joins from the web
     if request.method == "POST":
         user_form = EBUserPhoneNumberForm(request.POST)
         if user_form.is_valid():
@@ -132,10 +134,37 @@ def joinasuser(request):
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
             return redirect('index')
-
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
         return redirect('index')
+
+    # If it's from Sparrow's System or regular GET request
+    if request.GET.has_key('from'):
+        # Automatically prefixing with +977 to honor the phone number field
+        userphone = dict(phone='+977'+request.GET['from'])
+        # If no keyword on the message
+        if request.GET['keyword']=='':
+            user_form = EBUserPhoneNumberForm(userphone)
+            if user_form.is_valid():
+                phone = user_form.cleaned_data['phone']
+                userdata = user_form.save(commit=False)
+                userdata.save()
+                logger.warn("{0} just registered their number as a user".format(phone))
+                msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+                return HttpResponse(msg,content_type="text/html")
+        if str(request.GET['keyword']).lower()=='plumber':
+            msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
+            return HttpResponse(msg,content_type="text/html")
+        # If there are any keyword, consider it invalid
+        if request.GET['keyword']!='':
+            msg = "Invalid Input!"
+            return HttpResponse(msg,content_type="text/html")            
+        # As of now, error only seem to be in duplicate data
+        if user_form.errors:
+            msg = "You seem to have been registered already! We would get back to you soon!"
+            logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+            return HttpResponse(msg,content_type="text/html")
+
     return redirect('index')
 
 
