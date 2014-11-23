@@ -1,0 +1,5 @@
+export LOCAL_SECRET_KEY='!p5z9v6-sk^0%4pm8@cxl+#vo1%k%trtz!kjfpfb*+yca7dqri'
+export DJANGO_SETTINGS_MODULE='thm.settings'
+export SPARROW_PASSWORD='password'
+export SPARROW_CLIENT_ID='user'
+export SPARROW_USERNAME='user'
