@@ -22,6 +22,11 @@ SECRET_KEY = os.environ['LOCAL_SECRET_KEY']
 
 ALLOWED_HOSTS = []
 
+# Mandrill API KEY
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -35,6 +40,7 @@ INSTALLED_APPS = (
     'south',
     'rest_framework',
     'rest_framework.authtoken',
+    'djrill',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -140,6 +146,10 @@ LOGGING = {
             'level':'DEBUG',
         },
         'jobs': {
+            'handlers':['console'],
+            'level':'DEBUG',
+        },
+        'libs': {
             'handlers':['console'],
             'level':'DEBUG',
         },

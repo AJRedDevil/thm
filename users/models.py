@@ -214,6 +214,9 @@ class EarlyBirdUser(models.Model):
     registered_on = models.DateTimeField(_('updated_on'), 
         default=current_time)
 
+    def __unicode__(self):
+        return str(self.phone)
+
     def save(self, *args, **kwargs):
         if not self.registered_on:
             self.registered_on = timezone.now

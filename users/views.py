@@ -20,9 +20,11 @@ from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberF
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
+from libs import email_handler
 from ipware.ip import get_real_ip, get_ip
 import simplejson as json
 import logging
+import urllib
 
 
 # Init Logger
@@ -140,30 +142,54 @@ def joinasuser(request):
 
     # If it's from Sparrow's System or regular GET request
     if request.GET.has_key('from'):
-        # Automatically prefixing with +977 to honor the phone number field
-        userphone = dict(phone='+977'+request.GET['from'])
+        phone = urllib.unquote(request.GET['from'])
+        userphone = dict(phone=phone)
+        text = urllib.unquote(request.GET['text'])
+        user_form = EBUserPhoneNumberForm(userphone)
         # If no keyword on the message
-        if request.GET['keyword']=='':
-            user_form = EBUserPhoneNumberForm(userphone)
+        if len(text.lower().split()) == 1 and text.lower().split()[0]=='handyman':
             if user_form.is_valid():
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
                 userdata.save()
                 logger.warn("{0} just registered their number as a user".format(phone))
                 msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+                logger.warn(phone)
+                # send email to admin
+                email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
-        if str(request.GET['keyword']).lower()=='plumber':
-            msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
-            return HttpResponse(msg,content_type="text/html")
-        # If there are any keyword, consider it invalid
-        if request.GET['keyword']!='':
-            msg = "Invalid Input!"
-            return HttpResponse(msg,content_type="text/html")            
-        # As of now, error only seem to be in duplicate data
-        if user_form.errors:
-            msg = "You seem to have been registered already! We would get back to you soon!"
-            logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
-            return HttpResponse(msg,content_type="text/html")
+            # As of now, error only seem to be in duplicate data
+            elif user_form.errors:
+                msg = "You seem to have been registered already! We would get back to you soon!"
+                logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+                return HttpResponse(msg,content_type="text/html")                
+        elif len(text.lower().split()) > 1:
+            try:
+                ebuser = EarlyBirdUser.objects.get(phone=phone)
+            except EarlyBirdUser.DoesNotExist:
+                user_form = EBUserPhoneNumberForm(userphone)
+                if user_form.is_valid():
+                    phone = user_form.cleaned_data['phone']
+                    userdata = user_form.save(commit=False)
+                    userdata.save()
+                    logger.warn("{0} just registered their number as a user".format(phone))
+                    msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+                    logger.warn(phone)
+                    # send email to admin
+                    email_handler.send_newregistration_notif(phone.as_international)
+                    return HttpResponse(msg,content_type="text/html")
+            memberlist = EarlyBirdUser.objects.all()
+            if ebuser in memberlist:
+                if text.lower().split()[1]=='plumber':
+                    msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
+                    return HttpResponse(msg,content_type="text/html")
+                # If there are any added, consider it invalid
+                else: 
+                    msg = "Invalid Input!"
+                    return HttpResponse(msg,content_type="text/html")
+            else: 
+                msg = "Invalid Input!"
+                return HttpResponse(msg,content_type="text/html")
 
     return redirect('index')
 
