@@ -5,7 +5,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
-from django.db import IntegrityError
+from django.contrib.auth import authenticate
 # from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 #All local imports (libs, contribs, models)
 import handler as user_handler
 from thm.decorators import is_superuser
-from .models import UserProfile, EarlyBirdUser
+from .models import UserProfile, EarlyBirdUser, UserToken
 from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm
 
 #All external imports (libs, packages)
@@ -34,12 +34,12 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 def logout(request):
     """Logs out the user"""
-    # user = user_handler.getQuestrDetails(request.user.id)
     user = request.user
-    auth_logout(request)
-    eventhandler = user_handler.UserEventManager()
-    extrainfo = dict()
-    eventhandler.setevent(user, 0, extrainfo)
+    if user.is_authenticated:
+        eventhandler = user_handler.UserEventManager()
+        extrainfo = dict()
+        eventhandler.setevent(user, 0, extrainfo)
+        auth_logout(request)
     return redirect('index')
     
 def signin(request):
@@ -72,6 +72,34 @@ def signin(request):
         if auth_form.errors:
             logger.debug("Login Form has errors, %s ", auth_form.errors)
     return render(request, 'signin.html', locals())
+
+
+def signup(request):
+    """
+    Lets a user signup 
+    """
+    if request.method == "POST":
+        user_form = UserCreationForm(request.POST)
+        if user_form.is_valid():
+            userdata = user_form.save(commit=False)
+            userdata.address = dict(city=user_form.cleaned_data['city'], streetaddress=\
+                user_form.cleaned_data['streetaddress'])
+            userdata.save()
+            authenticate(username=userdata.phone, password=userdata.password)
+            userdata.backend='django.contrib.auth.backends.ModelBackend'
+            auth_login(request, userdata)
+            UserToken.objects.create(user=userdata)
+            um = user_handler.UserManager()
+            um.sendVerfText(userdata.id)
+            logger.debug("user {0} is created".format(userdata.phone))
+            return redirect('home')
+        if user_form.errors:
+            logger.debug("Login Form has errors, %s ", user_form.errors)
+            return render(request, 'signup.html', locals())
+
+    user_form = UserCreationForm
+    return render(request, 'signup.html', locals())
+
 
 @login_required
 def home(request):
@@ -135,6 +163,7 @@ def joinasuser(request):
             msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
+            email_handler.send_newregistration_notif(phone.as_international)
             return redirect('index')
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
@@ -154,7 +183,7 @@ def joinasuser(request):
                 userdata.save()
                 logger.warn("{0} just registered their number as a user".format(phone))
                 msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
-                logger.warn(phone)
+                # logger.warn(phone)
                 # send email to admin
                 email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
@@ -193,7 +222,6 @@ def joinasuser(request):
 
     return redirect('index')
 
-
 @csrf_exempt
 def joinashandymen(request):
     """
@@ -210,6 +238,7 @@ def joinashandymen(request):
             msg = "Thankyou for registering with The Right Handyman! Please expect a call soon for further processing!"
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
+            email_handler.send_newregistration_notif(phone.as_international)
             return redirect('index')
 
         if user_form.errors:

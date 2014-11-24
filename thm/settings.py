@@ -22,11 +22,6 @@ SECRET_KEY = os.environ['LOCAL_SECRET_KEY']
 
 ALLOWED_HOSTS = []
 
-# Mandrill API KEY
-MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
-EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
-ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -83,8 +78,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 APPEND_SLASH = True
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 # TURN DEBUG OFF
 DEBUG = False
 TEMPLATE_DEBUG = False
@@ -110,7 +103,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-# CONFIGURING QUESTRUSERPROFILE AS THE AUTH BACKEND
+# CONFIGURING USERPROFILE AS THE AUTH BACKEND
 AUTH_USER_MODEL = 'users.UserProfile'
 # LOGIN URL DEFINITIONS
 LOGIN_URL = '/signin/'
@@ -155,6 +148,18 @@ LOGGING = {
         },
     }
 }
+
+# ALL OTHER SETTINGS
+# Mandrill API KEY
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
+
+#GOOGlE RELATED CONFIGURATIONS
+GOOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+#User Token Expiry in days
+USER_TOKEN_EXPIRY = int(os.environ['USER_TOKEN_EXPIRY'])
 
 # LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py, required only for a dev env
 try:
