@@ -182,16 +182,16 @@ def joinasuser(request):
                     return HttpResponse(msg,content_type="text/html")
             memberlist = EarlyBirdUser.objects.all()
             if ebuser in memberlist:
-                if text.lower().split()[1]=='plumber':
-                    msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
-                    return HttpResponse(msg,content_type="text/html")
-                # If there are any added, consider it invalid
-                else: 
-                    msg = "Invalid Input!"
-                    return HttpResponse(msg,content_type="text/html")
-            else: 
+                # if text.lower().split()[1]=='plumber':
+                #     msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
+                #     return HttpResponse(msg,content_type="text/html")
+                # # If there are any added, consider it invalid
+                # else: 
                 msg = "Invalid Input!"
                 return HttpResponse(msg,content_type="text/html")
+        else: 
+            msg = "Invalid Input!"
+            return HttpResponse(msg,content_type="text/html")
 
     return redirect('index')
 
