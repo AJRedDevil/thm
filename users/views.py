@@ -135,6 +135,8 @@ def joinasuser(request):
             msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
+            # send email to admin
+            email_handler.send_newregistration_notif(phone.as_international)
             return redirect('index')
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
@@ -210,6 +212,8 @@ def joinashandymen(request):
             msg = "Thankyou for registering with The Right Handyman! Please expect a call soon for further processing!"
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
+            # send email to admin
+            email_handler.send_newregistration_notif(phone.as_international)
             return redirect('index')
 
         if user_form.errors:
