@@ -3,7 +3,7 @@
 from users.models import UserProfile, UserToken
 from users import handler as user_handler
 
-from .serializers import UserSerializer, AuthTokenSerializer, UserSignupSerializer
+from .serializers import UserSerializer, AuthTokenSerializer, UserSignupSerializer, UserSignupValidationSerializer
 
 
 from django.http import Http404, HttpResponse
@@ -49,15 +49,23 @@ class UserSignup(APIView):
         """
         Lets a user signup 
         """
-        serialized_user = UserSignupSerializer(data=request.DATA)
+        data = request.DATA
+        data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
+        serialized_user = UserSignupValidationSerializer(data=request.DATA)
         if serialized_user.is_valid():
-            user = serialized_user.save()
-            UserToken.objects.create(user=user)
-            um = user_handler.UserManager()
-            um.sendVerfTextApp(user.id)
-            logging.warn("user {0} is created".format(user.phone))
-            return Response(serialized_user.data, status=status.HTTP_201_CREATED)
+            serialized_user = UserSignupSerializer(data=request.DATA)
+            if serialized_user.is_valid():
+                user = serialized_user.save()
+                UserToken.objects.create(user=user)
+                um = user_handler.UserManager()
+                msgstatus = um.sendVerfTextApp(user.id)
+                logging.warn(msgstatus)
+                logging.warn("user {0} is created".format(user.phone))
+                token = Token.objects.get(user=user)
+                responsedata = dict (token=token.key, status=status.HTTP_201_CREATED, success=True)
+                return HttpResponse(json.dumps(responsedata), content_type="application/json")
         return Response(serialized_user.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ObtainAuthToken(APIView):
     throttle_classes = ()

@@ -3,12 +3,9 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 from users.models import UserProfile, CITY_SELECTION
 
-from phonenumber_field.phonenumber import PhoneNumber
-from phonenumber_field.formfields import PhoneNumberField
 from rest_framework import exceptions, serializers
 
 import logging
-import jsonfield
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,13 +17,25 @@ class UserSerializer(serializers.ModelSerializer):
             'phone',
             )
 
-class UserSignupSerializer(serializers.ModelSerializer):
+class UserSignupValidationSerializer(serializers.Serializer):
+    name = serializers.CharField()
     phone = serializers.CharField()
     password1 = serializers.CharField()
     password2 = serializers.CharField()
     city = serializers.ChoiceField(choices=CITY_SELECTION)
     streetaddress = serializers.CharField()
-    address = jsonfield.JSONField()
+    current_address = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        password1 = attrs.get('password1')
+        password2 = attrs.get('password2')
+        if password1 and password2 and password1 != password2:
+            msg = _('Passwords do not match.')
+            raise exceptions.ParseError(msg)
+        return password2
+
+class UserSignupSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField()
 
     class Meta:
         model = UserProfile
@@ -34,7 +43,16 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'name',
             'phone',
             'address',
+            'password2',
+            'current_address'
             )
+
+    def restore_object(self, attrs, instance=None):
+        instance = super(UserSignupSerializer, self).restore_object(attrs, instance)
+        logging.warn(attrs)
+        instance.set_password(attrs['password2'])
+        return instance
+
 
 class AuthTokenSerializer(serializers.Serializer):
     phone = serializers.CharField()

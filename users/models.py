@@ -191,8 +191,11 @@ class UserProfile(AbstractBaseUser):
             self.address = json.loads(self.address)
         if self.current_address == '{}':
             self.current_address = self.get_lat_long(self.address)
+        if type(self.current_address) != dict:
+            self.current_address = json.loads(self.current_address)
 
         super(UserProfile, self).save(*args, **kwargs)
+
         if self.profile_image:
             self.create_thumbnail(500)
 
@@ -255,17 +258,8 @@ class UserToken(models.Model):
     """
     Token Model Class for user's verification, password reset and other such services
     """
-    def generate_token():
-        """
-        Generates a token with first 14 hash and last 6 as verification code
-        """
-        from random import randint
-        strhash = hashlib.sha256(str(timezone.now()) + str(uuid.uuid4())).hexdigest()[:14]
-        randnum = str(randint(123456,999889))
-        return strhash+randnum
-
     user = models.ForeignKey(UserProfile)
-    token = models.CharField(_('id'), max_length=20, default=generate_token(), primary_key=True)
+    token = models.CharField(_('id'), max_length=20, primary_key=True)
     timeframe = models.DateTimeField(_('timeframe'), default=timezone.now())
     status = models.BooleanField(_('status'), default=False)
 
@@ -281,6 +275,15 @@ class UserToken(models.Model):
     def get_vrfcode(self):
         return self.token[-6:]
 
+    def generate_token(self):
+        """
+        Generates a token with first 14 hash and last 6 as verification code
+        """
+        from random import randint
+        strhash = hashlib.sha256(str(timezone.now()) + str(uuid.uuid4())).hexdigest()[:14]
+        randnum = str(randint(123456,999889))
+        return strhash+randnum
+
     def __unicode__(self):
         return self.token
 
@@ -288,4 +291,5 @@ class UserToken(models.Model):
     def save(self, *args, **kwargs):
         # Tag all existing tokens from this user as used before creating new
         UserToken.objects.filter(user_id=self.user).update(status=True)
+        self.token = self.generate_token()
         super(UserToken, self).save(*args, **kwargs)
