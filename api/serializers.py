@@ -13,8 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'is_active',
-            'phone',
+            'profile_image',
+            'phone_status',
             )
 
 class UserSignupValidationSerializer(serializers.Serializer):
@@ -35,6 +35,7 @@ class UserSignupValidationSerializer(serializers.Serializer):
         return password2
 
 class UserSignupSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField()
     password2 = serializers.CharField()
 
     class Meta:
@@ -43,13 +44,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'name',
             'phone',
             'address',
+            'password1',
             'password2',
             'current_address'
             )
 
     def restore_object(self, attrs, instance=None):
         instance = super(UserSignupSerializer, self).restore_object(attrs, instance)
-        logging.warn(attrs)
         instance.set_password(attrs['password2'])
         return instance
 
@@ -78,3 +79,12 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class SigninResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    success = serializers.BooleanField()
+
+class SignupResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    success = serializers.BooleanField()
+    status = serializers.IntegerField()

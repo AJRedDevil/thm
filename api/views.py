@@ -3,8 +3,7 @@
 from users.models import UserProfile, UserToken
 from users import handler as user_handler
 
-from .serializers import UserSerializer, AuthTokenSerializer, UserSignupSerializer, UserSignupValidationSerializer
-
+import serializers
 
 from django.http import Http404, HttpResponse
 
@@ -21,15 +20,19 @@ import simplejson as json
 # Init Logger
 logger = logging.getLogger(__name__)
 
-class UsersList(APIView):
+# class UsersList(APIView):
 
-    def get(self, request, format=None):
-        users = UserProfile.objects.all()
-        serialized_users = UserSerializer(users, many=True)
-        responsedata = dict(data=serialized_users.data, success=True)
-        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+#     def get(self, request, format=None):
+#         users = UserProfile.objects.all()
+#         serialized_users = serializers.UserSerializer(users, many=True)
+#         responsedata = dict(data=serialized_users.data, success=True)
+#         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
 class UsersDetail(APIView):
+    """
+    Userdetail resource
+    """
+
     def get_object(self, pk):
         try:
             return UserProfile.objects.get(pk=pk)
@@ -38,22 +41,33 @@ class UsersDetail(APIView):
 
 
     def get(self, request, pk, format=None):
+        """
+        Returns detail of a user
+        ---
+        response_serializer: serializers.UserSerializer
+        """
         user = self.get_object(pk)
-        serialized_user = UserSerializer(user)
+        serialized_user = serializers.UserSerializer(user)
         responsedata = dict(data=serialized_user.data, success=True)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
 class UserSignup(APIView):
+    """
+    User signup resource
+    """
     permission_classes = (AllowAny,)
     def post(self, request, format=None):
         """
-        Lets a user signup 
+        Allows a user to signup
+        ---
+        request_serializer: serializers.UserSignupValidationSerializer
+        response_serializer: serializers.SignupResponseSerializer
         """
         data = request.DATA.copy()
         data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
-        serialized_user = UserSignupValidationSerializer(data=data)
+        serialized_user = serializers.UserSignupValidationSerializer(data=data)
         if serialized_user.is_valid():
-            serialized_user = UserSignupSerializer(data=data)
+            serialized_user = serializers.UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
                 UserToken.objects.create(user=user)
@@ -68,14 +82,23 @@ class UserSignup(APIView):
 
 
 class ObtainAuthToken(APIView):
+    """
+    User login resource
+    """
     throttle_classes = ()
     permission_classes = ()
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
-    serializer_class = AuthTokenSerializer
+    serializer_class = serializers.AuthTokenSerializer
     model = Token
 
     def post(self, request):
+        """
+        Allows a user to login 
+        ---
+        request_serializer: serializers.AuthTokenSerializer
+        response_serializer: serializers.SigninResponseSerializer
+        """
         serializer = self.serializer_class(data=request.POST)
         if serializer.is_valid():
             user = serializer.object['user']
