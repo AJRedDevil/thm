@@ -51,9 +51,9 @@ class UserSignup(APIView):
         """
         data = request.DATA
         data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
-        serialized_user = UserSignupValidationSerializer(data=request.DATA)
+        serialized_user = UserSignupValidationSerializer(data=request.DATA.copy())
         if serialized_user.is_valid():
-            serialized_user = UserSignupSerializer(data=request.DATA)
+            serialized_user = UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
                 UserToken.objects.create(user=user)
