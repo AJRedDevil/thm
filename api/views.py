@@ -49,11 +49,11 @@ class UserSignup(APIView):
         """
         Lets a user signup 
         """
-        data = request.DATA
+        data = request.DATA.copy()
         data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
-        serialized_user = UserSignupValidationSerializer(data=request.DATA)
+        serialized_user = UserSignupValidationSerializer(data=data)
         if serialized_user.is_valid():
-            serialized_user = UserSignupSerializer(data=request.DATA)
+            serialized_user = UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
                 UserToken.objects.create(user=user)
