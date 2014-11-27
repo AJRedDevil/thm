@@ -122,7 +122,7 @@ def createhandymen(request):
             userdata = user_form.save(commit=False)
             userdata.address = json.dumps(useraddress)
             userdata.phone_status = True
-            userdata.user_type = 2
+            userdata.user_type = 1
             userdata.phone = user_form.cleaned_data['phone']
             # import hashlib
             # import uuid

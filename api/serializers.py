@@ -2,6 +2,7 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 from users.models import UserProfile, CITY_SELECTION
+from jobs.models import Jobs
 
 from rest_framework import exceptions, serializers
 
@@ -86,5 +87,46 @@ class SigninResponseSerializer(serializers.Serializer):
 
 class SignupResponseSerializer(serializers.Serializer):
     token = serializers.CharField()
+    success = serializers.BooleanField()
+    status = serializers.IntegerField()
+
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'jobtype',
+            'remarks',
+            'destination_home',
+            )
+
+class NewJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'customer',
+            'fee',
+            'jobtype',
+            'remarks',
+            'destination_home',
+            )
+
+class JobResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'id',
+            'customer',
+            'fee',
+            'status',
+            'creation_date',
+            'completion_date',
+            'jobtype',
+            'remarks',
+            )
+
+class JobAPIResponseSerializer(serializers.Serializer):
+    """
+    Response Serializer for requests over in API
+    """
     success = serializers.BooleanField()
     status = serializers.IntegerField()

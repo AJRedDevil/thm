@@ -1,6 +1,7 @@
 
 
 from users.models import UserProfile, UserToken
+from jobs.models import Jobs
 from users import handler as user_handler
 
 import serializers
@@ -80,7 +81,6 @@ class UserSignup(APIView):
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
         return Response(serialized_user.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class ObtainAuthToken(APIView):
     """
     User login resource
@@ -107,5 +107,66 @@ class ObtainAuthToken(APIView):
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return HttpResponse(json.dumps({'status':status.HTTP_400_BAD_REQUEST, 'success':False}), content_type="application/json")
 
-
 obtain_auth_token = ObtainAuthToken.as_view()
+
+class JobDetail(APIView):
+    """
+    Jobdetail resource
+    """
+
+    def get_object(self, pk):
+        try:
+            return Jobs.objects.get(pk=pk)
+        except UserProfile.DoesNotExist:
+            raise Http404
+
+
+    def get(self, request, pk, format=None):
+        """
+        Returns detail of a job
+        ---
+        response_serializer: serializers.JobResponseSerializer
+        """
+        job = self.get_object(pk)
+        serialized_user = serializers.JobResponseSerializer(job)
+        data = serialized_user.data
+        data['creation_date'] = str(data['creation_date'])
+        data['completion_date'] = str(data['completion_date'])
+        responsedata = dict(data=data, success=True)
+        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+
+class JobsDetail(APIView):
+    """
+    New Job resource
+    """
+    def get(self, request, format=None):
+        jobs = Jobs.objects.all()
+        serialized_jobs = serializers.JobResponseSerializer(jobs, many=True)
+        data = serialized_jobs.data
+        for datum in data:
+            datum['creation_date'] = str(datum['creation_date'])
+            datum['completion_date'] = str(datum['completion_date'])
+        responsedata = dict(data=data, success=True)
+        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+
+    def post(self, request, format=None):
+        """
+        Allows a user to create a job
+        ---
+        request_serializer: serializers.JobSerializer
+        response_serializer: serializers.JobAPIResponseSerializer
+        """
+        user = request.user
+        data = request.DATA.copy()
+        serialized_job = serializers.JobSerializer(data=data)
+        if serialized_job.is_valid():
+            data['customer'] = user.id
+            data['fee'] = "5.99"
+            serialized_job = serializers.NewJobSerializer(data=data)
+            if serialized_job.is_valid():
+                job = serialized_job.save()
+                logging.warn("job {0} is created".format(job.id))
+                responsedata = dict (status=status.HTTP_201_CREATED, success=True)
+                return HttpResponse(json.dumps(responsedata), content_type="application/json")
+        return Response(serialized_job.errors, status=status.HTTP_400_BAD_REQUEST)
+

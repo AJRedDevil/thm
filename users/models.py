@@ -16,6 +16,7 @@ import uuid
 import simplejson as json
 import jsonfield
 import logging
+import pytz
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
 
@@ -23,6 +24,7 @@ from rest_framework.authtoken.models import Token
 logger = logging.getLogger(__name__)
 
 CITY_SELECTION = (('Kathmandu','Kathmandu'),)
+current_time = timezone.now().astimezone(pytz.timezone(settings.TIME_ZONE))
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -209,7 +211,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class UserEvents(models.Model):
     """Models for Users UserEvents"""
-    current_time = timezone.now
+    
 
     user = models.ForeignKey(UserProfile)
     event = models.IntegerField(_('event'), max_length=2, default=1)
@@ -227,7 +229,7 @@ class EarlyBirdUser(models.Model):
     """
     List of customers who registered in the early phase
     """
-    current_time = timezone.now
+    
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     registered_on = models.DateTimeField(_('updated_on'), 
         default=current_time)
@@ -244,7 +246,7 @@ class EarlyBirdHandymen(models.Model):
     """
     List of Handymen who registered in the early phase
     """
-    current_time = timezone.now
+    
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     registered_on = models.DateTimeField(_('updated_on'), 
         default=current_time)
