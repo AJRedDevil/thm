@@ -117,7 +117,7 @@ class ObtainAuthToken(APIView):
             token, created = Token.objects.get_or_create(user=user)
             tokendata = dict(token=token.key)
             responsedata = dict(data=tokendata, status=status.HTTP_200_OK, success=True)
-            return HttpResponse(responsedata, content_type="application/json")
+            return HttpResponse(json.dumps(responsedata), content_type="application/json")
         responsedata=dict(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
         return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
