@@ -13,7 +13,7 @@ from rest_framework import status
 from rest_framework import parsers
 from rest_framework import renderers
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
+# from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 import logging
 import simplejson as json
@@ -49,7 +49,7 @@ class UsersDetail(APIView):
         """
         user = self.get_object(pk)
         serialized_user = serializers.UserSerializer(user)
-        responsedata = dict(data=serialized_user.data, success=True)
+        responsedata = dict(data=serialized_user.data, status=status.HTTP_200_OK ,success=True)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
 class UserSignup(APIView):
@@ -67,14 +67,14 @@ class UserSignup(APIView):
         user = request.user
         ## Error if user is already authenticated
         if user.is_authenticated():
-            responsedata = dict (status=status.HTTP_400_BAD_REQUEST, success=True)
+            responsedata = dict (status=status.HTTP_400_BAD_REQUEST, success=False)
             return HttpResponse(responsedata, content_type="application/json")
         ## Creating an mutable dict from the request.DATA so we can add address details to it
         data = request.DATA.copy()
         ## Creating a address object
-        data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
         serialized_user = serializers.UserSignupValidationSerializer(data=data)
         if serialized_user.is_valid():
+            data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
             serialized_user = serializers.UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
@@ -87,9 +87,11 @@ class UserSignup(APIView):
                 logging.warn("user {0} is created".format(user.phone))
                 ## Creating a auth token for the user and return the same as response
                 token = Token.objects.get(user=user)
-                responsedata = dict (token=token.key, status=status.HTTP_201_CREATED, success=True)
+                tokendata = dict(token=token.key)
+                responsedata = dict(data=tokendata, status=status.HTTP_201_CREATED, success=True)
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        return Response(serialized_user.errors, status=status.HTTP_400_BAD_REQUEST)
+        responsedata=dict(data=serialized_user.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
+        return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
 class ObtainAuthToken(APIView):
     """
@@ -113,9 +115,11 @@ class ObtainAuthToken(APIView):
         if serializer.is_valid():
             user = serializer.object['user']
             token, created = Token.objects.get_or_create(user=user)
-            return HttpResponse(json.dumps({'token': token.key, 'success' : True}), content_type="application/json")
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return HttpResponse(json.dumps({'status':status.HTTP_400_BAD_REQUEST, 'success':False}), content_type="application/json")
+            tokendata = dict(token=token.key)
+            responsedata = dict(data=tokendata, status=status.HTTP_200_OK, success=True)
+            return HttpResponse(responsedata, content_type="application/json")
+        responsedata=dict(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
+        return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
 obtain_auth_token = ObtainAuthToken.as_view()
 
@@ -153,7 +157,7 @@ class JobDetail(APIView):
         data = serialized_user.data
         data['creation_date'] = str(data['creation_date'])
         data['completion_date'] = str(data['completion_date'])
-        responsedata = dict(data=data, success=True)
+        responsedata = dict(data=data, status=status.HTTP_200_OK, success=True)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
 class JobsDetail(APIView):
@@ -172,7 +176,7 @@ class JobsDetail(APIView):
         elif user.user_type == 2:
             jobs = Jobs.objects.filter(customer_id=user.id)
         else:
-            responsedata = dict(success=False, status=status.HTTP_400_BAD_REQUEST)
+            responsedata = dict(status=status.HTTP_400_BAD_REQUEST, success=False)
             return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
         serialized_jobs = serializers.JobResponseSerializer(jobs, many=True)
@@ -180,7 +184,7 @@ class JobsDetail(APIView):
         for datum in data:
             datum['creation_date'] = str(datum['creation_date'])
             datum['completion_date'] = str(datum['completion_date'])
-        responsedata = dict(data=data, success=True)
+        responsedata = dict(data=data, status=status.HTTP_200_OK, success=True)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
     def post(self, request, format=None):
@@ -193,7 +197,7 @@ class JobsDetail(APIView):
         user = request.user
         ## We only allow a customer or THM staffs to create job requests
         if user.user_type == 1:
-            responsedata = dict(success=False, status=status.HTTP_400_BAD_REQUEST)
+            responsedata = dict(status=status.HTTP_400_BAD_REQUEST, success=False)
             return HttpResponse(json.dumps(responsedata), content_type="application/json")
         data = request.DATA.copy()
         serialized_job = serializers.JobSerializer(data=data)
@@ -205,5 +209,6 @@ class JobsDetail(APIView):
                 logging.warn("job {0} is created".format(job.id))
                 responsedata = dict (status=status.HTTP_201_CREATED, success=True)
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        return Response(serialized_job.errors, status=status.HTTP_400_BAD_REQUEST)
+        responsedata=dict(data=serialized_job.errors, status=status.HTTP_400_BAD_REQUEST, success=False)
+        return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
