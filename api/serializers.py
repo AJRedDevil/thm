@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'user_type',
             'profile_image',
             'phone_status',
             )

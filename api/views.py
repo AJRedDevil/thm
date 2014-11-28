@@ -64,18 +64,28 @@ class UserSignup(APIView):
         request_serializer: serializers.UserSignupValidationSerializer
         response_serializer: serializers.SignupResponseSerializer
         """
+        user = request.user
+        ## Error if user is already authenticated
+        if user.is_authenticated():
+            responsedata = dict (status=status.HTTP_400_BAD_REQUEST, success=True)
+            return HttpResponse(responsedata, content_type="application/json")
+        ## Creating an mutable dict from the request.DATA so we can add address details to it
         data = request.DATA.copy()
+        ## Creating a address object
         data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
         serialized_user = serializers.UserSignupValidationSerializer(data=data)
         if serialized_user.is_valid():
             serialized_user = serializers.UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
+                ## Creating a user transaction token for the user
                 UserToken.objects.create(user=user)
+                ## Using User hander send out verification code to the user on the phone
                 um = user_handler.UserManager()
                 msgstatus = um.sendVerfTextApp(user.id)
                 logging.warn(msgstatus)
                 logging.warn("user {0} is created".format(user.phone))
+                ## Creating a auth token for the user and return the same as response
                 token = Token.objects.get(user=user)
                 responsedata = dict (token=token.key, status=status.HTTP_201_CREATED, success=True)
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
@@ -114,10 +124,20 @@ class JobDetail(APIView):
     Jobdetail resource
     """
 
-    def get_object(self, pk):
+    def get_object(self, pk, user):
         try:
-            return Jobs.objects.get(pk=pk)
-        except UserProfile.DoesNotExist:
+            ## For staffs show all
+            if user.user_type==0:
+                return Jobs.objects.get(pk=pk)
+            ## For handymen, show data only if they were assigned to it
+            elif user.user_type==1:
+                return Jobs.objects.get(pk=pk, handyman_id=user.id)
+            ## For Customers, show data only if they created it
+            elif user.user_type==2:
+                return Jobs.objects.get(pk=pk, customer_id=user.id)
+            else:
+                raise Http404
+        except Jobs.DoesNotExist:
             raise Http404
 
 
@@ -127,7 +147,8 @@ class JobDetail(APIView):
         ---
         response_serializer: serializers.JobResponseSerializer
         """
-        job = self.get_object(pk)
+        user = request.user
+        job = self.get_object(pk, user)
         serialized_user = serializers.JobResponseSerializer(job)
         data = serialized_user.data
         data['creation_date'] = str(data['creation_date'])
@@ -140,7 +161,20 @@ class JobsDetail(APIView):
     New Job resource
     """
     def get(self, request, format=None):
-        jobs = Jobs.objects.all()
+        user = request.user
+        ## If THM Staffs retrieve all
+        if user.user_type == 0:
+            jobs = Jobs.objects.all()
+        ## If it's a handymen, only show requests which they were assigned to
+        elif user.user_type == 1:
+            jobs = Jobs.objects.filter(handyman_id=user.id)
+        ## If it's a customer only show requests that they created
+        elif user.user_type == 2:
+            jobs = Jobs.objects.filter(customer_id=user.id)
+        else:
+            responsedata = dict(success=False, status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(json.dumps(responsedata), content_type="application/json")
+
         serialized_jobs = serializers.JobResponseSerializer(jobs, many=True)
         data = serialized_jobs.data
         for datum in data:
@@ -157,11 +191,14 @@ class JobsDetail(APIView):
         response_serializer: serializers.JobAPIResponseSerializer
         """
         user = request.user
+        ## We only allow a customer or THM staffs to create job requests
+        if user.user_type == 1:
+            responsedata = dict(success=False, status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(json.dumps(responsedata), content_type="application/json")
         data = request.DATA.copy()
         serialized_job = serializers.JobSerializer(data=data)
         if serialized_job.is_valid():
             data['customer'] = user.id
-            data['fee'] = "5.99"
             serialized_job = serializers.NewJobSerializer(data=data)
             if serialized_job.is_valid():
                 job = serialized_job.save()
