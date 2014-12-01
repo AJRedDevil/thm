@@ -13,7 +13,6 @@ import jsonfield
 # Create your models here.
 
 STATUS_SELECTION = (('new','New'),('accepted','Accepted'),('completed','Completed'))
-current_time = timezone.now().astimezone(pytz.timezone(settings.TIME_ZONE))
 
 class Jobs(models.Model):
 
@@ -22,7 +21,7 @@ class Jobs(models.Model):
         max_digits=8, blank=True, null=True)
     status = models.TextField(_('status'), choices=STATUS_SELECTION, default='New')
     creation_date = models.DateTimeField(_('creation_date'), 
-        default=current_time)
+        default=timezone.now)
     jobtype = models.IntegerField(_('jobtype'), default=0) 
     handyman = models.ForeignKey(UserProfile, related_name='orders', blank=True, null=True)
     isaccepted = models.BooleanField(_('isaccepted'), default=False)
@@ -47,16 +46,13 @@ class Jobs(models.Model):
 
 class JobEvents(models.Model):
     """Models for JobEvents"""
-    
 
     job = models.ForeignKey(Jobs)
     event = models.IntegerField(_('event'), max_length=2, default=1)
     updated_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+        default=timezone.now)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
     
     def save(self, *args, **kwargs):
-        if not self.updated_on:
-            self.updated_on = timezone.now
         super(JobEvents, self).save(*args, **kwargs)

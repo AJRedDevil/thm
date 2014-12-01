@@ -166,18 +166,35 @@ class JobsDetail(APIView):
     """
     def get(self, request, format=None):
         user = request.user
-        ## If THM Staffs retrieve all
-        if user.user_type == 0:
-            jobs = Jobs.objects.all()
-        ## If it's a handymen, only show requests which they were assigned to
-        elif user.user_type == 1:
-            jobs = Jobs.objects.filter(handyman_id=user.id)
-        ## If it's a customer only show requests that they created
-        elif user.user_type == 2:
-            jobs = Jobs.objects.filter(customer_id=user.id)
+        if request.GET:
+            jobstatus = request.GET['jobstatus']
+            logging.warn(jobstatus)
+            logging.warn(user.user_type)
+            ## If THM Staffs retrieve all
+            if user.user_type == 0:
+                jobs = Jobs.objects.filter(status=jobstatus)
+                logging.warn(jobs)
+            ## If it's a handymen, only show requests which they were assigned to
+            elif user.user_type == 1:
+                jobs = Jobs.objects.filter(handyman_id=user.id, status=jobstatus)
+            ## If it's a customer only show requests that they created
+            elif user.user_type == 2:
+                jobs = Jobs.objects.filter(customer_id=user.id, status=jobstatus)
+            else:
+                responsedata = dict(status=status.HTTP_400_BAD_REQUEST, success=False)
+                return HttpResponse(json.dumps(responsedata), content_type="application/json")
         else:
-            responsedata = dict(status=status.HTTP_400_BAD_REQUEST, success=False)
-            return HttpResponse(json.dumps(responsedata), content_type="application/json")
+            if user.user_type == 0:
+                jobs = Jobs.objects.filter()
+            ## If it's a handymen, only show requests which they were assigned to
+            elif user.user_type == 1:
+                jobs = Jobs.objects.filter(handyman_id=user.id)
+            ## If it's a customer only show requests that they created
+            elif user.user_type == 2:
+                jobs = Jobs.objects.filter(customer_id=user.id)
+            else:
+                responsedata = dict(status=status.HTTP_400_BAD_REQUEST, success=False)
+                return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
         serialized_jobs = serializers.JobResponseSerializer(jobs, many=True)
         data = serialized_jobs.data

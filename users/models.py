@@ -24,7 +24,6 @@ from rest_framework.authtoken.models import Token
 logger = logging.getLogger(__name__)
 
 CITY_SELECTION = (('Kathmandu','Kathmandu'),)
-current_time = timezone.now().astimezone(pytz.timezone(settings.TIME_ZONE))
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -69,6 +68,7 @@ class UserManager(BaseUserManager):
 
 
 class UserProfile(AbstractBaseUser):
+
     def upload_pp_path(self, name):
         # name = 'pp'
         folder = self.id
@@ -212,27 +212,24 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 class UserEvents(models.Model):
     """Models for Users UserEvents"""
     
-
     user = models.ForeignKey(UserProfile)
     event = models.IntegerField(_('event'), max_length=2, default=1)
     updated_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+        default=timezone.now)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
     
     def save(self, *args, **kwargs):
-        if not self.updated_on:
-            self.updated_on = timezone.now
         super(UserEvents, self).save(*args, **kwargs)
 
 class EarlyBirdUser(models.Model):
     """
     List of customers who registered in the early phase
     """
-    
+
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     registered_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+        default=timezone.now)
 
     def __unicode__(self):
         return str(self.phone)
@@ -246,10 +243,10 @@ class EarlyBirdHandymen(models.Model):
     """
     List of Handymen who registered in the early phase
     """
-    
+
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     registered_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+        default=timezone.now)
 
     def save(self, *args, **kwargs):
         if not self.registered_on:
@@ -262,7 +259,7 @@ class UserToken(models.Model):
     """
     user = models.ForeignKey(UserProfile)
     token = models.CharField(_('id'), max_length=20, primary_key=True)
-    timeframe = models.DateTimeField(_('timeframe'), default=timezone.now())
+    timeframe = models.DateTimeField(_('timeframe'), default=timezone.now)
     status = models.BooleanField(_('status'), default=False)
 
     def is_alive(self):
