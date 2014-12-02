@@ -230,14 +230,18 @@ class JobsDetail(APIView):
                     vas = Sparrow()
                     msg = "Request for a plumber received and is queued for processing, a plumber would be put in touch with you soon!"
                     msgstatus = vas.sendDirectMessage(msg, user.phone)
-                    msgstatus = vas.sendDirectMessage(msg, intlphone.from_string('+9779802036633'))
+                    adminmsg = "Request for a plumber received from {0}".format(user.phone.as_national)
+                    adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
                     logger.warn(msgstatus)
+                    logger.warn(adminmsgstatus)
                 if job.jobtype == 2:
                     vas = Sparrow()
                     msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
                     msgstatus = vas.sendDirectMessage(msg, user.phone)
-                    msgstatus = vas.sendDirectMessage(msg, intlphone.from_string('+9779802036633'))
+                    adminmsg = "Request for an electrician received from {0}".format(user.phone.as_national)
+                    adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
                     logger.warn(msgstatus)
+                    logger.warn(adminmsgstatus)
                 logging.warn("job {0} is created".format(job.id))
                 responsedata = dict (status=status.HTTP_201_CREATED, success=True)
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
