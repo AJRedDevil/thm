@@ -210,7 +210,10 @@ def joinasuser(request):
             memberlist = EarlyBirdUser.objects.all()
             if ebuser in memberlist:
                 if text.lower().split()[1]=='plumber':
-                    msg = "Request received and queued for processing, a plumber would be put in touch with you soon!"
+                    msg = "Request for a plumber received and is queued for processing, a plumber would be put in touch with you soon!"
+                    return HttpResponse(msg,content_type="text/html")
+                if text.lower().split()[1]=='electrician':
+                    msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
                     return HttpResponse(msg,content_type="text/html")
                 # If there are any added, consider it invalid
                 else: 

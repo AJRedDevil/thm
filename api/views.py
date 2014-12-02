@@ -7,6 +7,7 @@ from users import handler as user_handler
 import serializers
 
 from django.http import Http404, HttpResponse
+from libs.sparrow_handler import Sparrow
 
 from rest_framework.views import APIView
 from rest_framework import status
@@ -15,6 +16,8 @@ from rest_framework import renderers
 from rest_framework.permissions import AllowAny
 # from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from phonenumber_field.phonenumber import PhoneNumber as intlphone
+
 import logging
 import simplejson as json
 
@@ -223,6 +226,18 @@ class JobsDetail(APIView):
             serialized_job = serializers.NewJobSerializer(data=data)
             if serialized_job.is_valid():
                 job = serialized_job.save()
+                if job.jobtype == 1:
+                    vas = Sparrow()
+                    msg = "Request for a plumber received and is queued for processing, a plumber would be put in touch with you soon!"
+                    msgstatus = vas.sendDirectMessage(msg, user.phone)
+                    msgstatus = vas.sendDirectMessage(msg, intlphone.from_string('+9779802036633'))
+                    logger.warn(msgstatus)
+                if job.jobtype == 2:
+                    vas = Sparrow()
+                    msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
+                    msgstatus = vas.sendDirectMessage(msg, user.phone)
+                    msgstatus = vas.sendDirectMessage(msg, intlphone.from_string('+9779802036633'))
+                    logger.warn(msgstatus)
                 logging.warn("job {0} is created".format(job.id))
                 responsedata = dict (status=status.HTTP_201_CREATED, success=True)
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
