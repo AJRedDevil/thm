@@ -9,6 +9,7 @@ from users.models import UserProfile
 
 import pytz
 import jsonfield
+import uuid
 
 # Create your models here.
 
@@ -16,6 +17,8 @@ STATUS_SELECTION = (('new','New'),('accepted','Accepted'),('completed','Complete
 
 class Jobs(models.Model):
 
+    jobref = models.CharField(_('jobref'), max_length=100, unique=True, 
+        default=''.join(str(uuid.uuid4()).split('-')))
     customer = models.ForeignKey(UserProfile, related_name='jobs')
     fee = models.DecimalField(_('reward'), decimal_places=2, 
         max_digits=8, blank=True, null=True)
