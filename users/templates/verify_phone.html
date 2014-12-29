@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>THM - Verify Phone</title>
+</head>
+<body>
+    <h1>Insert Code here Here</h1>
+    <form action="{% url 'verifyPhone' %}" method="POST">{% csrf_token %}
+        <input name='verf_code' type='text'><br>
+        <input type='submit'>
+        {% if user_form.verf_code.errors %}
+        {{ user_form.verf_code.errors }}
+        {% endif %}
+        {% if user_form.errors %}
+            {{ user_form.non_field_errors }}
+        {% endif %}
+    </form>
+    If you haven't received a code yet, please click <a href="{% url 'sendVrfCode'%}">here</a> to get one .
+</body>
+</html>

@@ -20,6 +20,8 @@ urlpatterns = patterns('',
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
     url(r'^register/$', userviews.joinasuser, name='register'),
     url(r'^joinus/$', userviews.joinashandymen, name='joinus'),
+    url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
+    url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
     url(r'^$', index, name='index'),
 )
 

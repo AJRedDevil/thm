@@ -5,6 +5,7 @@ from users.models import UserProfile, CITY_SELECTION
 from jobs.models import Jobs
 
 from rest_framework import exceptions, serializers
+import users.handler as user_handler
 
 import logging
 
@@ -131,3 +132,23 @@ class JobAPIResponseSerializer(serializers.Serializer):
     """
     success = serializers.BooleanField()
     status = serializers.IntegerField()
+
+class PhoneVerifySerializer(serializers.Serializer):
+    """
+    Response Serializer for requests over in API
+    """
+    verf_code = serializers.CharField()
+
+    def validate(self, attrs):
+        um = user_handler.UserManager()
+        verf_code = attrs.get('verf_code')
+        request = self.context.get('request', None)
+
+        if verf_code:
+            if request.user.phone_status == True:
+                msg = _('Phone already verified!')
+                raise exceptions.PermissionDenied(msg)
+
+            if not um.checkVerfCode(request.user, verf_code):
+                msg = _('Provided code is incorrect!')
+                raise exceptions.PermissionDenied(msg)

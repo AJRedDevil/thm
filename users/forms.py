@@ -10,11 +10,41 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
 from .models import UserProfile, CITY_SELECTION, EarlyBirdUser, EarlyBirdHandymen
+import handler as user_handler
 
 import os
 from phonenumber_field.formfields import PhoneNumberField
 import logging
 logger = logging.getLogger(__name__)
+
+
+class VerifyPhoneForm(forms.Form):
+    """
+    A form that takes phone number as the data
+    """
+    error_messages = {
+        'wrong_code': _("Provided code is not correct!"),
+        }
+
+    verf_code = forms.CharField(label=_("verf_code"),
+        widget=forms.TextInput, min_length=6, 
+        error_messages={'required' : 'Please provide with the verification code sent on your mobile !',
+                        })
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(VerifyPhoneForm, self).__init__(*args, **kwargs)
+
+    def clean_verf_code(self):
+        um = user_handler.UserManager()
+        verf_code = self.cleaned_data.get("verf_code")
+        user = self.request.user
+        if not um.checkVerfCode(user, verf_code):
+            raise forms.ValidationError(
+                self.error_messages['wrong_code'],
+                code='wrong_code',
+            )
+        return verf_code
 
 
 class EBUserPhoneNumberForm(forms.ModelForm):
@@ -360,15 +390,5 @@ class LocalAuthenticationForm(forms.Form):
 #     for k in ['old_password', 'new_password1', 'new_password2']
 # )
 
-
-# class NotifPrefForm(forms.Form):
-#     def __init__(self, *args, **kwargs):
-#         super(NotifPrefForm, self).__init__(*args, **kwargs)
-
-#     PACKAGE_SELECTION = (('car','Car'),('backpack','Backpack'),('minivan','Minivan'))
-#     NOTIF_SELECTION = (('newquest','Someone posts a new quest'),('applyquest','My posted quests are applied'))
-
-#     package = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=PACKAGE_SELECTION)
-#     notif = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=NOTIF_SELECTION)
 
 

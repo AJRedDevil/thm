@@ -2,6 +2,7 @@
 
 #All Djang Imports
 # from django.conf import settings
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
@@ -16,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 import handler as user_handler
 from thm.decorators import is_superuser
 from .models import UserProfile, EarlyBirdUser, UserToken
-from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm
+from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm, VerifyPhoneForm
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -78,6 +79,8 @@ def signup(request):
     """
     Lets a user signup 
     """
+    client_internal_ip = get_real_ip(request)
+    client_public_ip = get_ip(request)
     if request.method == "POST":
         user_form = UserCreationForm(request.POST)
         if user_form.is_valid():
@@ -89,9 +92,13 @@ def signup(request):
             userdata.backend='django.contrib.auth.backends.ModelBackend'
             auth_login(request, userdata)
             UserToken.objects.create(user=userdata)
+            eventhandler = user_handler.UserEventManager()
+            extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
+            eventhandler.setevent(request.user, 1, extrainfo)
             um = user_handler.UserManager()
             um.sendVerfText(userdata.id)
-            logger.debug("user {0} is created".format(userdata.phone))
+            logger.debug("user created")
+            logger.debug("User Details : \n {0}".format(serializers.serialize('json',[userdata, ])))
             return redirect('home')
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
@@ -100,6 +107,62 @@ def signup(request):
     user_form = UserCreationForm
     return render(request, 'signup.html', locals())
 
+@login_required
+def verifyPhone(request):
+    """
+    Lets a user verify his phone number 
+    """
+    client_internal_ip = get_real_ip(request)
+    client_public_ip = get_ip(request)
+    user = request.user
+    if user.phone_status == True:
+        return redirect('home')
+
+    if request.method == "POST":
+        user_form = VerifyPhoneForm(request.POST, request=request)
+        if user_form.is_valid():
+            um = user_handler.UserManager()
+            user = request.user
+            ### Update phone status for user
+            userdata = um.getUserDetails(user.id)
+            userdata.phone_status = True
+            userdata.save()
+            ### Update User Events
+            eventhandler = user_handler.UserEventManager()
+            extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
+            eventhandler.setevent(request.user, 2, extrainfo)                
+            ### Send user a SMS stating that his phone has been verified
+            um.sendPhoneVerfText(user.id)
+            logger.debug("User's phone verified")
+            logger.debug("User Details : \n {0}".format(serializers.serialize('json',[userdata, ])))
+            return redirect('home')
+        if user_form.errors:
+            logger.debug("Login Form has errors, %s ", user_form.errors)
+            return render(request, 'verify_phone.html', locals())
+
+    user_form = UserCreationForm
+    return render(request, 'verify_phone.html', locals())
+
+@login_required
+def sendVrfCode(request):
+    """
+    Lets a user send a verification code to his phone number 
+    """
+    client_internal_ip = get_real_ip(request)
+    client_public_ip = get_ip(request)
+    user = request.user
+    if user.is_active and user.phone_status == False:
+        um = user_handler.UserManager()
+        UserToken.objects.create(user=user)
+        ### Update User Events
+        eventhandler = user_handler.UserEventManager()
+        extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
+        eventhandler.setevent(request.user, 3, extrainfo)                
+        ### Send user a SMS stating that his phone has been verified
+        um.sendVerfTextApp(user.id)
+        logger.debug("Verification code sent to the {0}".format(user.phone))
+        return redirect('verifyPhone')
+    return redirect('home')
 
 @login_required
 def home(request):

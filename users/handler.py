@@ -17,19 +17,41 @@ class UserManager(object):
         return user
 
     def sendVerfText(self, user_id):
+        """Sends a verification text to the user"""
         user = self.getUserDetails(user_id)
         token = UserToken.objects.get(user_id=user, status=False)
         vas = Sparrow()
         msg = "Thankyou for signing up with The Right Handyman, to complete registration, type VERIFYHM {0} and send to 2200.".format(token.get_vrfcode())
-        logger.warn(msg)
+        logger.debug(msg)
         status = vas.sendMessage(msg, user)
         return status
 
     def sendVerfTextApp(self, user_id):
+        """Sends only the verification code, this is to be used from app"""
         user = self.getUserDetails(user_id)
         token = UserToken.objects.get(user_id=user, status=False)
         vas = Sparrow()
         msg = "{0}".format(token.get_vrfcode())
+        logger.debug(msg)
+        status = vas.sendMessage(msg, user)
+        return status
+
+    def checkVerfCode(self, user, verf_code):
+        """Checks if the user provided code is true"""
+        token = UserToken.objects.get(user_id=user.id, status=False)
+        if token:
+            if token.get_vrfcode() == verf_code:
+                return True
+            else:
+                return False
+        return False
+
+    def sendPhoneVerfText(self, user_id):
+        """Sends a text to the user saying that his phone has been verified"""
+        user = self.getUserDetails(user_id)
+        vas = Sparrow()
+        msg = "Your phone has been verified, Thankyou"
+        logger.debug(msg)
         status = vas.sendMessage(msg, user)
         return status
 

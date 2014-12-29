@@ -7,6 +7,8 @@ from users import handler as user_handler
 import serializers
 
 from django.http import Http404, HttpResponse
+
+from ipware.ip import get_real_ip, get_ip
 from libs.sparrow_handler import Sparrow
 
 from rest_framework.views import APIView
@@ -39,7 +41,7 @@ class UsersDetail(APIView):
 
     def get_object(self, pk):
         try:
-            return UserProfile.objects.get(pk=pk)
+            return UserProfile.objects.get(userref=pk)
         except UserProfile.DoesNotExist:
             raise Http404
 
@@ -135,13 +137,13 @@ class JobDetail(APIView):
         try:
             ## For staffs show all
             if user.user_type==0:
-                return Jobs.objects.get(pk=pk)
+                return Jobs.objects.get(jobref=pk)
             ## For handymen, show data only if they were assigned to it
             elif user.user_type==1:
-                return Jobs.objects.get(pk=pk, handyman_id=user.id)
+                return Jobs.objects.get(jobref=pk, handyman_id=user.id)
             ## For Customers, show data only if they created it
             elif user.user_type==2:
-                return Jobs.objects.get(pk=pk, customer_id=user.id)
+                return Jobs.objects.get(jobref=pk, customer_id=user.id)
             else:
                 raise Http404
         except Jobs.DoesNotExist:
@@ -247,4 +249,48 @@ class JobsDetail(APIView):
                 return HttpResponse(json.dumps(responsedata), content_type="application/json")
         responsedata=dict(data=serialized_job.errors, status=status.HTTP_400_BAD_REQUEST, success=False)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
+
+class VerifyPhone(APIView):
+    """
+    Phone verification resource
+    """
+
+    def get(self, request, format=None):
+        """
+        Sends the user a text message containig the verification code
+        """
+        user = request.user
+        client_internal_ip = get_real_ip(request)
+        client_public_ip = get_ip(request)
+        if user.phone_status == False:
+            um = user_handler.UserManager()
+            UserToken.objects.create(user=user)
+            ### Update User Events
+            eventhandler = user_handler.UserEventManager()
+            extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
+            eventhandler.setevent(request.user, 3, extrainfo)                
+            ### Send user a SMS stating that his phone has been verified
+            um.sendVerfTextApp(user.id)
+            logger.debug("Verification code sent to the {0}".format(user.phone))
+            responsedata = dict(status=status.HTTP_200_OK, success=True)
+            return HttpResponse(json.dumps(responsedata), content_type="application/json")
+        responsedata=dict(detail="Phone already verified", status=status.HTTP_400_BAD_REQUEST, success=False)
+        return HttpResponse(json.dumps(responsedata), content_type="application/json")
+
+    def post(self, request):
+        """
+        Allows a user to verify his phone 
+        ---
+        request_serializer: serializers.PhoneVerifySerializer
+        response_serializer: serializers.JobAPIResponseSerializer
+        """
+        serializer = serializers.PhoneVerifySerializer(data=request.POST, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            user.phone_status = True
+            user.save()
+            responsedata = dict(status=status.HTTP_200_OK, success=True)
+            return HttpResponse(json.dumps(responsedata), content_type="application/json")
+        responsedata=dict(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
+        return HttpResponse(json.dumps(responsedata), content_type="application/json")
 
