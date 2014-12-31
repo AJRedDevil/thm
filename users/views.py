@@ -36,10 +36,11 @@ logger = logging.getLogger(__name__)
 def logout(request):
     """Logs out the user"""
     user = request.user
-    if user.is_authenticated:
+    if user.is_authenticated():
         eventhandler = user_handler.UserEventManager()
         extrainfo = dict()
         eventhandler.setevent(user, 0, extrainfo)
+        logger.debug("{0} logged out".format(request.user))
         auth_logout(request)
     return redirect('index')
     
@@ -81,6 +82,11 @@ def signup(request):
     """
     client_internal_ip = get_real_ip(request)
     client_public_ip = get_ip(request)
+    user = request.user
+    if user.is_authenticated():
+        # redirect user to home if he is already authenticated
+        return redirect('home')
+
     if request.method == "POST":
         user_form = UserCreationForm(request.POST)
         if user_form.is_valid():
