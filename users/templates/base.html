@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>This is the homepage</title>
+</head>
+<body>
+<a href="{% url 'home' %}">Home</a>
+<a href="{% url 'myProfile' %}">Profile</a>
+<a href="{% url 'logout' %}">Logout</a>
+Logged in as {{user.name}} ({{user.phone}})<br>
+
+<br><br>
+{% block content %}
+    
+{% endblock content %}
+</body>
+</html>

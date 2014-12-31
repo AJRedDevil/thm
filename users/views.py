@@ -317,3 +317,13 @@ def joinashandymen(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
         return redirect('index')
     return redirect('index')
+
+@login_required
+def myProfile(request):
+    """
+    Displays profile of the logged in user
+    """
+    user = request.user
+    um = user_handler.UserManager()
+    userdetails = um.getUserDetails(user.id)
+    return render(request, 'profilepage.html', locals())

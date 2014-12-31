@@ -1,9 +1,4 @@
-<html>
-<head>
-    <title>This is the homepage</title>
-</head>
-<body>
-    <a href="{% url 'logout' %}">Logout</a>
-    <h1>This is home page</h1>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h1>This is home page</h1>    
+{% endblock content %}

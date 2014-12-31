@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^joinus/$', userviews.joinashandymen, name='joinus'),
     url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
+    url(r'^myprofile/$', userviews.myProfile, name='myProfile'),
     url(r'^$', index, name='index'),
 )
 

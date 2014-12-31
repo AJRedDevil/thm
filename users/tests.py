@@ -70,3 +70,14 @@ class UserTestCase(TestCase):
         response = self.client.get(reverse('signup'))
         self.assertEqual(response.status_code, 302)
         
+    def test7_MyProfilePage(self):
+        post_data=dict(
+            phone=self.phone,
+            password=self.password1
+            )
+        self.client.post(reverse('signup'), data=self.post_data)
+        response = self.client.post(reverse('signin'), data=post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, 'http://testserver/home/')
+        response = self.client.get(reverse('myProfile'))
+        self.assertEqual(response.status_code, 200)
