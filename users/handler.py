@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import UserEvents, UserProfile, UserToken
 from libs.sparrow_handler import Sparrow
+
+from phonenumber_field.modelfields import PhoneNumber
 import logging
 # Init Logger
 logger = logging.getLogger(__name__)
@@ -15,6 +17,15 @@ class UserManager(object):
         """List user information"""
         user = get_object_or_404(UserProfile, id=user_id, is_active=True)
         return user
+
+    def getUserDetailsFromPhone(self, phone):
+        """List user information from phone number"""
+        try:
+            user_phone = PhoneNumber.from_string(phone)
+            user = UserProfile.objects.get(phone=user_phone)
+            return user
+        except UserProfile.DoesNotExist:
+            return None
 
     def sendVerfText(self, user_id):
         """Sends a verification text to the user"""
@@ -53,6 +64,15 @@ class UserManager(object):
         msg = "Your phone has been verified, Thankyou"
         logger.debug(msg)
         status = vas.sendMessage(msg, user)
+        return status
+
+    def sendPasswordText(self, user_id, password):
+        """Sends a text to the user with his password"""
+        user = self.getUserDetails(user_id)
+        vas = Sparrow()
+        msg = "Your password is : {0} . Please login at www.thehandymanapp.co and change your password immediately".format(password)
+        status = vas.sendMessage(msg, user)
+        logger.debug(msg)
         return status
 
 class UserEventManager(object):

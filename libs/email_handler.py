@@ -19,6 +19,21 @@ def _prepNewUserRegistrationNotification(phone):
 
     return email_details
 
+def prepNewJobRegistrationNotification(phone, name=None):
+    """Prepare the details for notification emails after new job requests are put via SMS or App"""
+    template_name="New_Job_Registration"
+    subject="THM - New Job Registered !"
+    email_details = {
+                        'subject' : subject,
+                        'template_name' : template_name,
+                        'global_merge_vars': {
+                                                'phone_number'   : phone,
+                                                'name'  : name
+                                                },
+                    }
+
+    return email_details
+
 def _load_template(user, email_details):
     """
     Loads the email contents and returns the template for email
@@ -49,6 +64,20 @@ def send_newregistration_notif(phone):
         msg.send()
         logger.warn("Notification sent to - %s for %s", user, email_details['template_name'])
         return "success"
+    except Exception, e:
+        logger.warn("Error during sending of Email to - %s for %s", user, email_details['template_name'])
+        logger.warn("Error message is %s", str(e))
+        return "fail"
+
+def send_email_admin(email_details):
+    """
+    Sends an email to admin 
+    """
+    user = settings.ADMIN_EMAIL
+    try:
+        msg = _load_template(user, email_details)
+        msg.send()
+        logger.debug("Notification sent to - %s for %s", user, email_details['template_name'])
     except Exception, e:
         logger.warn("Error during sending of Email to - %s for %s", user, email_details['template_name'])
         logger.warn("Error message is %s", str(e))

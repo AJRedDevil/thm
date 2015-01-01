@@ -183,7 +183,9 @@ def home(request):
 @login_required
 @is_superuser
 def createhandymen(request):
-    """Signup, if request == POST, creates the user"""
+    """
+    Allows the staff create a handymen
+    """
     ## if authenticated redirect to user's homepage directly ##
     if request.user.is_authenticated():
         user = request.user
@@ -208,6 +210,46 @@ def createhandymen(request):
             msg = "Thankyou {0} for registering with The Right Handyman! Your account is being processed!".format(userdata.first_name)
             status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             logger.warn(status)
+            return redirect('home')
+
+        if user_form.errors:
+            logger.debug("Login Form has errors, %s ", user_form.errors)
+        pagetitle = "Create a Handymen"
+        return render(request, 'createhandymen.html', locals())
+    else:
+        user_form = UserCreationForm()
+        pagetitle = "Create a Handymen"
+        return render(request, 'createhandymen.html', locals())
+
+@login_required
+@is_superuser
+def createUser(request):
+    """
+    Allows the staffs create a user
+    """
+    ## if authenticated redirect to user's homepage directly ##
+    if request.user.is_authenticated():
+        user = request.user
+
+    if request.method == "POST":
+        user_form = UserCreationForm(request.POST)
+        if user_form.is_valid():
+            useraddress = dict(city=user_form.cleaned_data['city'], streetaddress=user_form.cleaned_data['streetaddress'])
+            userdata = user_form.save(commit=False)
+            userdata.address = json.dumps(useraddress)
+            userdata.phone_status = True
+            userdata.user_type = 2
+            userdata.phone = user_form.cleaned_data['phone']
+            import hashlib
+            import uuid
+            hashstring = hashlib.sha256(str(timezone.now()) + str(timezone.now()) + str(uuid.uuid4())).hexdigest()
+            password = hashstring[:4]+hashstring[-2:]
+            # password = user_form.cleaned_data['password1']
+            userdata.set_password(password)
+            userdata.save()
+            um = user_handler.UserManager()
+            um.sendPasswordText(userdata.id, password)
+            logger.debug("New user {0} has been created.".format(userdata.phone.as_international))
             return redirect('home')
 
         if user_form.errors:
@@ -263,15 +305,31 @@ def joinasuser(request):
             # As of now, error only seem to be in duplicate data
             elif user_form.errors:
                 msg = "Your request has been acknowledged! We would get back to you soon!"
-                logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+                # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
                 logger.warn("{0} just requested for a service. [assumed job request]".format(phone))
+                um = user_handler.UserManager()
+                userdetails = um.getUserDetailsFromPhone(phone)
+                if userdetails != None:
+                    email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)                            
+                    email_handler.send_email_admin(email_details)
+                else:
+                    email_details = email_handler.prepNewJobRegistrationNotification(phone)                            
+                    email_handler.send_email_admin(email_details)
                 return HttpResponse(msg,content_type="text/html")                
         elif len(text.lower().split()) > 1:
             try:
                 ebuser = EarlyBirdUser.objects.get(phone=phone)
                 msg = "Your request has been acknowledged! We would get back to you soon!"
                 logger.warn("{0} just requested for a service. [assumed job request type 2]".format(phone))
-                return HttpResponse(msg,content_type="text/html")                
+                um = user_handler.UserManager()
+                userdetails = um.getUserDetailsFromPhone(phone)
+                if userdetails != None:
+                    email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)                            
+                    email_handler.send_email_admin(email_details)
+                else:
+                    email_details = email_handler.prepNewJobRegistrationNotification(phone)                            
+                    email_handler.send_email_admin(email_details)
+                return HttpResponse(msg,content_type="text/html")   
             except EarlyBirdUser.DoesNotExist:
                 user_form = EBUserPhoneNumberForm(userphone)
                 if user_form.is_valid():
@@ -357,3 +415,4 @@ def myProfile(request):
     um = user_handler.UserManager()
     userdetails = um.getUserDetails(user.id)
     return render(request, 'profilepage.html', locals())
+
