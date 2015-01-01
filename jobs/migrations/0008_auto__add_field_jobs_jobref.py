@@ -3,14 +3,14 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-
+from jobs.models import getUniqueUUID
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Jobs.jobref'
         db.add_column(u'jobs_jobs', 'jobref',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=100),
+                      self.gf('django.db.models.fields.CharField')(default=getUniqueUUID(), max_length=100),
                       keep_default=False)
 
 

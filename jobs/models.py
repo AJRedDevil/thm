@@ -14,10 +14,13 @@ import uuid
 # Create your models here.
 
 STATUS_SELECTION = (('new','New'),('accepted','Accepted'),('completed','Completed'))
+def getUniqueUUID():
+    uniqueID = ''.join(str(uuid.uuid4()).split('-'))
+    return uniqueID
 
 class Jobs(models.Model):
 
-    jobref = models.CharField(_('jobref'), max_length=100, unique=True, default='')
+    jobref = models.CharField(_('jobref'), max_length=100, unique=True, default=getUniqueUUID)
     customer = models.ForeignKey(UserProfile, related_name='jobs')
     fee = models.DecimalField(_('reward'), decimal_places=2, 
         max_digits=8, blank=True, null=True)

@@ -66,6 +66,9 @@ class UserManager(BaseUserManager):
         return self._create_user(phone, password, **extra_fields)
 
 
+def getUniqueUUID():
+    uniqueID = ''.join(str(uuid.uuid4()).split('-'))
+    return uniqueID
 
 class UserProfile(AbstractBaseUser):
 
@@ -76,7 +79,7 @@ class UserProfile(AbstractBaseUser):
 
     id = models.AutoField(_('id'), primary_key=True)
     userref = models.CharField(_('userref'), max_length=100, unique=True, 
-        default=''.join(str(uuid.uuid4()).split('-')))
+        default=getUniqueUUID)
     # displayname = models.CharField(_('displayname'), max_length=30, unique=True, 
     #     error_messages={'unique' : 'The username provided is already taken !'})
     name = models.CharField(_('first_name'), max_length=30)
