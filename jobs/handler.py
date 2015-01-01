@@ -1,4 +1,5 @@
 
+from django.core import serializers
 from django.utils import timezone
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -15,6 +16,35 @@ class JobManager(object):
         job = get_object_or_404(Jobs, id=job_id)
         return job
 
+    def getAllJobs(self, user, status='New'):
+        if user.user_type == 0:
+            jobs = Jobs.objects.filter(status=status)
+        ## If it's a handymen, only show requests which they were assigned to
+        elif user.user_type == 1:
+            jobs = Jobs.objects.filter(handyman_id=user.id, status=status)
+        ## If it's a customer only show requests that they created
+        elif user.user_type == 2:
+            jobs = Jobs.objects.filter(customer_id=user.id, status=status)
+        else:
+            jobs = []
+
+        logger.debug("Job Details : \n {0}".format(serializers.serialize('json',jobs)))
+        return jobs
+
+    def getAllJobsByDate(self, user, date):
+        if user.user_type == 0:
+            jobs = Jobs.objects.filter(creation_date__gte=date)
+        ## If it's a handymen, only show requests which they were assigned to
+        elif user.user_type == 1:
+            jobs = Jobs.objects.filter(handyman_id=user.id, creation_date__gte=date)
+        ## If it's a customer only show requests that they created
+        elif user.user_type == 2:
+            jobs = Jobs.objects.filter(customer_id=user.id, creation_date__gte=date)
+        else:
+            jobs = []
+
+        logger.debug("Job Details : \n {0}".format(serializers.serialize('json',jobs)))
+        return jobs
 
 class JobEventManager(object):
     """docstring for UserEventManager"""

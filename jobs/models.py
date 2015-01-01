@@ -17,8 +17,7 @@ STATUS_SELECTION = (('new','New'),('accepted','Accepted'),('completed','Complete
 
 class Jobs(models.Model):
 
-    jobref = models.CharField(_('jobref'), max_length=100, unique=True, 
-        default=''.join(str(uuid.uuid4()).split('-')))
+    jobref = models.CharField(_('jobref'), max_length=100, unique=True, default='')
     customer = models.ForeignKey(UserProfile, related_name='jobs')
     fee = models.DecimalField(_('reward'), decimal_places=2, 
         max_digits=8, blank=True, null=True)
@@ -41,10 +40,12 @@ class Jobs(models.Model):
     destination_home =  models.BooleanField(_('destination_home'), default=True)
 
     def __unicode__(self):
-        return str(self.id )
+        return str(self.jobref )
 
         #Overriding
     def save(self, *args, **kwargs):
+        if self.jobref == '':
+            self.jobref=''.join(str(uuid.uuid4()).split('-'))
         super(Jobs, self).save(*args, **kwargs)
 
 class JobEvents(models.Model):

@@ -1,4 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>This is home page</h1>    
+<h1>This is home page</h1>
+
+Current Open Jobs
+{% for job in jobs  %}
+<p>
+    ============<br>
+    {{job.jobtype}}<br>
+    {{job.remarks}}<br>
+    {{job.status}}<br>
+    Created By {{job.customer.id}}<br>
+    ============
+</p>
+{% endfor %}
+
 {% endblock content %}

@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
-from .models import UserProfile, CITY_SELECTION, EarlyBirdUser, EarlyBirdHandymen
+from .models import UserProfile, CITY_SELECTION, EarlyBirdUser
 import handler as user_handler
 
 import os
@@ -84,34 +84,34 @@ class EBUserPhoneNumberForm(forms.ModelForm):
             data.save()
         return data
 
-class HMUserPhoneNumberForm(forms.ModelForm):
-    """
-    A form that takes phone number as the data
-    """
-    phone = PhoneNumberField()
+# class HMUserPhoneNumberForm(forms.ModelForm):
+#     """
+#     A form that takes phone number as the data
+#     """
+#     phone = PhoneNumberField()
 
-    error_messages = {
-        'country_notsupported': _("Your country is not supported right now!"),
-        }
+#     error_messages = {
+#         'country_notsupported': _("Your country is not supported right now!"),
+#         }
 
-    class Meta:
-        model = EarlyBirdHandymen
-        fields = ['phone']
+#     class Meta:
+#         model = EarlyBirdHandymen
+#         fields = ['phone']
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get("phone")
-        if str(phone.country_code) != '977':
-            raise forms.ValidationError(
-                self.error_messages['country_notsupported'],
-                code='country_notsupported',
-            )
-        return phone
+#     def clean_phone(self):
+#         phone = self.cleaned_data.get("phone")
+#         if str(phone.country_code) != '977':
+#             raise forms.ValidationError(
+#                 self.error_messages['country_notsupported'],
+#                 code='country_notsupported',
+#             )
+#         return phone
 
-    def save(self, commit=True):
-        data = super(HMUserPhoneNumberForm, self).save(commit=False)
-        if commit:
-            data.save()
-        return data
+#     def save(self, commit=True):
+#         data = super(HMUserPhoneNumberForm, self).save(commit=False)
+#         if commit:
+#             data.save()
+#         return data
 
 class UserCreationForm(forms.ModelForm):
     """

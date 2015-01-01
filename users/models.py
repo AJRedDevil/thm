@@ -232,6 +232,7 @@ class EarlyBirdUser(models.Model):
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     registered_on = models.DateTimeField(_('updated_on'), 
         default=timezone.now)
+    confirmed = models.BooleanField(_('confirmed'), default=False)
 
     def __unicode__(self):
         return str(self.phone)
@@ -241,19 +242,19 @@ class EarlyBirdUser(models.Model):
             self.registered_on = timezone.now
         super(EarlyBirdUser, self).save(*args, **kwargs)
 
-class EarlyBirdHandymen(models.Model):
-    """
-    List of Handymen who registered in the early phase
-    """
+# class EarlyBirdHandymen(models.Model):
+#     """
+#     List of Handymen who registered in the early phase
+#     """
 
-    phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-    registered_on = models.DateTimeField(_('updated_on'), 
-        default=timezone.now)
+#     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
+#     registered_on = models.DateTimeField(_('updated_on'), 
+#         default=timezone.now)
 
-    def save(self, *args, **kwargs):
-        if not self.registered_on:
-            self.registered_on = timezone.now
-        super(EarlyBirdHandymen, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         if not self.registered_on:
+#             self.registered_on = timezone.now
+#         super(EarlyBirdHandymen, self).save(*args, **kwargs)
 
 class UserToken(models.Model):
     """
