@@ -126,11 +126,11 @@ LOGGING = {
     },
     'handlers': {
         'null': {
-            'level': 'DEBUG',
+            'level': 'WARN',
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'WARN',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
@@ -138,15 +138,15 @@ LOGGING = {
     'loggers': {
         'users': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
         },
         'jobs': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
         },
         'libs': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
         },
     }
 }
