@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 import handler as user_handler
 from thm.decorators import is_superuser
 from .models import UserProfile, EarlyBirdUser, UserToken
-from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, HMUserPhoneNumberForm, VerifyPhoneForm
+from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, VerifyPhoneForm
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -174,6 +174,10 @@ def sendVrfCode(request):
 def home(request):
     """Post login this is returned and displays user's home page"""
     user = request.user
+    ##Acquire all the current open jobs related to the user
+    from jobs.handler import JobManager
+    jb = JobManager()
+    jobs = jb.getAllJobs(user)
     return render(request,'homepage.html', locals())
 
 @login_required
@@ -229,7 +233,7 @@ def joinasuser(request):
             userdata.save()
             logger.warn("{0} just registered their number as a user".format(phone))
             vas = Sparrow()
-            msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+            msg = "Thankyou for registering with The Handyman App!"
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
             email_handler.send_newregistration_notif(phone.as_international)
@@ -250,47 +254,73 @@ def joinasuser(request):
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
                 userdata.save()
-                logger.warn("{0} just registered their number as a user".format(phone))
-                msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+                logger.debug("{0} just registered their number as a user, [valid entry]".format(phone))
+                msg = "Thankyou for registering with The Handyman App!"
                 # logger.warn(phone)
                 # send email to admin
                 email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
             # As of now, error only seem to be in duplicate data
             elif user_form.errors:
-                msg = "You seem to have been registered already! We would get back to you soon!"
+                msg = "Your request has been acknowledged! We would get back to you soon!"
                 logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+                logger.warn("{0} just requested for a service. [assumed job request]".format(phone))
                 return HttpResponse(msg,content_type="text/html")                
         elif len(text.lower().split()) > 1:
             try:
                 ebuser = EarlyBirdUser.objects.get(phone=phone)
+                msg = "Your request has been acknowledged! We would get back to you soon!"
+                logger.warn("{0} just requested for a service. [assumed job request type 2]".format(phone))
+                return HttpResponse(msg,content_type="text/html")                
             except EarlyBirdUser.DoesNotExist:
                 user_form = EBUserPhoneNumberForm(userphone)
                 if user_form.is_valid():
                     phone = user_form.cleaned_data['phone']
                     userdata = user_form.save(commit=False)
                     userdata.save()
-                    logger.warn("{0} just registered their number as a user".format(phone))
-                    msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
-                    logger.warn(phone)
+                    logger.warn("{0} just registered their number as a user, [assumed registration]".format(phone))
+                    msg = "Thankyou for registering with The Handyman App!"
                     # send email to admin
                     email_handler.send_newregistration_notif(phone.as_international)
                     return HttpResponse(msg,content_type="text/html")
-            memberlist = EarlyBirdUser.objects.all()
-            if ebuser in memberlist:
-                if text.lower().split()[1]=='plumber':
-                    msg = "Request for a plumber received and is queued for processing, a plumber would be put in touch with you soon!"
-                    return HttpResponse(msg,content_type="text/html")
-                if text.lower().split()[1]=='electrician':
-                    msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
-                    return HttpResponse(msg,content_type="text/html")
-                # If there are any added, consider it invalid
-                else: 
-                    msg = "Invalid Input!"
-                    return HttpResponse(msg,content_type="text/html")
-            else: 
-                msg = "Invalid Input!"
-                return HttpResponse(msg,content_type="text/html")
+            ## Commenting the below out to ease it out for users to communicate via SMS
+            # memberlist = EarlyBirdUser.objects.all()
+            # if ebuser in memberlist:
+            #     if text.lower().split()[1]=='plumber':
+            #         try:
+            #             ebuser = EarlyBirdUser.objects.get(phone=phone)
+            #             if user_form.is_valid():
+            #                 logger.warn("{0} just requested for a plumber".format(phone))
+            #                 # send email to admin
+            #                 email_handler.send_newregistration_notif(phone.as_international)
+            #                 return HttpResponse(msg,content_type="text/html")
+            #                 msg = "Request for a plumber received and is queued for processing, a plumber would be put in touch with you soon!"
+            #                 return HttpResponse(msg,content_type="text/html")
+
+            #         except EarlyBirdUser.DoesNotExist:
+            #             user_form = EBUserPhoneNumberForm(userphone)
+            #             if user_form.is_valid():
+            #                 phone = user_form.cleaned_data['phone']
+            #                 userdata = user_form.save(commit=False)
+            #                 userdata.save()
+            #                 logger.warn("{0} just registered their number as a user".format(phone))
+            #                 msg = "Thankyou for registering with The Right Handyman! We shall inform you once we are operational!"
+            #                 logger.warn(phone)
+            #                 # send email to admin
+            #                 email_handler.send_newregistration_notif(phone.as_international)
+            #                 return HttpResponse(msg,content_type="text/html")
+
+            #     if text.lower().split()[1]=='electrician':
+            #         msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
+            #         return HttpResponse(msg,content_type="text/html")
+            #     # If there are any added, consider it invalid
+            #     else: 
+            #         msg = "Invalid Input!"
+            #         return HttpResponse(msg,content_type="text/html")
+        else: 
+            msg = "Invalid Input!"
+            logger.warn("{0} sent a invalid request, [Invalid Input]".format(phone))
+            return HttpResponse(msg,content_type="text/html")
 
     return redirect('index')
 
