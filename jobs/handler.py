@@ -13,7 +13,7 @@ class JobManager(object):
     """docstring for JobManager"""
     def getJobDetails(self, job_id):
         """List job information"""
-        job = get_object_or_404(Jobs, id=job_id)
+        job = get_object_or_404(Jobs, jobref=job_id)
         return job
 
     def getAllJobs(self, user, status='New'):

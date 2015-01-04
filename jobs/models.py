@@ -21,14 +21,15 @@ def getUniqueUUID():
 class Jobs(models.Model):
 
     jobref = models.CharField(_('jobref'), max_length=100, unique=True, default=getUniqueUUID)
-    customer = models.ForeignKey(UserProfile, related_name='jobs')
-    fee = models.DecimalField(_('reward'), decimal_places=2, 
+    customer = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'2'}, related_name='jobs')
+    fee = models.DecimalField(_('fees'), decimal_places=2, 
         max_digits=8, blank=True, null=True)
     status = models.TextField(_('status'), choices=STATUS_SELECTION, default='New')
     creation_date = models.DateTimeField(_('creation_date'), 
         default=timezone.now)
     jobtype = models.IntegerField(_('jobtype'), default=0) 
-    handyman = models.ForeignKey(UserProfile, related_name='orders', blank=True, null=True)
+    handyman = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'0'}, 
+        related_name='orders', blank=True, null=True)
     isaccepted = models.BooleanField(_('isaccepted'), default=False)
     isnotified = models.BooleanField(_('isnotified'), default=False)
     is_complete = models.BooleanField(_('is_complete'), default=False)

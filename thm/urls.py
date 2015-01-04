@@ -4,6 +4,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 from users import views as userviews
+from jobs import views as jobviews
 from .views import index
 
 urlpatterns = patterns('',
@@ -19,11 +20,13 @@ urlpatterns = patterns('',
     url(r'^home/$', userviews.home, name='home'),
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
     url(r'^createuser/$', userviews.createUser, name='createUser'),
+    url(r'^createjob/$', jobviews.createJob, name='createJob'),
     url(r'^register/$', userviews.joinasuser, name='register'),
     url(r'^joinus/$', userviews.joinashandymen, name='joinus'),
     url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
     url(r'^myprofile/$', userviews.myProfile, name='myProfile'),
+    url(r'^jobs/', include('jobs.urls')),
     url(r'^$', index, name='index'),
 )
 

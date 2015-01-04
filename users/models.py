@@ -113,7 +113,7 @@ class UserProfile(AbstractBaseUser):
     objects = UserManager()
 
     def __unicode__(self):
-        return str(self.phone) 
+        return str(self.name+' ('+str(self.phone)+')') 
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
