@@ -10,10 +10,10 @@ from django.utils import timezone
 from thm.decorators import is_superuser
 from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
 from .handler import JobManager
-# @login_required
-# def viewjob(request, jobid):
-#     user = request.user
-#     jobdetails = handler.getJobDetails()
+import logging
+# Init Logger
+logger = logging.getLogger(__name__)
+
 
 @login_required
 @is_superuser
@@ -24,7 +24,7 @@ def createJob(request):
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
             job_form.save()
-    
+
     job_form = JobCreationFormAdmin()
     return render(request, 'createjob.html',locals())
 
@@ -34,6 +34,16 @@ def viewJob(request, job_id):
     user = request.user
     jm = JobManager()
     job = jm.getJobDetails(job_id)
+    if request.method=="POST":
+        job_form = JobEditFormAdmin(request.POST)
+        if job_form.is_valid():
+            job = jm.getJobDetails(job_id)
+            job_form = JobEditFormAdmin(request.POST, instance=job)
+            logger.debug(job_form.errors)
+            job_form.save()
+
+        if job_form.errors:
+            logger.debug("Form has errors, %s ", job_form.errors)
+
     job_form = JobEditFormAdmin(instance=job)
     return render(request, 'jobdetails.html',locals())
-

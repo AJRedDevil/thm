@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+{{faq_form.as_p}}
+<button type="submit" class="btn btn-fatty btn-lg" id="createAccBtn">CREATE FAQ</button>
+</form>
+{% endblock content %}

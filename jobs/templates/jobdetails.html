@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<p>
-{{job_form.as_p}}
-</p>
+<form action="" method="post">{% csrf_token %}
+    {{job_form.as_p}}
+    <button type="submit" class="btn btn-fatty btn-lg" id="createAccBtn">Update JOB</button>
+</form>
 {% endblock content %}

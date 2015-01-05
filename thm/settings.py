@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'users',
     'jobs',
     'libs',
+    'faq',
     'south',
     'rest_framework',
     'rest_framework.authtoken',
@@ -68,7 +69,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
 )
-# TEMPLATE PATH CONFIGURATION 
+# TEMPLATE PATH CONFIGURATION
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 TEMPLATE_DIRS = (TEMPLATE_PATH)
 ## MISCELLANEOUS SETTINGS
@@ -145,6 +146,10 @@ LOGGING = {
             'level':'WARN',
         },
         'libs': {
+            'handlers':['console'],
+            'level':'WARN',
+        },
+        'faq': {
             'handlers':['console'],
             'level':'WARN',
         },

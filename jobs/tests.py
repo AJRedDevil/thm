@@ -39,7 +39,6 @@ class JobTestCase(TestCase):
             streetaddress=self.customerstreetaddress,
             )
 
-    def test1_createJobUrl(self):
         # create user
         user = UserProfile(
             phone=self.staffphone,
@@ -50,16 +49,19 @@ class JobTestCase(TestCase):
             )
         user.set_password(self.staffpassword1)
         user.save()
+
         # create customer
-        customer = UserProfile(
+        self.customer = UserProfile(
             phone=self.customerphone,
             name=self.customername,
             is_superuser=True,
             user_type=2,
             address=dict(streetaddress=self.customerstreetaddress,city=self.customercity),
             )
-        customer.set_password(self.customerpassword1)
-        customer.save()
+        self.customer.set_password(self.customerpassword1)
+        self.customer.save()
+
+    def test1_createJobUrl(self):
         # Login to the system
         login_post_data=dict(
             phone=self.staffphone,
@@ -71,7 +73,7 @@ class JobTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         # Create job post data
         job_post_data=dict(
-            customer=customer.id,
+            customer=self.customer.id,
             jobtype = '1',
             remarks = 'test plumbing job'
             )

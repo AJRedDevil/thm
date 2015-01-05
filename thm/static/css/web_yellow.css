@@ -1,0 +1,304 @@
+body{
+	margin:0;
+}
+
+@media all and (max-width: 960px){
+	background: #090;
+}
+.wrapper {
+	width: 960px;
+	margin: auto;
+	text-align: right;
+}
+
+.clear:after {
+	content: '';
+	display: block;
+	clear: both;
+
+}
+
+
+.mobile {
+	display: inline-block;
+
+	margin-top: 100px;
+}
+.mobile-section{
+	transform:rotate(-45deg);
+	-webkit-transform:rotate(-45deg);
+	position: relative;
+	left: -140px;
+	top:-100px;
+
+}
+
+.iphone{text-align: left;}
+.iphone img{
+
+}
+	
+.v-link .img{
+-webkit-transform: rotate(10deg);
+display: inline-block;
+position: relative;
+left: -50px;
+}	
+.v-link .img img{
+	width: 80%;
+}
+
+}
+.pic{
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.pic img {
+}
+.contents {
+	display: inline-block;
+	width: 49%;
+	float:right;
+}
+h1 {
+	font-family: 'Montserrat', sans-serif;
+	text-align: right;
+	margin: 0;
+}
+.brand{
+	margin-top:72px; overflow: hidden;
+}
+.brand > *{display: inline; text-align: right;}
+h1 span{
+	display: block;
+	line-height: 32px;
+	font-weight: 700;
+	color: #2c2d2d;
+	letter-spacing: -1px;
+}
+.brand .brand-logo{
+	float:right;
+}
+.brand .brand-logo img{
+	width: 140px;
+margin-left: 20px;
+}
+.the {
+	font-size: 45px;
+}
+.handyman {
+	font-size: 46px;
+}
+.app {
+	font-size: 35px;
+}
+
+p {
+	font-size: 19px;
+	font-family: 'Montserrat', sans-serif;
+	text-align: right;
+	width: 100%;
+	line-height: 24px;
+	margin: 46px 0 0 0;
+	color: #2c2d2d;
+}
+
+.register {
+	color: #2c2d2d;
+	font-size: 24px;
+	font-family: 'Montserrat', sans-serif;
+	letter-spacing: -1px;
+	font-weight: 700;
+	margin-top: 20px;
+}
+form{
+	margin: 28px 0 0 0;
+}
+form input {
+	border: 0;
+	padding: 0;
+}
+
+.links{text-align: right; margin: 40px 0;}
+.links li{display: inline-block; list-style: none; margin-left: 10px;}
+.links li a{ color:#333; text-transform: uppercase; font-family: 'Montserrat', sans-serif;}
+.dark_grey {
+	font-size: 32px;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 700;
+	padding:11px;
+	background: #2c2d2d;
+	width: 406px;
+	color:#FFF;
+	text-align: right;
+}
+
+form{
+	margin-top:10px;
+}
+.btn-register {background: #E9C01E;
+font-family: 'Source Sans Pro', sans-serif;
+font-size: 20px;
+font-weight: 700;
+color: #2C2D2D;
+padding: 14px 16px;
+margin-top: 15px;
+}
+.btn-register:hover {
+	background:#f5cd2e; 
+}
+footer {
+	margin-top: 20px;
+	font-family: 'Source Sans Pro', sans-serif;
+	color: #2c2d2d;
+	font-weight: 700;
+	letter-spacing: -1px;
+	line-height: 40px;
+}
+
+footer .or {
+	display: block;
+	font-size: 38px;
+}
+
+footer .cell {
+	display:block;
+	font-size: 32px;
+	text-align: right;
+
+}
+footer .cell img{
+	display:inline;
+}
+footer .carrier{
+	font-size: 14px;
+}
+footer .handyman {
+	font-size: 48px;
+}
+footer .to {
+	font-size: 32px;
+}
+
+.wrapper{ width:70%;position: relative; z-index: 1;
+}
+
+.thm-bg{
+	position: fixed;
+	width: 100%; 
+	height: 100%; 
+	top:0; 
+	left: 0;
+}
+.thm-bg .thm-row{}
+.thm-bg .thm-row > img{
+	width:40%;
+	display: inline-block;
+}
+.thm-bg .thm-row.one > div{
+	height:260px; 
+}
+.thm-bg .thm-bar .yellow-row{ 
+	background: #E9C01E;height:50px; width:100%;
+	}
+.thm-bg .thm-bar .black-row{
+	background: #2C2D2D;
+	width:100%;
+	height:30px;
+}
+.thm-bar{display:none;}
+
+.thm-bg .thm-row.one{
+	
+position: fixed;right:0; top:0; text-align: right;
+}
+
+.thm-bg .thm-row.two
+{
+position: fixed;left:0; bottom:0;
+
+}
+
+.thm-bg .thm-row.two .yellow-row{
+	left:auto; right:100px;
+}
+
+.wrapper.faq .contents{width:100%;}
+
+.faq-section{text-align: left; }
+.faq-section li{list-style: none;
+margin: 20px 0;
+border: 1px solid #CCC;
+border-radius: 10px;}
+.faq-section h2{font-family:"Montserrrat", sans-serif; padding:10px;}
+.faq-section p{text-align: left; margin-top:10px; padding:10px;}
+.faq-list{cursor:pointer;}
+.faq-list p{display: none}
+
+.logo.small{width: 46px;
+margin-top: 8px; cursor:pointer;}
+
+ul{padding:0;}
+@media screen and (max-width:1024px)
+{
+	.wrapper{width:100%; overflow: hidden;}
+
+.thm-bg{
+	z-index:2;
+	height:auto;
+}
+.thm-bg .thm-row{display:none;}
+.thm-bg .thm-bar{display:block;}
+.brand{margin-top:150px; }
+.wrapper, .links, .faq-section, .faq-section p,
+.contents p,
+.contents,
+.dark_grey,
+.iphone
+{text-align: center;}
+.brand .brand-logo,.contents{float:none;}
+.brand h1 span{line-height:52px;}
+.brand > *{text-align: center !important;}
+.contents{width:100%;}
+.btn-register{
+	display: block;
+margin: 20px auto;
+}
+.mobile{display:block; width:100%;}
+.mobile-section{position: static;}
+
+}
+
+.signin{
+	text-align: center;
+	padding:40px;
+}
+.signin ul{
+	margin:0; padding:0;
+}
+.signin h2{
+margin-top:0;
+font-size: 30px
+}
+.signin form{margin-top:0;}
+.popupContent .signin li{list-style: none; font-family: 'Montserrat', sans-serif; margin:5px 0;}
+.popupContent .signin input{margin: 5px 0;
+border: 1px solid #CCC;
+padding: 16px;
+width: 350px;
+text-align: center;
+box-sizing:border-box;}
+.signin-btn{
+	background: #E9C01E;
+	color:#333;
+	text-align: center;
+
+}
+
+
+
+
+
+
+

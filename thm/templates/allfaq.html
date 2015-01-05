@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for faq in allfaq %}
+<a href="{% url 'viewFaq' faq_id=faq.faqref %}">{{faq.id}}</a>
+{{faq.question}}
+{%endfor%}
+{% endblock content %}

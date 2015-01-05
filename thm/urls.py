@@ -5,7 +5,7 @@ from django.conf.urls import patterns, include, url
 
 from users import views as userviews
 from jobs import views as jobviews
-from .views import index
+from .views import index, manage
 
 urlpatterns = patterns('',
     # Examples:
@@ -26,7 +26,9 @@ urlpatterns = patterns('',
     url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
     url(r'^myprofile/$', userviews.myProfile, name='myProfile'),
+    url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
+    url(r'^manage/$', manage, name='manage'),
     url(r'^$', index, name='index'),
 )
 
