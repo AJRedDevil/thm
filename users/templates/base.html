@@ -1,6 +1,17 @@
 <html>
 <head>
-    <title>This is the homepage</title>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-58270740-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+
+    <title>This is the homepage</title>    
 </head>
 <body>
 <a href="{% url 'home' %}">Home</a>
@@ -10,7 +21,7 @@ Logged in as {{user.name}} ({{user.phone}})<br>
 
 <br><br>
 {% block content %}
-    
+
 {% endblock content %}
 </body>
 </html>
