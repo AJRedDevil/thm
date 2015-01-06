@@ -8,6 +8,7 @@ from libs.sparrow_handler import Sparrow
 
 from phonenumber_field.modelfields import PhoneNumber
 import logging
+import os
 # Init Logger
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class UserManager(object):
         user = self.getUserDetails(user_id)
         token = UserToken.objects.get(user_id=user, status=False)
         vas = Sparrow()
-        msg = "Thankyou for signing up with The Right Handyman, to complete registration, type VERIFYHM {0} and send to 2200.".format(token.get_vrfcode())
+        msg = os.environ['PHONE_VERF_MSG'].format(token.get_vrfcode())
         logger.debug(msg)
         status = vas.sendMessage(msg, user)
         return status
@@ -70,14 +71,14 @@ class UserManager(object):
         """Sends a text to the user with his password"""
         user = self.getUserDetails(user_id)
         vas = Sparrow()
-        msg = "Your password is : {0} . Please login at www.thehandymanapp.co and change your password immediately".format(password)
+        msg = os.environ['SEND_PASSWD_MSG'].format(password)
         status = vas.sendMessage(msg, user)
         logger.debug(msg)
         return status
 
 class UserEventManager(object):
     """docstring for UserEventManager"""
-    
+
     def __init__(self):
         pass
 

@@ -8,7 +8,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = patterns('',
     # Examples:
     url(r'^api-auth/$', apiview.obtain_auth_token),
-    url(r'^signup/$', apiview.UserSignup.as_view()),
+    # url(r'^signup/$', apiview.UserSignup.as_view()),
     # url(r'^users/$', apiview.UsersList.as_view()),
     url(r'^users/(?P<pk>\w+)/$', apiview.UsersDetail.as_view()),
     url(r'^docs/', include('rest_framework_swagger.urls')),

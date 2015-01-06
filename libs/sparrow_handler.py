@@ -31,15 +31,17 @@ class Sparrow(object):
         getparams = self.setparams(message, user)
         req = requests.post(self.__outgoingurl, getparams, verify=False)
         if req.status_code == 200:
+            logger.warn(message)
             sm = SMSLogManager()
             sm.updateLog(user, message)
             return req.content
         else:
             logger.warn("Error sending SMS to {0}".format(user.phone.as_international))
-            return req.content            
+            return req.content
 
 
     def sendDirectMessage(self, message, phone):
+        logger.warn(message)
         params = dict(
             client_id = self.__clientid,
             username = self.__username,

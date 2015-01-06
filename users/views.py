@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 #All local imports (libs, contribs, models)
 import handler as user_handler
+from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser
 from .models import UserProfile, EarlyBirdUser, UserToken
 from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, VerifyPhoneForm
@@ -26,6 +27,7 @@ from ipware.ip import get_real_ip, get_ip
 import simplejson as json
 import logging
 import urllib
+import os
 
 
 # Init Logger
@@ -43,7 +45,7 @@ def logout(request):
         logger.debug("{0} logged out".format(request.user))
         auth_logout(request)
     return redirect('index')
-    
+
 def signin(request):
     """
     View to login to the portal
@@ -51,13 +53,13 @@ def signin(request):
     ## if authenticated redirect to user's homepage directly ##
     client_internal_ip = get_real_ip(request)
     client_public_ip = get_ip(request)
-    if request.GET:  
-        next = request.GET['next']
+    # if request.GET:
+    #     next = request.GET['next']
 
     if request.user.is_authenticated():
         return redirect('home')
 
-    if request.method == "POST":   
+    if request.method == "POST":
         auth_form = LocalAuthenticationForm(data=request.POST)
         if auth_form.is_valid():
             auth_login(request, auth_form.get_user())
@@ -73,12 +75,14 @@ def signin(request):
 
         if auth_form.errors:
             logger.debug("Login Form has errors, %s ", auth_form.errors)
-    return render(request, 'signin.html', locals())
+
+    return redirect('index')
+    # return render(request, 'signin.html', locals())
 
 
 def signup(request):
     """
-    Lets a user signup 
+    Lets a user signup
     """
     client_internal_ip = get_real_ip(request)
     client_public_ip = get_ip(request)
@@ -116,7 +120,7 @@ def signup(request):
 @login_required
 def verifyPhone(request):
     """
-    Lets a user verify his phone number 
+    Lets a user verify his phone number
     """
     client_internal_ip = get_real_ip(request)
     client_public_ip = get_ip(request)
@@ -136,7 +140,7 @@ def verifyPhone(request):
             ### Update User Events
             eventhandler = user_handler.UserEventManager()
             extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
-            eventhandler.setevent(request.user, 2, extrainfo)                
+            eventhandler.setevent(request.user, 2, extrainfo)
             ### Send user a SMS stating that his phone has been verified
             um.sendPhoneVerfText(user.id)
             logger.debug("User's phone verified")
@@ -152,7 +156,7 @@ def verifyPhone(request):
 @login_required
 def sendVrfCode(request):
     """
-    Lets a user send a verification code to his phone number 
+    Lets a user send a verification code to his phone number
     """
     client_internal_ip = get_real_ip(request)
     client_public_ip = get_ip(request)
@@ -163,7 +167,7 @@ def sendVrfCode(request):
         ### Update User Events
         eventhandler = user_handler.UserEventManager()
         extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
-        eventhandler.setevent(request.user, 3, extrainfo)                
+        eventhandler.setevent(request.user, 3, extrainfo)
         ### Send user a SMS stating that his phone has been verified
         um.sendVerfTextApp(user.id)
         logger.debug("Verification code sent to the {0}".format(user.phone))
@@ -207,7 +211,7 @@ def createhandymen(request):
             userdata.set_password(password)
             userdata.save()
             vas = Sparrow()
-            msg = "Thankyou {0} for registering with The Right Handyman! Your account is being processed!".format(userdata.first_name)
+            msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.first_name)
             status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             logger.warn(status)
             return redirect('home')
@@ -248,7 +252,8 @@ def createUser(request):
             userdata.set_password(password)
             userdata.save()
             um = user_handler.UserManager()
-            um.sendPasswordText(userdata.id, password)
+            # Commenting the below for now, user would be notified of their password only after we internal portal is ready
+            # um.sendPasswordText(userdata.id, password)
             logger.debug("New user {0} has been created.".format(userdata.phone.as_international))
             return redirect('home')
 
@@ -264,7 +269,7 @@ def createUser(request):
 @csrf_exempt
 def joinasuser(request):
     """
-    Early bird Register as a user 
+    Early bird Register as a user
     """
     # If a user joins from the web
     if request.method == "POST":
@@ -275,7 +280,7 @@ def joinasuser(request):
             userdata.save()
             logger.warn("{0} just registered their number as a user".format(phone))
             vas = Sparrow()
-            msg = "Thankyou for registering with The Handyman App!"
+            msg = os.environ['NEW_USER_REG_MSG']
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
             email_handler.send_newregistration_notif(phone.as_international)
@@ -296,51 +301,83 @@ def joinasuser(request):
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
                 userdata.save()
-                logger.debug("{0} just registered their number as a user, [valid entry]".format(phone))
-                msg = "Thankyou for registering with The Handyman App!"
-                # logger.warn(phone)
+                logger.debug("{0} just registered their number as a user. \
+                    [valid entry]".format(phone))
+                msg = os.environ['NEW_USER_REG_MSG']
+                vas = Sparrow()
+                status = vas.sendDirectMessage(msg, phone)
+                logger.warn(status)
                 # send email to admin
                 email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
-            # As of now, error only seem to be in duplicate data
+            # As of now, error only seem to be in duplicate phone number
             elif user_form.errors:
-                msg = "Your request has been acknowledged! We would get back to you soon!"
-                # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
-                logger.warn("{0} just requested for a service. [assumed job request]".format(phone))
-                um = user_handler.UserManager()
-                userdetails = um.getUserDetailsFromPhone(phone)
-                if userdetails != None:
-                    email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)                            
-                    email_handler.send_email_admin(email_details)
-                else:
-                    email_details = email_handler.prepNewJobRegistrationNotification(phone)                            
-                    email_handler.send_email_admin(email_details)
-                return HttpResponse(msg,content_type="text/html")                
-        elif len(text.lower().split()) > 1:
-            try:
-                ebuser = EarlyBirdUser.objects.get(phone=phone)
-                msg = "Your request has been acknowledged! We would get back to you soon!"
-                logger.warn("{0} just requested for a service. [assumed job request type 2]".format(phone))
-                um = user_handler.UserManager()
-                userdetails = um.getUserDetailsFromPhone(phone)
-                if userdetails != None:
-                    email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)                            
-                    email_handler.send_email_admin(email_details)
-                else:
-                    email_details = email_handler.prepNewJobRegistrationNotification(phone)                            
-                    email_handler.send_email_admin(email_details)
-                return HttpResponse(msg,content_type="text/html")   
-            except EarlyBirdUser.DoesNotExist:
-                user_form = EBUserPhoneNumberForm(userphone)
-                if user_form.is_valid():
-                    phone = user_form.cleaned_data['phone']
-                    userdata = user_form.save(commit=False)
-                    userdata.save()
-                    logger.warn("{0} just registered their number as a user, [assumed registration]".format(phone))
-                    msg = "Thankyou for registering with The Handyman App!"
-                    # send email to admin
-                    email_handler.send_newregistration_notif(phone.as_international)
+                # Check if the account is created for this user
+                try:
+                    userdetails = UserProfile.objects.get(phone=phone)
+                except UserProfile.DoesNotExist:
+                    msg = os.environ['DUP_USER_REG_MSG']
+                    vas = Sparrow()
+                    phone = intlphone.from_string(phone)
+                    status = vas.sendDirectMessage(msg, phone)
+                    logger.warn("{0} duplicate user creation request. \
+                    [account being processed]".format(phone))
                     return HttpResponse(msg,content_type="text/html")
+                # if the account exists consider this as a new job request, the
+                # the call center calls
+                msg = os.environ['JOB_REQ_MSG']
+                vas = Sparrow()
+                status = vas.sendMessage(msg, userdetails)
+                # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+                logger.warn("{0} just requested for a service. \
+                [valid user]".format(phone))
+                # send email and SMS to admin
+                adminmsg = "Request for service received from {0}".format(userdetails.phone.as_national)
+                adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
+                email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)
+                email_handler.send_email_admin(email_details)
+                return HttpResponse(msg,content_type="text/html")
+        elif len(text.lower().split()) > 1:
+            if user_form.is_valid():
+                phone = user_form.cleaned_data['phone']
+                userdata = user_form.save(commit=False)
+                userdata.save()
+                logger.debug("{0} just registered their number as a user. \
+                    [valid entry]".format(phone))
+                msg = os.environ['NEW_USER_REG_MSG']
+                vas = Sparrow()
+                status = vas.sendDirectMessage(msg, phone)
+                logger.warn(status)
+                # send email to admin
+                email_handler.send_newregistration_notif(phone.as_international)
+                return HttpResponse(msg,content_type="text/html")
+            # As of now, error only seem to be in duplicate phone number
+            elif user_form.errors:
+                # Check if the account is created for this user
+                try:
+                    userdetails = UserProfile.objects.get(phone=phone)
+                except UserProfile.DoesNotExist:
+                    msg = os.environ['DUP_USER_REG_MSG']
+                    vas = Sparrow()
+                    phone = intlphone.from_string(phone)
+                    status = vas.sendDirectMessage(msg, phone)
+                    logger.warn("{0} duplicate user creation request. \
+                    [account being processed]".format(phone))
+                    return HttpResponse(msg,content_type="text/html")
+                # if the account exists consider this as a new job request, the
+                # the call center calls
+                msg = os.environ['JOB_REQ_MSG']
+                vas = Sparrow()
+                status = vas.sendMessage(msg, userdetails)
+                # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
+                logger.warn("{0} just requested for a service. \
+                [valid user]".format(phone))
+                # send email and SMS to admin
+                adminmsg = "Request for service received from {0}".format(userdetails.phone.as_national)
+                adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
+                email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)
+                email_handler.send_email_admin(email_details)
+                return HttpResponse(msg,content_type="text/html")
             ## Commenting the below out to ease it out for users to communicate via SMS
             # memberlist = EarlyBirdUser.objects.all()
             # if ebuser in memberlist:
@@ -372,39 +409,42 @@ def joinasuser(request):
             #         msg = "Request for an electrician received and is queued for processing, an electrician would be put in touch with you soon!"
             #         return HttpResponse(msg,content_type="text/html")
             #     # If there are any added, consider it invalid
-            #     else: 
+            #     else:
             #         msg = "Invalid Input!"
             #         return HttpResponse(msg,content_type="text/html")
-        else: 
+        else:
             msg = "Invalid Input!"
             logger.warn("{0} sent a invalid request, [Invalid Input]".format(phone))
             return HttpResponse(msg,content_type="text/html")
 
-    return redirect('index')
+    msg = "Invalid Input!"
+    logger.warn("{0} sent an invalid request, [Invalid Input]".format(request.META['REMOTE_ADDR']))
+    return HttpResponse(msg,content_type="text/html")
 
-@csrf_exempt
-def joinashandymen(request):
-    """
-    Early bird Register as a handymen 
-    """
-    if request.method == "POST":
-        user_form = HMUserPhoneNumberForm(request.POST)
-        if user_form.is_valid():
-            phone = user_form.cleaned_data['phone']
-            userdata = user_form.save(commit=False)
-            userdata.save()
-            logger.warn("{0} just registered their number as a handymen".format(phone))
-            vas = Sparrow()
-            msg = "Thankyou for registering with The Right Handyman! Please expect a call soon for further processing!"
-            status = vas.sendDirectMessage(msg, phone)
-            logger.warn(status)
-            email_handler.send_newregistration_notif(phone.as_international)
-            return redirect('index')
 
-        if user_form.errors:
-            logger.debug("Login Form has errors, %s ", user_form.errors)
-        return redirect('index')
-    return redirect('index')
+# @csrf_exempt
+# def joinashandymen(request):
+#     """
+#     Early bird Register as a handymen
+#     """
+#     if request.method == "POST":
+#         user_form = HMUserPhoneNumberForm(request.POST)
+#         if user_form.is_valid():
+#             phone = user_form.cleaned_data['phone']
+#             userdata = user_form.save(commit=False)
+#             userdata.save()
+#             logger.warn("{0} just registered their number as a handymen".format(phone))
+#             vas = Sparrow()
+#             msg = "Thankyou for registering with The Right Handyman! Please expect a call soon for further processing!"
+#             status = vas.sendDirectMessage(msg, phone)
+#             logger.warn(status)
+#             email_handler.send_newregistration_notif(phone.as_international)
+#             return redirect('index')
+#
+#         if user_form.errors:
+#             logger.debug("Login Form has errors, %s ", user_form.errors)
+#         return redirect('index')
+#     return redirect('index')
 
 @login_required
 def myProfile(request):
@@ -415,4 +455,3 @@ def myProfile(request):
     um = user_handler.UserManager()
     userdetails = um.getUserDetails(user.id)
     return render(request, 'profilepage.html', locals())
-
