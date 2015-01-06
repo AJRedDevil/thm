@@ -1,124 +1,84 @@
+{% extends "landingbase.html" %}
 {% load staticfiles %}
-<!doctype html>
-<html>
-<head>
-	<title>The Handyman App!</title>
-<!--Montserrat font css-->
-	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-	<!--Montserrat font css -->
-
-<!--Source sans pro font css-->
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
-
-	<!--Source sans pro font css-->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-	<link rel="stylesheet" type="text/css" href={% static 'css/web_yellow.css' %}>
-	<link rel="stylesheet" type="text/css" href={% static 'css/popup.css' %}>
-	<script>
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	ga('create', 'UA-58270740-1', 'auto');
-	ga('send', 'pageview');
-
-	</script>
-</head>
-<style>
-
-
-@media screen and (max-width: 960px)
-{
-
-}
-</style>
-
-<body id='top'>
-	<!--Float right Start-->
-	<div class="wrapper">
-	<div class='brand'>
-		<div class='brand-logo'>
-		<img class='logo big' src={% static 'img/logo.png' %}>
-	</div>
-	<h1 class="brand-name">
-		<span class="the">the</span>
-		<span class="handyman">handyman</span>
-		<span class="app">app</span>
-
-	</h1>
-
-</div>
-
-<!-- eo brand -->
-
+{% block content %}
 <!-- video -->
 <div class="mobile">
-		<div class="mobile-section">
+	<div class="mobile-section">
 		<div class="iphone">
-		<img src={% static 'img/thm-gif-v.gif' %}>
+			<img src={% static 'img/thm-gif-v.gif' %}>
 		</div>
 
-<div class='v-link'>
-<span class='img'>
-	<a  onclick='popup("video")'>
-<img src={% static 'img/v-link.png' %}></a>
-</span>
+		<div class='v-link'>
+			<span class='img'>
+				<a  onclick='popup("video")'>
+					<img src={% static 'img/v-link.png' %}></a>
+				</span>
 
 
-</div>
+			</div>
 
 		</div>
 	</div>
-<!-- eo video -->
+	<!-- eo video -->
 
 	<div class="contents">
 
 
 
-	<p>With the handyman app, you can instantly get in touch with one of our home repair experts who will help you with the petty repairs and fixes that's been bothering you. Connect with us and brief us about the job, and we will instantly send one of our repairmen to you to help you with it.</p>
-<div class="links">
-<ul>
-<li> <a href='#' onclick='popup("signin")'>Sign In</a> </li>
-<li> <a href="{% url 'faq' %}">FAQs</a> </li>
-<!-- <li> <a href="FAQ">Social</a> </li> -->
-</ul>
+		<p><b>Need some repairs done?</b><br> Our home repair experts will arrive at your doorsteps within hours.</p>
+		<div class="links">
+			<ul>
+				<li> <a href='#' onclick='popup("signin")'>Sign In</a> </li>
+				<li> <a href="{% url 'faq' %}">FAQs</a> </li>
+				<!-- <li> <a href="FAQ">Social</a> </li> -->
+			</ul>
 
-</div>
-	<div class="btn">
+		</div>
+		<div class="btn">
 			<div class="register">
 				Register Now!
 			</div>
 			<form action="{% url 'register' %}" method="post"> {%csrf_token%}
-				<input type="text" name='phone' placeholder="+977 Mobile Number |" class="dark_grey">
+				<input type="text" name='phone' placeholder='+977 Mobile Number' onfocus="this.placeholder = ''" onblur="this.placeholder = '+977 Mobile Number'" class="dark_grey">
 				<div class='clearfix'></div>
 				<input type="submit" value="REGISTER" class="btn-register">
 			</form>
-	</div>
-	<footer>
-		<span class="or">OR</span>
-		<span class="sms">SMS</span>
-		<span class="handyman">HANDYMAN</span>
+		</div>
+		<footer>
+			<span class="or">OR</span>
+			<span class="sms">SMS</span>
+			<span class="handyman">HANDYMAN</span>
 			<span class="sms">to</span>
-		<span class="handyman">2200</span>
-		<span class="cell"><img src={% static 'img/cell.jpg' %}></span>
-	</footer>
-</div>
+			<span class="handyman">2200</span>
+			<div class='sms'>** Carrier charges may apply on SMS</div>
+			<span class="sms"><img src={% static 'img/cell.jpg' %}></span>
 
-<!-- eo content -->
+
+			<div class='social'>
+
+				<ul>
+					<li><a href='http://facebook.com/thehandymanapp' target='_blank'> <img src={% static 'img/fb.png' %}></a></li>
+					<li><a href='http://twitter.com/thehandymanapp' target='_blank'> <img src={% static 'img/tw.png' %}></a></li>
+
+				</ul>
+			</div>
+		</footer>
+	</div>
+
+	<!-- eo content -->
 
 
 </div>
 <!--Float right End-->
 
-	<!-- color bg -->
+<!-- color bg -->
 <div class='thm-bg'>
 	<div class="thm-row one">
-	<img src={% static 'img/bg-tr.png' %}>
+		<img src={% static 'img/bg-tr.png' %}>
 	</div>
 
-		<div class="thm-row two">
-	<img src={% static 'img/bg-bl.png' %}>
+	<div class="thm-row two">
+		<img src={% static 'img/bg-bl.png' %}>
 
 	</div>
 
@@ -141,59 +101,57 @@
 <!-- popup system -->
 
 <div class="popupSystem">
-<div class='back-black'></div>
+	<div class='back-black'></div>
 
-<div class='popupContent'>
+	<div class='popupContent'>
 
-<!-- popup items -->
-<div class='video'>
-	<div class='btn-bar'>
-	<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
+		<!-- popup items -->
+		<div class='video'>
+			<div class='btn-bar'>
+				<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
+			</div>
+			<div class='col-md-12'>
+				<iframe width="560" height="315" src="//www.youtube.com/embed/B0qgzAq-ZII" frameborder="0" allowfullscreen></iframe>
+			</div>
+		</div>
+		<!-- eo popup item1 -->
+
+
+
+		<!-- popup items -->
+		<div class='signin'>
+			<div class='btn-bar'>
+				<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
+			</div>
+			<div class='col-md-12'>
+				<div class='signin-form'>
+					<form action="{% url 'signin' %}" method="post">{%csrf_token%}
+						<ul>
+							<li>
+								<h2>Sign in here!</h2>
+							</li><li>
+								<input type='tel' name='phone' placeholder='+977 Mobile Number' onfocus="this.placeholder = ''" onblur="this.placeholder = '+977 Mobile Number'" class='dark_grey'>
+							</li>
+							<li>
+								<input type='password' name='password' placeholder='Password' onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" class='dark_grey'>
+							</li>
+							<li>
+								<input type='submit' value='SIGN IN' class='signin-btn dark_grey' >
+							</li>
+
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- eo popup item1 -->
+
+
+
+		</div>
+		<!-- eo popupContent -->
+
 	</div>
-	<div class='col-md-12'>
-	<iframe width="560" height="315" src="//www.youtube.com/embed/B0qgzAq-ZII" frameborder="0" allowfullscreen></iframe>
-	</div>
-</div>
-<!-- eo popup item1 -->
 
+	<!-- eo popupsystem -->
 
-
-<!-- popup items -->
-<div class='signin'>
-	<div class='btn-bar'>
-	<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
-	</div>
-	<div class='col-md-12'>
-	<div class='signin-form'>
-		<form action="{% url 'signin' %}" method="post">{%csrf_token%}
-			<ul>
-				<li>
-			<h2>Sign in here!</h2>
-</li><li>
-			<input type='tel' name='phone' placeholder='Phone Number' class='dark_grey'>
-</li>
-<li>
-			<input type='password' name='password' placeholder='Password' class='dark_grey'>
-</li>
-<li>
-	<input type='submit' value='SIGN IN' class='signin-btn dark_grey' >
-</li>
-
-		</form>
-	</div>
-	</div>
-</div>
-<!-- eo popup item1 -->
-
-
-
-</div>
-<!-- eo popupContent -->
-
-</div>
-
-<!-- eo popupsystem -->
-</body>
-<script type="text/javascript" src={% static 'js/web_yellow.js' %}></script>
-<script type="text/javascript" src={% static 'js/popup.js' %}></script>
-</html>
+{% endblock content %}

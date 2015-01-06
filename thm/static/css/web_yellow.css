@@ -37,13 +37,14 @@ body{
 .iphone img{
 
 }
-	
+
 .v-link .img{
 -webkit-transform: rotate(10deg);
+transform: rotate(10deg);
 display: inline-block;
 position: relative;
 left: -50px;
-}	
+}
 .v-link .img img{
 	width: 80%;
 }
@@ -146,7 +147,7 @@ padding: 14px 16px;
 margin-top: 15px;
 }
 .btn-register:hover {
-	background:#f5cd2e; 
+	background:#f5cd2e;
 }
 footer {
 	margin-top: 20px;
@@ -186,9 +187,9 @@ footer .to {
 
 .thm-bg{
 	position: fixed;
-	width: 100%; 
-	height: 100%; 
-	top:0; 
+	width: 100%;
+	height: 100%;
+	top:0;
 	left: 0;
 }
 .thm-bg .thm-row{}
@@ -197,9 +198,9 @@ footer .to {
 	display: inline-block;
 }
 .thm-bg .thm-row.one > div{
-	height:260px; 
+	height:260px;
 }
-.thm-bg .thm-bar .yellow-row{ 
+.thm-bg .thm-bar .yellow-row{
 	background: #E9C01E;height:50px; width:100%;
 	}
 .thm-bg .thm-bar .black-row{
@@ -210,7 +211,7 @@ footer .to {
 .thm-bar{display:none;}
 
 .thm-bg .thm-row.one{
-	
+
 position: fixed;right:0; top:0; text-align: right;
 }
 
@@ -231,8 +232,8 @@ position: fixed;left:0; bottom:0;
 margin: 20px 0;
 border: 1px solid #CCC;
 border-radius: 10px;}
-.faq-section h2{font-family:"Montserrrat", sans-serif; padding:10px;}
-.faq-section p{text-align: left; margin-top:10px; padding:10px;}
+.faq-section h2{font-family:"Montserrrat", sans-serif; padding-left:10px;}
+.faq-section p{text-align: left; margin-top:10px; padding-left:10px;}
 .faq-list{cursor:pointer;}
 .faq-list p{display: none}
 
@@ -295,10 +296,11 @@ box-sizing:border-box;}
 	text-align: center;
 
 }
-
-
-
-
-
-
-
+.social{margin-top: 10px;
+padding-top: 10px;
+border-top: 1px solid #EEE;
+}
+.social li{
+	list-style: none;
+	display: inline-block;
+}
