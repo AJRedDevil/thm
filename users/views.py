@@ -297,7 +297,7 @@ def joinasuser(request):
         text = urllib.unquote(request.GET['text'])
         user_form = EBUserPhoneNumberForm(userphone)
         # If no keyword on the message
-        if len(text.lower().split()) == 1 and text.lower().split()[0]=='handyman':
+        if len(text.lower().split()) == 1 and text.lower().split()[0]==os.environ['SMS_KEYWORD']:
             if user_form.is_valid():
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
@@ -370,7 +370,7 @@ def joinasuser(request):
                 # if the account exists consider this as a new job request, the
                 # the call center calls
                 jm = jobs_handler.JobManager()
-                jm.createJob(userdetails)                
+                jm.createJob(userdetails)
                 msg = os.environ['JOB_REQ_MSG']
                 vas = Sparrow()
                 status = vas.sendMessage(msg, userdetails)
