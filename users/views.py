@@ -212,7 +212,7 @@ def createhandymen(request):
             userdata.set_password(password)
             userdata.save()
             vas = Sparrow()
-            msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.first_name)
+            msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.name)
             status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             logger.warn(status)
             return redirect('home')

@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
 
         if not phone:
             raise ValueError('A valid mobile number must be provided')
-            
+
         user = self.model(phone=phone,
                           is_active=True, last_login=now,
                           date_joined=now, **extra_fields)
@@ -46,11 +46,13 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, password=None, **extra_fields):
-        u = self._create_user(phone, password, **extra_fields)
+        address=dict(streetaddress='Thirbum Marg - 4, Baluwatar', city='Kathmandu')
+        u = self._create_user(phone, password, address=address, **extra_fields)
         u.is_staff = True
         u.is_active = True
         u.is_superuser = True
         u.phone_status = True
+        u.user_type = 0
         u.save(using=self._db)
         return u
 
@@ -78,9 +80,9 @@ class UserProfile(AbstractBaseUser):
         return str(folder) + '/' + str(name)
 
     id = models.AutoField(_('id'), primary_key=True)
-    userref = models.CharField(_('userref'), max_length=100, unique=True, 
+    userref = models.CharField(_('userref'), max_length=100, unique=True,
         default=getUniqueUUID)
-    # displayname = models.CharField(_('displayname'), max_length=30, unique=True, 
+    # displayname = models.CharField(_('displayname'), max_length=30, unique=True,
     #     error_messages={'unique' : 'The username provided is already taken !'})
     name = models.CharField(_('first_name'), max_length=30)
     # last_name = models.CharField(_('last_name'), max_length=30)
@@ -113,7 +115,7 @@ class UserProfile(AbstractBaseUser):
     objects = UserManager()
 
     def __unicode__(self):
-        return str(self.name+' ('+str(self.phone)+')') 
+        return str(self.name+' ('+str(self.phone)+')')
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -134,7 +136,7 @@ class UserProfile(AbstractBaseUser):
         return gc.get_lat_long(address)
 
     def create_thumbnail(self, size, quality=None):
-        # invalidate the cache of the thumbnail with the given size first        
+        # invalidate the cache of the thumbnail with the given size first
         import os
         from PIL import Image
         from django.core.files.storage import default_storage as storage
@@ -146,8 +148,8 @@ class UserProfile(AbstractBaseUser):
         avatar_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') % (filename_base)
         try:
             if not storage.exists(avatar_file_path):
-                try:    
-                    orig = storage.open(file_path, 'rb')            
+                try:
+                    orig = storage.open(file_path, 'rb')
                     image = Image.open(orig)
                     quality = quality or settings.AVATAR_THUMB_QUALITY
                     w, h = image.size
@@ -216,14 +218,14 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class UserEvents(models.Model):
     """Models for Users UserEvents"""
-    
+
     user = models.ForeignKey(UserProfile)
     event = models.IntegerField(_('event'), max_length=2, default=1)
-    updated_on = models.DateTimeField(_('updated_on'), 
+    updated_on = models.DateTimeField(_('updated_on'),
         default=timezone.now)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
-    
+
     def save(self, *args, **kwargs):
         super(UserEvents, self).save(*args, **kwargs)
 
@@ -233,7 +235,7 @@ class EarlyBirdUser(models.Model):
     """
 
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-    registered_on = models.DateTimeField(_('updated_on'), 
+    registered_on = models.DateTimeField(_('updated_on'),
         default=timezone.now)
     confirmed = models.BooleanField(_('confirmed'), default=False)
 
@@ -251,7 +253,7 @@ class EarlyBirdUser(models.Model):
 #     """
 
 #     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-#     registered_on = models.DateTimeField(_('updated_on'), 
+#     registered_on = models.DateTimeField(_('updated_on'),
 #         default=timezone.now)
 
 #     def save(self, *args, **kwargs):

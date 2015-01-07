@@ -15,7 +15,6 @@ urlpatterns = patterns('',
     url(r'^jobs/$', apiview.JobsDetail.as_view()),
     url(r'^jobs/(?P<pk>\w+)/$', apiview.JobDetail.as_view()),
     url(r'^verify/$', apiview.VerifyPhone.as_view(), name='verifyPhone'),
-    # url(r'^getprice/$', apiview.PriceCalculator.as_view()),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

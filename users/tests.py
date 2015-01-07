@@ -19,7 +19,7 @@ class UserTestCase(TestCase):
         self.password1 = "test123"
         self.password2 = "test123"
         self.city   = "Kathmandu"
-        self.streetaddress = "Thirbum Marg - 4, Baluwatar"
+        self.streetaddress = "Sukedhara, Baluwatar"
         self.post_data = dict(
             phone=self.phone,
             name=self.name,
@@ -38,6 +38,7 @@ class UserTestCase(TestCase):
         user = UserProfile.objects.get(phone=self.phone)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(user.phone, PhoneNumber.from_string(self.phone))
+        self.assertEqual(user.address['streetaddress'], self.streetaddress)
 
     def test3_LogoutUrl(self):
         response = self.client.get(reverse('logout'))
@@ -45,7 +46,8 @@ class UserTestCase(TestCase):
 
     def test4_SigninUrl(self):
         response = self.client.get(reverse('signin'))
-        self.assertEqual(response.status_code, 200)
+        # signin page is disabled for now
+        self.assertEqual(response.status_code, 302)
 
     def test5_Signin(self):
         post_data=dict(
@@ -69,7 +71,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.url, 'http://testserver/home/')
         response = self.client.get(reverse('signup'))
         self.assertEqual(response.status_code, 302)
-        
+
     def test7_MyProfilePage(self):
         post_data=dict(
             phone=self.phone,

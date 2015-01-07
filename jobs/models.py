@@ -40,7 +40,7 @@ class Jobs(models.Model):
                     choices=JOBS_SELECTION,
                     default='0',
                     )
-    handyman = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'0'},
+    handyman = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'1'},
         related_name='orders', blank=True, null=True)
     isaccepted = models.BooleanField(_('isaccepted'), default=False)
     isnotified = models.BooleanField(_('isnotified'), default=False)
