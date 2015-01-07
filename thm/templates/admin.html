@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{% url 'createUser' %}">Create User</a>
+<a href="{% url 'createhandymen' %}">Create Handymen</a>
+<a href="{% url 'createJob' %}">Create Job</a>
+<a href="{% url 'createFaq' %}">Create FAQ</a>
+<a href="{% url 'viewAllFaq' %}">View All FAQ</a>
+{% endblock content %}

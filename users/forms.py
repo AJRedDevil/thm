@@ -9,12 +9,42 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
-from .models import UserProfile, CITY_SELECTION, EarlyBirdUser, EarlyBirdHandymen
+from .models import UserProfile, CITY_SELECTION, EarlyBirdUser
+import handler as user_handler
 
 import os
 from phonenumber_field.formfields import PhoneNumberField
 import logging
 logger = logging.getLogger(__name__)
+
+
+class VerifyPhoneForm(forms.Form):
+    """
+    A form that takes phone number as the data
+    """
+    error_messages = {
+        'wrong_code': _("Provided code is not correct!"),
+        }
+
+    verf_code = forms.CharField(label=_("verf_code"),
+        widget=forms.TextInput, min_length=6, 
+        error_messages={'required' : 'Please provide with the verification code sent on your mobile !',
+                        })
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(VerifyPhoneForm, self).__init__(*args, **kwargs)
+
+    def clean_verf_code(self):
+        um = user_handler.UserManager()
+        verf_code = self.cleaned_data.get("verf_code")
+        user = self.request.user
+        if not um.checkVerfCode(user, verf_code):
+            raise forms.ValidationError(
+                self.error_messages['wrong_code'],
+                code='wrong_code',
+            )
+        return verf_code
 
 
 class EBUserPhoneNumberForm(forms.ModelForm):
@@ -54,46 +84,41 @@ class EBUserPhoneNumberForm(forms.ModelForm):
             data.save()
         return data
 
-class HMUserPhoneNumberForm(forms.ModelForm):
-    """
-    A form that takes phone number as the data
-    """
-    phone = PhoneNumberField()
+# class HMUserPhoneNumberForm(forms.ModelForm):
+#     """
+#     A form that takes phone number as the data
+#     """
+#     phone = PhoneNumberField()
 
-    error_messages = {
-        'country_notsupported': _("Your country is not supported right now!"),
-        }
+#     error_messages = {
+#         'country_notsupported': _("Your country is not supported right now!"),
+#         }
 
-    class Meta:
-        model = EarlyBirdHandymen
-        fields = ['phone']
+#     class Meta:
+#         model = EarlyBirdHandymen
+#         fields = ['phone']
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get("phone")
-        if str(phone.country_code) != '977':
-            raise forms.ValidationError(
-                self.error_messages['country_notsupported'],
-                code='country_notsupported',
-            )
-        return phone
+#     def clean_phone(self):
+#         phone = self.cleaned_data.get("phone")
+#         if str(phone.country_code) != '977':
+#             raise forms.ValidationError(
+#                 self.error_messages['country_notsupported'],
+#                 code='country_notsupported',
+#             )
+#         return phone
 
-    def save(self, commit=True):
-        data = super(HMUserPhoneNumberForm, self).save(commit=False)
-        if commit:
-            data.save()
-        return data
+#     def save(self, commit=True):
+#         data = super(HMUserPhoneNumberForm, self).save(commit=False)
+#         if commit:
+#             data.save()
+#         return data
 
 class UserCreationForm(forms.ModelForm):
     """
     A form that creates a user, from the given data, this runs when the user uses the signup form 
     """
-    displayname = forms.RegexField(label=_("Username"), max_length=30,
-        regex=r'^[\w.\.+-]+$',
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                      "./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "./+/-/_ characters.")})
+    phone = PhoneNumberField()
+    
     password1 = forms.CharField(label=_("Password"),
         widget=forms.PasswordInput, min_length=6, 
         error_messages={'required' : 'Please provide with a password !',
@@ -116,8 +141,6 @@ class UserCreationForm(forms.ModelForm):
     streetaddress = forms.CharField(
         error_messages={'required' : 'Street/Apt. Address where the shipment is to be picked up from is required !',}
         )
-    streetaddress_2 = forms.CharField(required=False)
-
 
     error_messages = {
         'password_mismatch': _("The two password fields didn't match. Please re-verify your passwords !"),
@@ -126,7 +149,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['first_name','last_name','displayname','phone']
+        fields = ['name','phone']
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -147,18 +170,18 @@ class UserCreationForm(forms.ModelForm):
             )
         return phone
 
-    def clean_email(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        email = self.cleaned_data["email"]
-        try:
-            UserProfile._default_manager.get(email=email)
-        except UserProfile.DoesNotExist:
-            return email
-        raise forms.ValidationError(
-            self.error_messages['duplicate_email'],
-            code='duplicate_email',
-        )
+    # def clean_email(self):
+    #     # Since User.username is unique, this check is redundant,
+    #     # but it sets a nicer error message than the ORM. See #13147.
+    #     email = self.cleaned_data["email"]
+    #     try:
+    #         UserProfile._default_manager.get(email=email)
+    #     except UserProfile.DoesNotExist:
+    #         return email
+    #     raise forms.ValidationError(
+    #         self.error_messages['duplicate_email'],
+    #         code='duplicate_email',
+    #     )
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
@@ -173,13 +196,13 @@ class LocalAuthenticationForm(forms.Form):
     Base class for authenticating users. Extend this to get a form that accepts
     username/password logins.
     """
-    username = forms.CharField(label=_("username"),max_length=254)
+    phone = PhoneNumberField()
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
 
     error_messages = {
-        'invalid_login': _("Please enter a correct %(username)s and password. "
-                           "Note that both fields may be case-sensitive."),
-        'inactive': _("This account is inactive, please contact us at hello@questr.co ! "),
+        'invalid_login': _("Please enter a correct phone number and password. "
+                           "Note that password may be case-sensitive."),
+        'inactive': _("This account is inactive, please contact us at support@thehandymanapp.co ! "),
     }
 
     def __init__(self, request=None, *args, **kwargs):
@@ -191,18 +214,18 @@ class LocalAuthenticationForm(forms.Form):
         self.user_cache = None
         super(LocalAuthenticationForm, self).__init__(*args, **kwargs)
 
-        # Set the label for the "username" field.
+        # Set the label for the "phone" field.
         UserModel = get_user_model()
         self.username_field = UserModel._meta.get_field(UserModel.USERNAME_FIELD)
-        if self.fields['username'].label is None:
-            self.fields['username'].label = capfirst(self.username_field.verbose_name)
+        # if self.fields['username'].label is None:
+        #     self.fields['username'].label = capfirst(self.username_field.verbose_name)
 
     def clean(self):
-        username = self.cleaned_data.get('username')
+        phone = self.cleaned_data.get('phone')
         password = self.cleaned_data.get('password')
 
-        if username and password:
-            self.user_cache = authenticate(username=username,
+        if phone and password:
+            self.user_cache = authenticate(username=phone,
                                            password=password)
             if self.user_cache is None:
                 raise forms.ValidationError(
@@ -367,15 +390,5 @@ class LocalAuthenticationForm(forms.Form):
 #     for k in ['old_password', 'new_password1', 'new_password2']
 # )
 
-
-# class NotifPrefForm(forms.Form):
-#     def __init__(self, *args, **kwargs):
-#         super(NotifPrefForm, self).__init__(*args, **kwargs)
-
-#     PACKAGE_SELECTION = (('car','Car'),('backpack','Backpack'),('minivan','Minivan'))
-#     NOTIF_SELECTION = (('newquest','Someone posts a new quest'),('applyquest','My posted quests are applied'))
-
-#     package = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=PACKAGE_SELECTION)
-#     notif = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=NOTIF_SELECTION)
 
 
