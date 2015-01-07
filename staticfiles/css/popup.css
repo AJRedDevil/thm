@@ -1,0 +1,69 @@
+
+/* line 135, sass/3clab.scss */
+.popupSystem {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: none;
+  z-index: 5;
+}
+/* line 143, sass/3clab.scss */
+.popupSystem .back-black {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+/* line 153, sass/3clab.scss */
+.popupSystem .popupContent {
+  background: #FFF;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+}
+/* line 164, sass/3clab.scss */
+.popupSystem .popupContent .pp-big {
+  max-width: 100%;
+}
+/* line 165, sass/3clab.scss */
+.popupSystem .popupContent p {
+  margin-top: 20px;
+  font-family: sans-serif;
+  font-weight: bold;
+  line-height: 20px;
+}
+/* line 168, sass/3clab.scss */
+.popupSystem .popupContent .goto-btn {
+  text-transform: uppercase;
+  font-weight: bold;
+  padding: 15px 30px;
+  color: #FFF;
+  background: #FF6600;
+  font-family: sans-serif;
+  font-size: 12px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin-top: 10px;
+}
+/* line 181, sass/3clab.scss */
+.popupSystem .popupContent .goto-btn:hover {
+  text-decoration: none;
+}
+/* line 186, sass/3clab.scss */
+.popupSystem .popupContent .btn-bar {
+  position: absolute;
+  top: -20px;
+  text-align: right;
+  width: 100%;
+}
+/* line 191, sass/3clab.scss */
+.popupSystem .popupContent .btn-bar a {
+  display: inline-block;
+}

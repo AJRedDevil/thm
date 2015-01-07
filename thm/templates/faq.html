@@ -1,0 +1,50 @@
+{% extends "landingbase.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class="links">
+    <ul>
+        <li> <a href={% url 'index' %}>Home</a> </li>
+        <!-- <li> <a href="FAQ">Social</a> </li> -->
+    </ul>
+</div>
+<!-- eo links -->
+
+<div class="faq-section">
+
+    <ul class='faq-list'>
+
+        {%for faq in faqs %}
+
+        <li>
+            <h2>{{faq.question}}</h2>
+            <p>{{faq.answer}}</p>
+        </li>
+
+        {% endfor %}
+    </ul>
+
+
+</div>
+</div>
+
+<!-- color bg -->
+<div class='thm-bg'>
+    <div class="thm-row one">
+        <img src={% static 'img/bg-tr.png' %}>
+    </div>
+
+    <div class="thm-row two">
+        <img src={% static 'img/bg-bl.png' %}>
+
+    </div>
+
+    <div class='thm-bar'>
+        <div class="yellow-row">
+            <div class='brand-small'>
+                <a href="#top"><img class='logo small' src={% static 'img/logo.png' %}></a>
+            </div>
+        </div>
+        <div class="black-row"></div>
+    </div>
+</div>
+{% endblock content %}

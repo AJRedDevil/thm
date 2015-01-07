@@ -1,3 +1,5 @@
+from .models import SMSLog, SMSLogManager
+
 import os
 import logging
 import requests
@@ -28,10 +30,18 @@ class Sparrow(object):
     def sendMessage(self, message, user):
         getparams = self.setparams(message, user)
         req = requests.post(self.__outgoingurl, getparams, verify=False)
-        resp = req.content
-        return resp
+        if req.status_code == 200:
+            logger.warn(message)
+            sm = SMSLogManager()
+            sm.updateLog(user, message)
+            return req.content
+        else:
+            logger.warn("Error sending SMS to {0}".format(user.phone.as_international))
+            return req.content
+
 
     def sendDirectMessage(self, message, phone):
+        logger.warn(message)
         params = dict(
             client_id = self.__clientid,
             username = self.__username,
