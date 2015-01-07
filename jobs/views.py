@@ -23,7 +23,11 @@ def createJob(request):
     if request.method == "POST":
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
+            logger.debug("form is correct")
             job_form.save()
+
+        if job_form.errors:
+            logger.debug("Form has errors, %s ", job_form.errors)
 
     job_form = JobCreationFormAdmin()
     return render(request, 'createjob.html',locals())
@@ -39,7 +43,6 @@ def viewJob(request, job_id):
         if job_form.is_valid():
             job = jm.getJobDetails(job_id)
             job_form = JobEditFormAdmin(request.POST, instance=job)
-            logger.debug(job_form.errors)
             job_form.save()
 
         if job_form.errors:

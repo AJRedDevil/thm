@@ -6,10 +6,11 @@ Current Open Jobs
 {% for job in jobs  %}
 <p>
     ============<br>
-    <a href="{% url 'viewJob' job_id=job.jobref %}">{{job.remarks}}</a>
-    {{job.jobtype}}<br>
-    {{job.status}}<br>
-    Requested By {{job.customer.name}} | {{job.customer.userref}}<br>
+    JobType : {{job.get_jobtype_display}}<br>
+    Requested By :  {{job.customer.name}}( {{job.customer.phone}} )<br>
+    Details = <a href="{% url 'viewJob' job_id=job.jobref %}">{{job.jobref}}</a><br>
+    Status = {{job.get_status_display}}<br>
+    Handyman = {{job.handyman.name}}<br>
     ============
 </p>
 {% endfor %}

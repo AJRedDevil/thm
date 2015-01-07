@@ -190,6 +190,9 @@ SWAGGER_SETTINGS = {
         'title': 'The Handyman App',
     },
 }
+
+# Currency Setting
+CURRENCIES = ('NPR',)
 # LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py, required only for a dev env
 try:
     from local_setting import *

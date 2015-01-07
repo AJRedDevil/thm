@@ -16,15 +16,15 @@ class JobManager(object):
         job = get_object_or_404(Jobs, jobref=job_id)
         return job
 
-    def getAllJobs(self, user, status='New'):
+    def getAllJobs(self, user):
         if user.user_type == 0:
-            jobs = Jobs.objects.filter(status=status)
+            jobs = Jobs.objects.filter()
         ## If it's a handymen, only show requests which they were assigned to
         elif user.user_type == 1:
-            jobs = Jobs.objects.filter(handyman_id=user.id, status=status)
+            jobs = Jobs.objects.filter(handyman_id=user.id)
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
-            jobs = Jobs.objects.filter(customer_id=user.id, status=status)
+            jobs = Jobs.objects.filter(customer_id=user.id)
         else:
             jobs = []
 
@@ -32,6 +32,9 @@ class JobManager(object):
         return jobs
 
     def getAllJobsByDate(self, user, date):
+        """
+        Returns list of jobs by date
+        """
         if user.user_type == 0:
             jobs = Jobs.objects.filter(creation_date__gte=date)
         ## If it's a handymen, only show requests which they were assigned to
@@ -46,9 +49,16 @@ class JobManager(object):
         logger.debug("Job Details : \n {0}".format(serializers.serialize('json',jobs)))
         return jobs
 
+    def createJob(self, customer):
+        """
+        Creates a job request with default params
+        """
+        job = Jobs(customer=customer)
+        job.save()
+
 class JobEventManager(object):
     """docstring for UserEventManager"""
-    
+
     def __init__(self):
         pass
 

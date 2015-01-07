@@ -22,6 +22,7 @@ from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberF
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
+import jobs.handler as jobs_handler
 from libs import email_handler
 from ipware.ip import get_real_ip, get_ip
 import simplejson as json
@@ -325,6 +326,8 @@ def joinasuser(request):
                     return HttpResponse(msg,content_type="text/html")
                 # if the account exists consider this as a new job request, the
                 # the call center calls
+                jm = jobs_handler.JobManager()
+                jm.createJob(userdetails)
                 msg = os.environ['JOB_REQ_MSG']
                 vas = Sparrow()
                 status = vas.sendMessage(msg, userdetails)
@@ -366,6 +369,8 @@ def joinasuser(request):
                     return HttpResponse(msg,content_type="text/html")
                 # if the account exists consider this as a new job request, the
                 # the call center calls
+                jm = jobs_handler.JobManager()
+                jm.createJob(userdetails)                
                 msg = os.environ['JOB_REQ_MSG']
                 vas = Sparrow()
                 status = vas.sendMessage(msg, userdetails)
