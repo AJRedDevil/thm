@@ -302,12 +302,9 @@ def joinasuser(request):
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
                 userdata.save()
-                logger.debug("{0} just registered their number as a user. \
+                logger.warn("{0} just registered their number as a user. \
                     [valid entry]".format(phone))
                 msg = os.environ['NEW_USER_REG_MSG']
-                vas = Sparrow()
-                status = vas.sendDirectMessage(msg, phone)
-                logger.warn(status)
                 # send email to admin
                 email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
@@ -318,9 +315,6 @@ def joinasuser(request):
                     userdetails = UserProfile.objects.get(phone=phone)
                 except UserProfile.DoesNotExist:
                     msg = os.environ['DUP_USER_REG_MSG']
-                    vas = Sparrow()
-                    phone = intlphone.from_string(phone)
-                    status = vas.sendDirectMessage(msg, phone)
                     logger.warn("{0} duplicate user creation request. \
                     [account being processed]".format(phone))
                     return HttpResponse(msg,content_type="text/html")
@@ -329,8 +323,6 @@ def joinasuser(request):
                 jm = jobs_handler.JobManager()
                 jm.createJob(userdetails)
                 msg = os.environ['JOB_REQ_MSG']
-                vas = Sparrow()
-                status = vas.sendMessage(msg, userdetails)
                 # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
                 logger.warn("{0} just requested for a service. \
                 [valid user]".format(phone))
@@ -345,12 +337,9 @@ def joinasuser(request):
                 phone = user_form.cleaned_data['phone']
                 userdata = user_form.save(commit=False)
                 userdata.save()
-                logger.debug("{0} just registered their number as a user. \
+                logger.warn("{0} just registered their number as a user. \
                     [valid entry]".format(phone))
                 msg = os.environ['NEW_USER_REG_MSG']
-                vas = Sparrow()
-                status = vas.sendDirectMessage(msg, phone)
-                logger.warn(status)
                 # send email to admin
                 email_handler.send_newregistration_notif(phone.as_international)
                 return HttpResponse(msg,content_type="text/html")
@@ -361,9 +350,6 @@ def joinasuser(request):
                     userdetails = UserProfile.objects.get(phone=phone)
                 except UserProfile.DoesNotExist:
                     msg = os.environ['DUP_USER_REG_MSG']
-                    vas = Sparrow()
-                    phone = intlphone.from_string(phone)
-                    status = vas.sendDirectMessage(msg, phone)
                     logger.warn("{0} duplicate user creation request. \
                     [account being processed]".format(phone))
                     return HttpResponse(msg,content_type="text/html")
@@ -372,8 +358,6 @@ def joinasuser(request):
                 jm = jobs_handler.JobManager()
                 jm.createJob(userdetails)
                 msg = os.environ['JOB_REQ_MSG']
-                vas = Sparrow()
-                status = vas.sendMessage(msg, userdetails)
                 # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
                 logger.warn("{0} just requested for a service. \
                 [valid user]".format(phone))
