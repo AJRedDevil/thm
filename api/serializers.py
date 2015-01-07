@@ -1,17 +1,154 @@
 
+from django.contrib.auth import authenticate
+from django.utils.translation import ugettext_lazy as _
+from users.models import UserProfile, CITY_SELECTION
+from jobs.models import Jobs
 
-from users.models import UserProfile
+from rest_framework import exceptions, serializers
+import users.handler as user_handler
 
-from rest_framework import serializers
+import logging
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
             'id',
-            'first_name',
-            'last_name',
-            'displayname',
-            'is_active',
-            'phone',
+            'name',
+            'user_type',
+            'profile_image',
+            'phone_status',
             )
+
+class UserSignupValidationSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    phone = serializers.CharField()
+    password1 = serializers.CharField()
+    password2 = serializers.CharField()
+    city = serializers.ChoiceField(choices=CITY_SELECTION)
+    streetaddress = serializers.CharField()
+    current_address = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        password1 = attrs.get('password1')
+        password2 = attrs.get('password2')
+        if password1 and password2 and password1 != password2:
+            msg = _('Passwords do not match.')
+            raise exceptions.ParseError(msg)
+        return password2
+
+class UserSignupSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField()
+    password2 = serializers.CharField()
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'name',
+            'phone',
+            'address',
+            'password1',
+            'password2',
+            'current_address'
+            )
+
+    def restore_object(self, attrs, instance=None):
+        instance = super(UserSignupSerializer, self).restore_object(attrs, instance)
+        instance.set_password(attrs['password2'])
+        return instance
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    phone = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        phone = attrs.get('phone')
+        password = attrs.get('password')
+
+        if phone and password:
+            user = authenticate(username=phone, password=password)
+
+            if user:
+                if not user.is_active:
+                    msg = _('User account is disabled.')
+                    raise exceptions.PermissionDenied(msg)
+            else:
+                msg = _('Unable to log in with provided credentials.')
+                raise exceptions.AuthenticationFailed(msg)
+        else:
+            msg = _('Must include "phone" and "password"')
+            raise exceptions.ParseError(msg)
+
+        attrs['user'] = user
+        return attrs
+
+class SigninResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    success = serializers.BooleanField()
+
+class SignupResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    success = serializers.BooleanField()
+    status = serializers.IntegerField()
+
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'jobtype',
+            'remarks',
+            'destination_home',
+            )
+
+class NewJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'customer',
+            'fee',
+            'jobtype',
+            'remarks',
+            'destination_home',
+            )
+
+class JobResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'id',
+            'customer',
+            'fee',
+            'status',
+            'creation_date',
+            'completion_date',
+            'jobtype',
+            'remarks',
+            )
+
+class JobAPIResponseSerializer(serializers.Serializer):
+    """
+    Response Serializer for requests over in API
+    """
+    success = serializers.BooleanField()
+    status = serializers.IntegerField()
+
+class PhoneVerifySerializer(serializers.Serializer):
+    """
+    Response Serializer for requests over in API
+    """
+    verf_code = serializers.CharField()
+
+    def validate(self, attrs):
+        um = user_handler.UserManager()
+        verf_code = attrs.get('verf_code')
+        request = self.context.get('request', None)
+
+        if verf_code:
+            if request.user.phone_status == True:
+                msg = _('Phone already verified!')
+                raise exceptions.PermissionDenied(msg)
+
+            if not um.checkVerfCode(request.user, verf_code):
+                msg = _('Provided code is incorrect!')
+                raise exceptions.PermissionDenied(msg)

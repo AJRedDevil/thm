@@ -22,11 +22,6 @@ SECRET_KEY = os.environ['LOCAL_SECRET_KEY']
 
 ALLOWED_HOSTS = []
 
-# Mandrill API KEY
-MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
-EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
-ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -37,9 +32,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'users',
     'jobs',
+    'libs',
+    'faq',
     'south',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
     'djrill',
 )
 
@@ -71,7 +69,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
 )
-# TEMPLATE PATH CONFIGURATION 
+# TEMPLATE PATH CONFIGURATION
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 TEMPLATE_DIRS = (TEMPLATE_PATH)
 ## MISCELLANEOUS SETTINGS
@@ -83,8 +81,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 APPEND_SLASH = True
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 # TURN DEBUG OFF
 DEBUG = False
 TEMPLATE_DEBUG = False
@@ -110,7 +106,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-# CONFIGURING QUESTRUSERPROFILE AS THE AUTH BACKEND
+# CONFIGURING USERPROFILE AS THE AUTH BACKEND
 AUTH_USER_MODEL = 'users.UserProfile'
 # LOGIN URL DEFINITIONS
 LOGIN_URL = '/signin/'
@@ -131,11 +127,11 @@ LOGGING = {
     },
     'handlers': {
         'null': {
-            'level': 'DEBUG',
+            'level': 'WARN',
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'WARN',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
@@ -143,19 +139,60 @@ LOGGING = {
     'loggers': {
         'users': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
         },
         'jobs': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
         },
         'libs': {
             'handlers':['console'],
-            'level':'DEBUG',
+            'level':'WARN',
+        },
+        'faq': {
+            'handlers':['console'],
+            'level':'WARN',
         },
     }
 }
 
+# ALL OTHER SETTINGS
+# Mandrill API KEY
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
+
+#GOOGlE RELATED CONFIGURATIONS
+GOOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+#User Token Expiry in days
+USER_TOKEN_EXPIRY = int(os.environ['USER_TOKEN_EXPIRY'])
+
+SWAGGER_SETTINGS = {
+    "exclude_namespaces": [],
+    "api_version": '1',
+    "api_path": "/",
+    "enabled_methods": [
+        'get',
+        'post',
+    ],
+    "api_key": '',
+    "is_authenticated": True,
+    "is_superuser": True,
+    "permission_denied_handler": None,
+    "info": {
+        'contact': 'dev@thehandymanapp.co',
+        'description': 'This is a API documentation server. '
+                       'To use the API please use your token auth.',
+        'license': 'Copyright The Handyman App 2014',
+        'licenseUrl': '',
+        'termsOfServiceUrl': '',
+        'title': 'The Handyman App',
+    },
+}
+
+# Currency Setting
+CURRENCIES = ('NPR',)
 # LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py, required only for a dev env
 try:
     from local_setting import *

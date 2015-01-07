@@ -8,12 +8,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from django.utils import six
+# from django.utils import six
 
 #All external imports (libs, packages)
 import hashlib
+import uuid
+import simplejson as json
 import jsonfield
 import logging
+import pytz
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
 
@@ -34,7 +37,7 @@ class UserManager(BaseUserManager):
 
         if not phone:
             raise ValueError('A valid mobile number must be provided')
-            
+
         user = self.model(phone=phone,
                           is_active=True, last_login=now,
                           date_joined=now, **extra_fields)
@@ -43,11 +46,13 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, password=None, **extra_fields):
-        u = self._create_user(phone, password, **extra_fields)
+        address=dict(streetaddress='Thirbum Marg - 4, Baluwatar', city='Kathmandu')
+        u = self._create_user(phone, password, address=address, **extra_fields)
         u.is_staff = True
         u.is_active = True
         u.is_superuser = True
         u.phone_status = True
+        u.user_type = 0
         u.save(using=self._db)
         return u
 
@@ -63,26 +68,34 @@ class UserManager(BaseUserManager):
         return self._create_user(phone, password, **extra_fields)
 
 
+def getUniqueUUID():
+    uniqueID = ''.join(str(uuid.uuid4()).split('-'))
+    return uniqueID
 
 class UserProfile(AbstractBaseUser):
+
     def upload_pp_path(self, name):
         # name = 'pp'
         folder = self.id
         return str(folder) + '/' + str(name)
 
     id = models.AutoField(_('id'), primary_key=True)
-    displayname = models.CharField(_('displayname'), max_length=30, unique=True, 
-        error_messages={'unique' : 'The username provided is already taken !'})
-    first_name = models.CharField(_('first_name'), max_length=30)
-    last_name = models.CharField(_('last_name'), max_length=30)
-    email = models.EmailField(_('email'), max_length=100,
-        error_messages={'unique' : 'It seems you already have an account registered with that email!'})
-
+    userref = models.CharField(_('userref'), max_length=100, unique=True,
+        default=getUniqueUUID)
+    # displayname = models.CharField(_('displayname'), max_length=30, unique=True,
+    #     error_messages={'unique' : 'The username provided is already taken !'})
+    name = models.CharField(_('first_name'), max_length=30)
+    # last_name = models.CharField(_('last_name'), max_length=30)
+    # email = models.EmailField(_('email'), max_length=100,
+    #     error_messages={'unique' : 'It seems you already have an account registered with that email!'})
     phone_status = models.BooleanField(_('phone_status'), default=False)
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     profile_image = models.ImageField(max_length=1024, upload_to=upload_pp_path, blank=True, default='')
-    account_status = models.IntegerField(_('account_status'), max_length=1, blank=True, default=1)
+    """Account Status"""
+    # 1 = Active
+    # 0 = Suspended
+    account_status = models.IntegerField(_('account_status'), max_length=1, default=1)
     """User Types"""
     # 0 = THM Staffs
     # 1 = Handymen
@@ -93,16 +106,16 @@ class UserProfile(AbstractBaseUser):
     is_superuser = models.BooleanField(_('is_superuser'), default=False)
     is_active = models.BooleanField(default=True)
     address = jsonfield.JSONField(_('address'), default='{}', max_length=9999)
+    current_address = jsonfield.JSONField(_('current_address'), default='{}', max_length=9999)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['first_name','last_name','displayname']
-
+    REQUIRED_FIELDS = ['name']
 
     objects = UserManager()
 
     def __unicode__(self):
-        return str(self.phone) 
+        return str(self.name+' ('+str(self.phone)+')')
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -117,8 +130,13 @@ class UserProfile(AbstractBaseUser):
     def __generate_hash(self):
         return hashlib.sha256(str(self.date_joined) + str(self.phone)).hexdigest()
 
+    def get_lat_long(self, address):
+        from libs.googleapi_handler import GeoCoding
+        gc = GeoCoding()
+        return gc.get_lat_long(address)
+
     def create_thumbnail(self, size, quality=None):
-        # invalidate the cache of the thumbnail with the given size first        
+        # invalidate the cache of the thumbnail with the given size first
         import os
         from PIL import Image
         from django.core.files.storage import default_storage as storage
@@ -130,8 +148,8 @@ class UserProfile(AbstractBaseUser):
         avatar_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') % (filename_base)
         try:
             if not storage.exists(avatar_file_path):
-                try:    
-                    orig = storage.open(file_path, 'rb')            
+                try:
+                    orig = storage.open(file_path, 'rb')
                     image = Image.open(orig)
                     quality = quality or settings.AVATAR_THUMB_QUALITY
                     w, h = image.size
@@ -178,9 +196,18 @@ class UserProfile(AbstractBaseUser):
         return default_file_path
 
     def save(self, *args, **kwargs):
+        if type(self.address) != dict:
+            self.address = json.loads(self.address)
+        if self.current_address == '{}':
+            self.current_address = self.get_lat_long(self.address)
+        if type(self.current_address) != dict:
+            self.current_address = json.loads(self.current_address)
+
         super(UserProfile, self).save(*args, **kwargs)
+
         if self.profile_image:
             self.create_thumbnail(500)
+
 
 # Create Token for users when a user is created
 @receiver(post_save, sender=UserProfile)
@@ -191,28 +218,26 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class UserEvents(models.Model):
     """Models for Users UserEvents"""
-    current_time = timezone.now
 
     user = models.ForeignKey(UserProfile)
     event = models.IntegerField(_('event'), max_length=2, default=1)
-    updated_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+    updated_on = models.DateTimeField(_('updated_on'),
+        default=timezone.now)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
-    
+
     def save(self, *args, **kwargs):
-        if not self.updated_on:
-            self.updated_on = timezone.now
         super(UserEvents, self).save(*args, **kwargs)
 
 class EarlyBirdUser(models.Model):
     """
     List of customers who registered in the early phase
     """
-    current_time = timezone.now
+
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-    registered_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+    registered_on = models.DateTimeField(_('updated_on'),
+        default=timezone.now)
+    confirmed = models.BooleanField(_('confirmed'), default=False)
 
     def __unicode__(self):
         return str(self.phone)
@@ -222,16 +247,56 @@ class EarlyBirdUser(models.Model):
             self.registered_on = timezone.now
         super(EarlyBirdUser, self).save(*args, **kwargs)
 
-class EarlyBirdHandymen(models.Model):
-    """
-    List of Handymen who registered in the early phase
-    """
-    current_time = timezone.now
-    phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-    registered_on = models.DateTimeField(_('updated_on'), 
-        default=current_time)
+# class EarlyBirdHandymen(models.Model):
+#     """
+#     List of Handymen who registered in the early phase
+#     """
 
+#     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
+#     registered_on = models.DateTimeField(_('updated_on'),
+#         default=timezone.now)
+
+#     def save(self, *args, **kwargs):
+#         if not self.registered_on:
+#             self.registered_on = timezone.now
+#         super(EarlyBirdHandymen, self).save(*args, **kwargs)
+
+class UserToken(models.Model):
+    """
+    Token Model Class for user's verification, password reset and other such services
+    """
+    user = models.ForeignKey(UserProfile)
+    token = models.CharField(_('id'), max_length=20, primary_key=True)
+    timeframe = models.DateTimeField(_('timeframe'), default=timezone.now)
+    status = models.BooleanField(_('status'), default=False)
+
+    def is_alive(self):
+        timedelta = timezone.now() - self.timeframe
+        days = getattr(settings, 'USER_TOKEN_EXPIRY', None)
+        allowable_time = float(days * 24 * 60 * 60)
+        return timedelta.total_seconds() < allowable_time
+
+    def get_hash(self):
+        return self.token[:14]
+
+    def get_vrfcode(self):
+        return self.token[-6:]
+
+    def generate_token(self):
+        """
+        Generates a token with first 14 hash and last 6 as verification code
+        """
+        from random import randint
+        strhash = hashlib.sha256(str(timezone.now()) + str(uuid.uuid4())).hexdigest()[:14]
+        randnum = str(randint(123456,999889))
+        return strhash+randnum
+
+    def __unicode__(self):
+        return self.token
+
+    # Overriding
     def save(self, *args, **kwargs):
-        if not self.registered_on:
-            self.registered_on = timezone.now
-        super(EarlyBirdHandymen, self).save(*args, **kwargs)
+        # Tag all existing tokens from this user as used before creating new
+        UserToken.objects.filter(user_id=self.user).update(status=True)
+        self.token = self.generate_token()
+        super(UserToken, self).save(*args, **kwargs)
