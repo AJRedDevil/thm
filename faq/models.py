@@ -15,3 +15,11 @@ class FAQ(models.Model):
 
     def __unicode__(self):
         return self.id
+
+
+class FAQManager(object):
+    """
+    Manager for FAQ
+    """
+    def all(self):
+        return FAQ.objects.filter().order_by('id')
