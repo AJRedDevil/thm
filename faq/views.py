@@ -24,7 +24,6 @@ def viewAllFaq(request):
     user = request.user
     fm = FAQManager()
     allfaq = fm.all()
-    logger.warn(allfaq)
     return render(request, 'allfaq.html', locals())
 
 @login_required
