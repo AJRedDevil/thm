@@ -240,7 +240,7 @@ class EarlyBirdUser(models.Model):
     confirmed = models.BooleanField(_('confirmed'), default=False)
 
     def __unicode__(self):
-        return str(self.phone)
+        return self.phone
 
     def save(self, *args, **kwargs):
         if not self.registered_on:

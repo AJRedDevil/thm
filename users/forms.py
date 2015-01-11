@@ -27,7 +27,7 @@ class VerifyPhoneForm(forms.Form):
         }
 
     verf_code = forms.CharField(label=_("verf_code"),
-        widget=forms.TextInput, min_length=6, 
+        widget=forms.TextInput, min_length=6,
         error_messages={'required' : 'Please provide with the verification code sent on your mobile !',
                         })
 
@@ -115,12 +115,11 @@ class EBUserPhoneNumberForm(forms.ModelForm):
 
 class UserCreationForm(forms.ModelForm):
     """
-    A form that creates a user, from the given data, this runs when the user uses the signup form 
+    A form that creates a user, from the given data, this runs when the user uses the signup form
     """
-    phone = PhoneNumberField()
-    
+    phone = forms.ModelChoiceField(EarlyBirdUser.objects.filter(confirmed=False).order_by('id'))
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput, min_length=6, 
+        widget=forms.PasswordInput, min_length=6,
         error_messages={'required' : 'Please provide with a password !',
                         'min_length' : 'The password has to be more than 6 characters !',
                         })
@@ -162,7 +161,8 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def clean_phone(self):
-        phone = self.cleaned_data.get("phone")
+        # self.cleaned_data.get("phone") is a User object
+        phone = self.cleaned_data.get("phone").phone
         if str(phone.country_code) != '977':
             raise forms.ValidationError(
                 self.error_messages['country_notsupported'],
@@ -202,7 +202,7 @@ class LocalAuthenticationForm(forms.Form):
     error_messages = {
         'invalid_login': _("Please enter a correct phone number and password. "
                            "Note that password may be case-sensitive."),
-        'inactive': _("This account is inactive, please contact us at support@thehandymanapp.co ! "),
+        'inactive': _("This account is inactive, please contact us at info@thehandymanapp.co ! "),
     }
 
     def __init__(self, request=None, *args, **kwargs):
@@ -389,6 +389,3 @@ class LocalAuthenticationForm(forms.Form):
 #     (k, PasswordChangeForm.base_fields[k])
 #     for k in ['old_password', 'new_password1', 'new_password2']
 # )
-
-
-

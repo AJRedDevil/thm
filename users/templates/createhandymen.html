@@ -1,16 +1,4 @@
 <form action="" method="post">{% csrf_token %}
-<input id="phone" name="phone" type="phone" placeholder="+9779846464646"/>
-{{user_form.phone.errors}}                        
-<input id="password1" type="password" name="password1" placeholder="minimum 6 chars"/>
-<input id="password2" type="password" name="password2" placeholder="re-enter password"/>
-{{user_form.password1.errors}}              
-{{user_form.password2.errors}}
-<input type="text" name="name" id="name" placeholder="Anil Chaulagain" />
-{{user_form.last_name.errors}}
-<select id="city" class="btn-classic" data-size="5" name="city" default="Kathmandu">
-    <option>Kathmandu</option>
-</select>
-<input type="text" name="streetaddress" id="streetaddress" placeholder="Street Address, P.O box, company name, etc" />
-<br><br>
+{{user_form.as_p}}
 <button type="submit" class="btn btn-fatty btn-lg" id="createAccBtn">CREATE ACCOUNT</button>
 </form>
