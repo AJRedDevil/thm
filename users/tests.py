@@ -6,6 +6,9 @@ from django.core.urlresolvers import reverse
 from phonenumber_field.modelfields import PhoneNumber
 # Create your tests here.
 from users.models import UserProfile
+from users.forms import EBUserPhoneNumberForm
+
+import logging
 
 class UserTestCase(TestCase):
     """
@@ -29,16 +32,16 @@ class UserTestCase(TestCase):
             streetaddress=self.streetaddress,
             )
 
-    def test1_SignupUrl(self):
-        response = self.client.get(reverse('signup'))
-        self.assertEqual(response.status_code, 200)
+    # def test1_SignupUrl(self):
+    #     response = self.client.get(reverse('signup'))
+    #     self.assertEqual(response.status_code, 200)
 
-    def test2_UserIsCreated(self):
-        response = self.client.post(reverse('signup'), data=self.post_data)
-        user = UserProfile.objects.get(phone=self.phone)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(user.phone, PhoneNumber.from_string(self.phone))
-        self.assertEqual(user.address['streetaddress'], self.streetaddress)
+    # def test2_UserIsCreated(self):
+    #     response = self.client.post(reverse('signup'), data=self.post_data)
+    #     user = UserProfile.objects.get(phone=self.phone)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(user.phone, PhoneNumber.from_string(self.phone))
+    #     self.assertEqual(user.address['streetaddress'], self.streetaddress)
 
     def test3_LogoutUrl(self):
         response = self.client.get(reverse('logout'))
@@ -49,37 +52,141 @@ class UserTestCase(TestCase):
         # signin page is disabled for now
         self.assertEqual(response.status_code, 302)
 
-    def test5_Signin(self):
-        post_data=dict(
-            phone=self.phone,
-            password=self.password1
-            )
-        response = self.client.post(reverse('signup'), data=self.post_data)
-        response = self.client.get(reverse('logout'))
-        response = self.client.post(reverse('signin'), data=post_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, 'http://testserver/home/')
+    # def test5_Signin(self):
+    #     post_data=dict(
+    #         phone=self.phone,
+    #         password=self.password1
+    #         )
+    #     response = self.client.post(reverse('signup'), data=self.post_data)
+    #     response = self.client.get(reverse('logout'))
+    #     response = self.client.post(reverse('signin'), data=post_data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(response.url, 'http://testserver/home/')
 
-    def test6_RedirectHomeIfSignedin(self):
-        post_data=dict(
-            phone=self.phone,
-            password=self.password1
-            )
-        self.client.post(reverse('signup'), data=self.post_data)
-        response = self.client.post(reverse('signin'), data=post_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, 'http://testserver/home/')
-        response = self.client.get(reverse('signup'))
-        self.assertEqual(response.status_code, 302)
+    # def test6_RedirectHomeIfSignedin(self):
+    #     post_data=dict(
+    #         phone=self.phone,
+    #         password=self.password1
+    #         )
+    #     self.client.post(reverse('signup'), data=self.post_data)
+    #     response = self.client.post(reverse('signin'), data=post_data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(response.url, 'http://testserver/home/')
+    #     response = self.client.get(reverse('signup'))
+    #     self.assertEqual(response.status_code, 302)
 
-    def test7_MyProfilePage(self):
-        post_data=dict(
-            phone=self.phone,
-            password=self.password1
-            )
-        self.client.post(reverse('signup'), data=self.post_data)
-        response = self.client.post(reverse('signin'), data=post_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, 'http://testserver/home/')
-        response = self.client.get(reverse('myProfile'))
-        self.assertEqual(response.status_code, 200)
+    # def test7_MyProfilePage(self):
+    #     post_data=dict(
+    #         phone=self.phone,
+    #         password=self.password1
+    #         )
+    #     self.client.post(reverse('signup'), data=self.post_data)
+    #     response = self.client.post(reverse('signin'), data=post_data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(response.url, 'http://testserver/home/')
+    #     response = self.client.get(reverse('myProfile'))
+    #     self.assertEqual(response.status_code, 200)
+
+class PhoneNumberTestCase(TestCase):
+    """
+    Phone test case
+    """
+    def setUp(self):
+        super(PhoneNumberTestCase, self).setUp()
+        self.phone_regular_valid = ["+9779802036633","9802036633", "9779802036633"]
+        self.phone_land_line = ["+97714412832", "+14412832", "4412832", "97714412832", "9774412832"]
+        self.phone_non_nep = ["+8801732987388", "+16627368514"]
+        self.phone_ncell = ["9801036633", "9803197607"]
+        self.phone_ntc_mobile = ["9841136633", "9841891459"]
+        self.phone_utl_mobile = ["9721122112"]
+        self.phone_ndcl_mobile = ["9741122112", "9741122112"]
+        self.phone_nstpl_mobile = ["9631122112"]
+        self.phone_stm_mobile = ["9601122112"]
+        self.phone_smartcell_mobile=["9611122112"]
+
+    def test1_validRegularPhone(self):
+        ## Tests Valid phone
+        for x in self.phone_regular_valid:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+
+    def test2_invalidPhoneLandLine(self):
+        ## Tests regular landline
+        for x in self.phone_land_line:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertNotEqual(user_form.is_valid(), True)
+
+    def test3_invalidNonNepalesePhone(self):
+        ## Tests invalid mobile for non nepalese phone
+        for x in self.phone_non_nep:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertNotEqual(user_form.is_valid(), True)
+
+    def test4_validPhoneNcell(self):
+        ## Tests valid Ncell mobile
+        for x in self.phone_ncell:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test5_validPhoneNtc(self):
+        ### Tests valid NTC mobile
+        for x in self.phone_ntc_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test6_validPhoneUTL(self):
+        ### Tests valid UTL
+        for x in self.phone_utl_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test7_validPhoneNDCLMobile(self):
+        for x in self.phone_ndcl_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test8_validPhoneNSTPLMobile(self):
+        for x in self.phone_nstpl_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test9_validPhoneSTMMobile(self):
+        for x in self.phone_stm_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)
+
+    def test10_validPhoneSmartCellMobile(self):
+        for x in self.phone_smartcell_mobile:
+            post_data = dict(
+                phone=x,
+                )
+            user_form = EBUserPhoneNumberForm(data=post_data)
+            self.assertEqual(user_form.is_valid(), True)

@@ -54,8 +54,9 @@ class EBUserPhoneNumberForm(forms.ModelForm):
     phone = PhoneNumberField()
 
     error_messages = {
-        'country_notsupported': _("Your country is not supported right now!"),
+        'country_notsupported': _("Your country is not supported as of now!"),
         'duplicate_phone': _("You have already registered!"),
+        'mobile_phone': _("Please enter a valid mobile number!"),
         }
 
     class Meta:
@@ -63,6 +64,7 @@ class EBUserPhoneNumberForm(forms.ModelForm):
         fields = ['phone']
 
     def clean_phone(self):
+
         phone = self.cleaned_data.get("phone")
         signedupusers = EarlyBirdUser.objects.all()
         if str(phone.country_code) != '977':
@@ -70,6 +72,18 @@ class EBUserPhoneNumberForm(forms.ModelForm):
                 self.error_messages['country_notsupported'],
                 code='country_notsupported',
             )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96,97,98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
 
         if phone in signedupusers:
             raise forms.ValidationError(

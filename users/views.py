@@ -293,7 +293,18 @@ def joinasuser(request):
     """
     # If a user joins from the web
     if request.method == "POST":
-        user_form = EBUserPhoneNumberForm(request.POST)
+        request_dict = request.POST.copy()
+        phone = request_dict.get('phone')
+        if phone == '':
+            return redirect('index')
+        try:
+            phone = intlphone.from_string(request_dict.get('phone'), region='NP')
+        except Exception as e:
+            return redirect('index')
+
+        request_dict['phone'] = phone
+        logging.warn(request_dict)
+        user_form = EBUserPhoneNumberForm(request_dict)
         if user_form.is_valid():
             phone = user_form.cleaned_data['phone']
             userdata = user_form.save(commit=False)
@@ -309,10 +320,11 @@ def joinasuser(request):
         if user_form.errors:
             gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
             logger.debug("Login Form has errors, %s ", user_form.errors)
+            return render(request,'index.html',locals())
         return redirect('index')
 
     # disbale GET
-    raise Http404
+    return redirect('index')
 
 
 @csrf_exempt
