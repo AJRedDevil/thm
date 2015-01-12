@@ -3,6 +3,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from .models import Jobs
+from users.models import UserProfile
 
 from moneyed import Money, NPR
 import logging
@@ -36,12 +37,18 @@ class JobEditFormAdmin(forms.ModelForm):
     error_messages = {
         'negative_currency': _("Fees can never be negative!"),
         }
-        
+
+    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1))
+
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
                     'remarks','fee','status','handyman','isaccepted','isnotified',
                     'completion_date',]
+
+
+    # def __init__(self, *args, **kwargs):
+    #     letter =
 
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')
