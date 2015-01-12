@@ -376,6 +376,7 @@ def smsEndpoint(request):
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
                     # send email and SMS to admin
+                    vas = Sparrow()
                     adminmsg = "Request for service received from {0}".format(userdetails.phone.as_national)
                     adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
                     email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)
@@ -421,6 +422,7 @@ def smsEndpoint(request):
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
                     # send email and SMS to admin
+                    vas = Sparrow()
                     adminmsg = "Request for service received from {0}".format(userdetails.phone.as_national)
                     adminmsgstatus = vas.sendDirectMessage(adminmsg, intlphone.from_string('+9779802036633'))
                     email_details = email_handler.prepNewJobRegistrationNotification(userdetails.phone.as_international, userdetails.name)
