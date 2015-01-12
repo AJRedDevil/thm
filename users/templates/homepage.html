@@ -10,7 +10,7 @@ Current Open Jobs
     Requested By :  {{job.customer.name}}( {{job.customer.phone}} )<br>
     Details = <a href="{% url 'viewJob' job_id=job.jobref %}">{{job.jobref}}</a><br>
     Status = {{job.get_status_display}}<br>
-    Handyman = {{job.handyman.name}}<br>
+    Handyman = {{ job.handyman.all | join:", "}}<br>
     ============
 </p>
 {% endfor %}

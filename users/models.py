@@ -117,11 +117,8 @@ class UserProfile(AbstractBaseUser):
     def __unicode__(self):
         return str(self.name+' ('+str(self.phone)+')')
 
-    def get_full_name(self):
-        return self.first_name + " " + self.last_name
-
-    def get_short_name(self):
-        return self.first_name
+    def get_name(self):
+        return self_name
 
     def thumbnail_exists(self, size):
         from django.core.files.storage import default_storage as storage

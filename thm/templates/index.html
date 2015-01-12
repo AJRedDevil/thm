@@ -45,6 +45,11 @@
 			</form>
 		</div>
 		<footer>
+			{% if user_form.errors %}
+			{% for field, error in user_form.errors.items  %}
+			<span class="sms">{{ error | striptags }}</span>
+			{% endfor %}
+			{% endif %}
 			<span class="or">OR</span>
 			<span class="sms">SMS</span>
 			<span class="handyman">HANDYMAN</span>

@@ -40,8 +40,7 @@ class Jobs(models.Model):
                     choices=JOBS_SELECTION,
                     default='0',
                     )
-    handyman = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'1'},
-        related_name='orders', blank=True, null=True)
+    handyman = models.ManyToManyField(UserProfile, related_name='orders')
     isaccepted = models.BooleanField(_('isaccepted'), default=False)
     isnotified = models.BooleanField(_('isnotified'), default=False)
     is_complete = models.BooleanField(_('is_complete'), default=False)
@@ -56,7 +55,7 @@ class Jobs(models.Model):
     destination_home =  models.BooleanField(_('destination_home'), default=True)
 
     def __unicode__(self):
-        return str(self.jobref )
+        return str(self.jobref)
 
         #Overriding
     def save(self, *args, **kwargs):

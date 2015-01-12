@@ -18,7 +18,7 @@ djrill==1.2.0
 gunicorn==19.1.1
 jsonfield==1.0.0
 oauthlib==0.7.1
-phonenumbers==7.0.0
+phonenumbers==7.0.1
 psycopg2==2.5.2
 py-moneyed==0.5.0
 pytz==2014.10

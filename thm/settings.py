@@ -193,6 +193,8 @@ SWAGGER_SETTINGS = {
 
 # Currency Setting
 CURRENCIES = ('NPR',)
+# Phone number setting
+PHONENUMBER_DEFAULT_REGION = 'NP'
 # LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py, required only for a dev env
 try:
     from local_setting import *
