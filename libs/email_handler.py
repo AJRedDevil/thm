@@ -41,7 +41,7 @@ def _load_template(user, email_details):
     ##Email Template Init###
     email_template = EmailMessage(
         subject=email_details['subject'],
-        from_email="The Handyman App <do-not-reply@thehandymanapp.co>",
+        from_email="The Handyman App <do-not-reply@thehomerepairapp.com>",
         to=[user,]
         )
 

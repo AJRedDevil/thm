@@ -8,14 +8,16 @@
 			<img src={% static 'img/thm-gif-v.gif' %}>
 		</div>
 
-		<div class='v-link'>
-			<span class='img'>
-				<a  onclick='popup("video")'>
-					<img src={% static 'img/v-link.png' %}></a>
-				</span>
+		{% comment %}
+			<div class='v-link'>
+				<span class='img'>
+					<a  onclick='popup("video")'>
+						<img src={% static 'img/v-link.png' %}></a>
+					</span>
 
 
 			</div>
+		{% endcomment %}
 
 		</div>
 	</div>
@@ -62,8 +64,8 @@
 			<div class='social'>
 
 				<ul>
-					<li><a href='http://facebook.com/thehandymanapp' target='_blank'> <img src={% static 'img/fb.png' %}></a></li>
-					<li><a href='http://twitter.com/thehandymanapp' target='_blank'> <img src={% static 'img/tw.png' %}></a></li>
+					<li><a href='http://facebook.com/homerepairapp' target='_blank'> <img src={% static 'img/fb.png' %}></a></li>
+					<li><a href='http://twitter.com/homerepairapp' target='_blank'> <img src={% static 'img/tw.png' %}></a></li>
 
 				</ul>
 			</div>
@@ -110,16 +112,18 @@
 
 	<div class='popupContent'>
 
-		<!-- popup items -->
-		<div class='video'>
-			<div class='btn-bar'>
-				<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
-			</div>
-			<div class='col-md-12'>
-				<iframe width="560" height="315" src="//www.youtube.com/embed/B0qgzAq-ZII" frameborder="0" allowfullscreen></iframe>
-			</div>
+{% comment %}
+	<!-- popup items -->
+	<div class='video'>
+		<div class='btn-bar'>
+			<a href='#' class='close-btn'><img src={% static 'img/x.png' %}></a>
 		</div>
-		<!-- eo popup item1 -->
+		<div class='col-md-12'>
+			<iframe width="560" height="315" src="//www.youtube.com/embed/B0qgzAq-ZII" frameborder="0" allowfullscreen></iframe>
+		</div>
+	</div>
+	<!-- eo popup item1 -->
+{% endcomment %}
 
 
 

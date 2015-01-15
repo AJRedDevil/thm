@@ -216,7 +216,7 @@ class LocalAuthenticationForm(forms.Form):
     error_messages = {
         'invalid_login': _("Please enter a correct phone number and password. "
                            "Note that password may be case-sensitive."),
-        'inactive': _("This account is inactive, please contact us at info@thehandymanapp.co ! "),
+        'inactive': _("This account is inactive, please contact us at info@thehomerepairapp.com ! "),
     }
 
     def __init__(self, request=None, *args, **kwargs):
