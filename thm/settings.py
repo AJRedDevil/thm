@@ -181,7 +181,7 @@ SWAGGER_SETTINGS = {
     "is_superuser": True,
     "permission_denied_handler": None,
     "info": {
-        'contact': 'dev@thehandymanapp.co',
+        'contact': 'dev@thehomerepairapp.com',
         'description': 'This is a API documentation server. '
                        'To use the API please use your token auth.',
         'license': 'Copyright The Handyman App 2014',
