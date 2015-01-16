@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from thm.decorators import is_superuser
 
-from .models import FAQManager
+from .models import FAQ, FAQManager
 from .forms import FAQCreationForm
 import logging
 # Init Logger
