@@ -13,9 +13,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     # url(r'^admin/', include(admin.site.urls)),
-    # url(r'^api/v1/', include('api.urls') ),
     url(r'^signin/$', userviews.signin, name='signin'),
-    # url(r'^signup/$', userviews.signup, name='signup'),
     url(r'^logout/$', userviews.logout, name='logout'),
     url(r'^home/$', userviews.home, name='home'),
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
@@ -32,6 +30,12 @@ urlpatterns = patterns('',
     url(r'^manage/$', manage, name='manage'),
     url(r'^$', index, name='index'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+    url(r'^api/v1/', include('api.urls') ),
+    url(r'^signup/$', userviews.signup, name='signup'),
+    ) 
 
 urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
