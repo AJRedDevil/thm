@@ -26,13 +26,13 @@ import simplejson as json
 # Init Logger
 logger = logging.getLogger(__name__)
 
-# class UsersList(APIView):
+class UsersList(APIView):
 
-#     def get(self, request, format=None):
-#         users = UserProfile.objects.all()
-#         serialized_users = serializers.UserSerializer(users, many=True)
-#         responsedata = dict(data=serialized_users.data, success=True)
-#         return HttpResponse(json.dumps(responsedata),content_type="application/json")
+    def get(self, request, format=None):
+        users = UserProfile.objects.all()
+        serialized_users = serializers.UserSerializer(users, many=True)
+        responsedata = dict(data=serialized_users.data, success=True)
+        return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
 class UsersDetail(APIView):
     """
