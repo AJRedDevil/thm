@@ -15,8 +15,10 @@
 </head>
 <body>
 <a href="{% url 'home' %}">Home</a>
-<a href="{% url 'myProfile' %}">Profile</a>
 <a href="{% url 'logout' %}">Logout</a>
+{% if user.is_superuser %}
+	<a href="{% url 'manage' %}">Manage</a>
+{% endif %}
 Logged in as {{user.name}} ({{user.phone}})<br>
 
 <br><br>
