@@ -205,6 +205,97 @@ class UserCreationForm(forms.ModelForm):
             user.save()
         return user
 
+
+class UserSignupForm(forms.ModelForm):
+    """
+    A form for user signups
+    """
+    phone = PhoneNumberField()
+    password1 = forms.CharField(label=_("Password"),
+        widget=forms.PasswordInput, min_length=6,
+        error_messages={'required' : 'Please provide with a password !',
+                        'min_length' : 'The password has to be more than 6 characters !',
+                        })
+    password2 = forms.CharField(label=_("Password confirmation"),
+        widget=forms.PasswordInput, min_length=6,
+        help_text=_("Enter the same password as above, for verification."),
+        error_messages={'required' : 'Please provide with a password confirmation !',
+                        'min_length' : 'The password has to be more than 6 characters !',
+                        })
+    city = forms.ChoiceField(
+        choices=CITY_SELECTION,
+        error_messages={
+                        'required' : 'Name of the city is required !',
+                        'invalid_choice' : 'Please select one of the options available !'
+                        }
+        )
+
+    streetaddress = forms.CharField(
+        error_messages={'required' : 'Street/Apt. Address where the shipment is to be picked up from is required !',}
+        )
+
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match. Please re-verify your passwords !"),
+        'country_notsupported': _("Your country is not supported right now!"),
+        }
+
+    class Meta:
+        model = UserProfile
+        fields = ['name','phone']
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        return password2
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96,97,98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        return phone
+
+    # def clean_email(self):
+    #     # Since User.username is unique, this check is redundant,
+    #     # but it sets a nicer error message than the ORM. See #13147.
+    #     email = self.cleaned_data["email"]
+    #     try:
+    #         UserProfile._default_manager.get(email=email)
+    #     except UserProfile.DoesNotExist:
+    #         return email
+    #     raise forms.ValidationError(
+    #         self.error_messages['duplicate_email'],
+    #         code='duplicate_email',
+    #     )
+
+    def save(self, commit=True):
+        user = super(UserSignupForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        # user.avatar_file_name=settings.STATIC_URL+'img/default.png'
+        if commit:
+            user.save()
+        return user
+
 class LocalAuthenticationForm(forms.Form):
     """
     Base class for authenticating users. Extend this to get a form that accepts
