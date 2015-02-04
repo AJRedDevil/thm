@@ -345,7 +345,7 @@ def smsEndpoint(request):
             text = urllib.unquote(request.GET['text'])
             user_form = EBUserPhoneNumberForm(userphone)
             # If no keyword on the message
-            if len(text.lower().split()) == 1 and text.lower().split()[0]==os.environ['SMS_KEYWORD']:
+            if len(text.lower().split()) == 1 and text.lower().split()[0] in os.environ['SMS_KEYWORD'].split(','):
                 if user_form.is_valid():
                     phone = user_form.cleaned_data['phone']
                     userdata = user_form.save(commit=False)
