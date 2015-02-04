@@ -19,7 +19,7 @@ import handler as user_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser
 from .models import UserProfile, EarlyBirdUser, UserToken
-from .forms import UserCreationForm, LocalAuthenticationForm, EBUserPhoneNumberForm, VerifyPhoneForm
+from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, EBUserPhoneNumberForm, VerifyPhoneForm
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -95,7 +95,16 @@ def signup(request):
         return redirect('home')
 
     if request.method == "POST":
-        user_form = UserCreationForm(request.POST)
+        request_dict = request.POST.copy()
+        phone = request_dict.get('phone')
+        if phone == '':
+            return redirect('signup')
+        try:
+            phone = intlphone.from_string(request_dict.get('phone'), region='NP')
+        except Exception as e:
+            return redirect('signup')
+
+        user_form = UserSignupForm(request.POST)
         if user_form.is_valid():
             userdata = user_form.save(commit=False)
             userdata.address = dict(city=user_form.cleaned_data['city'], streetaddress=\
@@ -117,7 +126,7 @@ def signup(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'signup.html', locals())
 
-    user_form = UserCreationForm
+    user_form = UserSignupForm
     return render(request, 'signup.html', locals())
 
 @login_required
