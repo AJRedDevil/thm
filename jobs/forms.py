@@ -36,19 +36,15 @@ class JobEditFormAdmin(forms.ModelForm):
     """
     error_messages = {
         'negative_currency': _("Fees can never be negative!"),
+        'complete_job': _("Job once complete cannot be reverted"),
         }
 
-    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1))
+    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1), required=False)
 
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman','isaccepted','isnotified',
-                    'completion_date',]
-
-
-    # def __init__(self, *args, **kwargs):
-    #     letter =
+                    'remarks','fee','status','handyman',]
 
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')

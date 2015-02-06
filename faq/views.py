@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+
 from django.contrib.auth.decorators import login_required
 from thm.decorators import is_superuser
 
@@ -45,7 +46,7 @@ def createFaq(request):
 @is_superuser
 def viewFaq(request, faq_id):
     user = request.user
-    faq = FAQ.objects.get(faqref=faq_id)
+    faq = get_object_or_404(FAQ, faqref=faq_id)
     if request.method=="POST":
         faq_form = FAQCreationForm(request.POST)
         if faq_form.is_valid():
