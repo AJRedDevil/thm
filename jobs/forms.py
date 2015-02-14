@@ -46,6 +46,17 @@ class JobEditFormAdmin(forms.ModelForm):
         fields = ['customer','jobtype','remarks','destination_home',
                     'remarks','fee','status','handyman',]
 
+
+    def __init__(self, *args, **kwargs):
+        super(JobEditFormAdmin, self).__init__(*args, **kwargs)
+        self.fields['customer'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['jobtype'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['destination_home'].widget.attrs.update({'class' : 'checkbox'})
+        self.fields['fee'].widget.attrs.update({'class' : 'form-control col-sm-6 col-xs-6'})
+        self.fields['status'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
+    
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')
         if fee.amount < 0:

@@ -194,6 +194,9 @@ def home(request):
     from jobs.handler import JobManager
     jb = JobManager()
     jobs = jb.getAllJobs(user)
+    if user.is_staff or user.is_superuser:
+        return render(request,'adminjoblist.html', locals())
+
     return render(request,'homepage.html', locals())
 
 @login_required

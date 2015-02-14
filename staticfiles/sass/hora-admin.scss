@@ -1,0 +1,168 @@
+@import 'compass/css3';
+
+$color-y : #E9C01E;
+$color-b : #2c2d2d;
+
+
+body *{
+	font-family: "Montserrat", sans-serif;
+	box-sizing:border-box;
+}
+
+input::-webkit-input-placeholder {
+   color: $color-b;
+}
+
+input:-moz-placeholder { /* Firefox 18- */
+   color: $color-b;  
+}
+
+input::-moz-placeholder {  /* Firefox 19+ */
+   color: $color-b;  
+}
+
+input:-ms-input-placeholder {  
+   color: $color-b;  
+}
+
+a{
+	color:$color-b !important;
+
+	&:hover,&:focus{
+	background:$color-b !important;
+	color:#FFF !important;
+
+	}
+}
+.link{
+	text-transform: uppercase;
+	opacity: 1;
+
+	&.main-back{
+		color:$color-y !important;
+		opacity: .9;
+		&:hover{
+			text-decoration:none;
+			opacity:1;
+		}
+	}
+}
+
+.btn-default{
+	background-color: $color-y;
+	font-weight: bold;
+	color:$color-b;
+	border:none;
+
+	font-size: 16px;
+
+	&:hover{
+		background-color:$color-y;
+	}
+
+	&.submit{
+		
+			padding:10px 15px;
+	margin-bottom:20px;
+
+	}
+}
+.hora-nav{
+	background: $color-y;
+	box-shadow: 1px 0 12px rgba(0,0,0,.5);
+		color: $color-b;
+	border-radius: 0;
+	border: none;
+
+	.hora-nav-brand{
+		width: 40px;
+	}
+
+	.hora-nav-search{
+		input[type=text]{
+			border:none;
+			background: none;
+			border-bottom:1px solid $color-b;
+			border-radius: 0;
+			box-shadow: none;
+			color:$color-b;
+
+		}
+		.hora-nav-search-btn
+		{
+			background: transparent;
+			border:none;
+			outline: none;
+			cursor: pointer;
+
+		}
+	}
+}
+
+
+.page-container{
+
+		h1{
+			text-transform: uppercase;
+			color:$color-y;
+			background: $color-b;
+			display: inline-block;
+padding: 5px 10px;
+font-weight: bold;
+font-size: 33px;
+
+		}
+
+		.hora-table{
+			margin:20px 0;
+		}
+	
+}
+
+table.dataTable.dtr-inline.collapsed tbody td:first-child:before, table.dataTable.dtr-inline.collapsed tbody th:first-child:before{
+	background-color: $color-y;
+	top: 12px;
+left: 4px;
+height: 20px;
+width: 20px;
+color: #FFF;
+line-height: 20px;
+border:none;
+box-shadow: none;
+
+
+}
+table.dataTable.dtr-inline.collapsed tbody tr.parent td:first-child:before, table.dataTable.dtr-inline.collapsed tbody tr.parent th:first-child:before{
+	background-color: $color-b;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover
+{
+	background: $color-y !important;
+	border:none;
+	background-color:$color-b;
+}
+
+.hora-job-form{
+
+}
+
+.double-input{
+	overflow: hidden;
+
+	.ip-form{
+		width:85%;
+		float:left;
+	}
+	.ip-btn{
+		width:10%;
+		float:left;
+		padding: 4px;
+border-radius: 5px;
+border: none;
+margin-left: 5px;
+background: $color-y;
+font-weight: bold;
+font-size: 20PX;
+
+	}
+}

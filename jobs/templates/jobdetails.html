@@ -1,7 +1,21 @@
-{% extends "base.html" %}
+{% extends "adminbase.html" %}
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-    {{job_form.as_p}}
-    <button type="submit" class="btn btn-fatty btn-lg" id="createAccBtn">Update JOB</button>
-</form>
+	<div class='page-container container list-table'>
+	<h1><a href={% url 'home' %} class='link main-back'><</a></h1>
+
+		<h1>Job <span class='jobId'>#{{job.id}}</span></h1>
+
+	<div class="hora-job-form">
+		<div class='row'>
+		<div class="col-md-6">
+
+	<form action="" method="post">{% csrf_token %}
+
+	{{job_form.as_p}}
+
+	</div>
+		 </div>
+	</div>
+	<button type="submit" class="btn btn-default submit">Update</button>
+	<!-- eo hora-job-form -->
 {% endblock content %}
