@@ -80,7 +80,86 @@ class JobTestCase(TestCase):
         response = self.client.post(reverse('createJob'), data=job_post_data)
         self.assertEqual(response.status_code, 200)
         # Get the job reference id
+        job = Jobs.objects.get(remarks='test plumbing job')
+        # Open the job page
+        response = self.client.get(reverse('viewJob', kwargs={'job_id': job.jobref}))
+        self.assertEqual(response.status_code, 200)
+
+    def test1_UpdateJobUrl(self):
+        # Login to the system
+        login_post_data=dict(
+            phone=self.staffphone,
+            password=self.staffpassword1
+            )
+        response = self.client.post(reverse('signin'), data=login_post_data)
+        # Open Job Creation Page
+        response = self.client.get(reverse('createJob'))
+        self.assertEqual(response.status_code, 200)
+        # Create job post data
+        job_post_data=dict(
+            customer=self.customer.id,
+            jobtype = '1',
+            status = '0',
+            remarks = 'test plumbing job',
+            fee_0 = '0.00',
+            fee_1 = 'NPR'
+            )
+        response = self.client.post(reverse('createJob'), data=job_post_data)
+        self.assertEqual(response.status_code, 200)
+        # Get the job reference id
         job = Jobs.objects.get(id=1)
         # Open the job page
         response = self.client.get(reverse('viewJob', kwargs={'job_id': job.jobref}))
         self.assertEqual(response.status_code, 200)
+        # Update the job data
+        job_update_data=dict(
+            customer=self.customer.id,
+            jobtype = '1',
+            remarks = 'test job',
+            status = '0',
+            fee_0 = '0.00',
+            fee_1 = 'NPR'
+            )
+        response = self.client.post(reverse('viewJob', kwargs={'job_id': job.jobref}), 
+            data=job_update_data)
+        self.assertEqual(response.status_code, 200)
+        job = Jobs.objects.get(id=1)
+        self.assertEqual(job.remarks, job_update_data['remarks'])
+        # Open the job page
+        response = self.client.get(reverse('viewJob', kwargs={'job_id': job.jobref}))
+        self.assertEqual(response.status_code, 200)
+        # Update job status
+        # Change from New to Accepted
+        job_update_data=dict(
+            customer=self.customer.id,
+            jobtype = '1',
+            remarks = 'test job',
+            status = '1',
+            fee_0 = '0.00',
+            fee_1 = 'NPR'
+            )
+        response = self.client.post(reverse('viewJob', kwargs={'job_id': job.jobref}), 
+            data=job_update_data)
+        self.assertEqual(response.status_code, 200)
+        job = Jobs.objects.get(id=1)
+        self.assertEqual(job.status, job_update_data['status'])
+        # Open the job page
+        response = self.client.get(reverse('viewJob', kwargs={'job_id': job.jobref}))
+        self.assertEqual(response.status_code, 200)
+        # Update job status back to New
+        old_status = job.status
+        job_update_data=dict(
+            customer=self.customer.id,
+            jobtype = '1',
+            remarks = 'test job',
+            status = '0',
+            fee_0 = '0.00',
+            fee_1 = 'NPR'
+            )
+        response = self.client.post(reverse('viewJob', kwargs={'job_id': job.jobref}), 
+            data=job_update_data)
+        self.assertEqual(response.status_code, 200)
+        job = Jobs.objects.get(id=1)
+        self.assertNotEqual(job.status, job_update_data['status'])
+        self.assertEqual(job.status, old_status)
+

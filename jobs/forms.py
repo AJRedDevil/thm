@@ -29,6 +29,13 @@ class JobCreationFormAdmin(forms.ModelForm):
         fields = ['customer','jobtype','remarks','destination_home',
                     'remarks',]
 
+    def __init__(self, *args, **kwargs):
+        super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
+        self.fields['customer'].widget.attrs={'class' : 'form-control'}
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
+        self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
+        self.fields['destination_home'].attrs={'class' : 'form-control'}
+
 
 class JobEditFormAdmin(forms.ModelForm):
     """
@@ -36,20 +43,27 @@ class JobEditFormAdmin(forms.ModelForm):
     """
     error_messages = {
         'negative_currency': _("Fees can never be negative!"),
+        'complete_job': _("Job once complete cannot be reverted"),
         }
 
-    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1))
+    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1), required=False)
 
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman','isaccepted','isnotified',
-                    'completion_date',]
+                    'remarks','fee','status','handyman',]
 
 
-    # def __init__(self, *args, **kwargs):
-    #     letter =
-
+    def __init__(self, *args, **kwargs):
+        super(JobEditFormAdmin, self).__init__(*args, **kwargs)
+        self.fields['customer'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['jobtype'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['destination_home'].widget.attrs.update({'class' : 'checkbox'})
+        self.fields['fee'].widget.attrs.update({'class' : 'form-control col-sm-6 col-xs-6'})
+        self.fields['status'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
+    
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')
         if fee.amount < 0:

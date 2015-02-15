@@ -162,7 +162,7 @@ def verifyPhone(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'verify_phone.html', locals())
 
-    user_form = UserCreationForm
+    # user_form = UserCreationForm
     return render(request, 'verify_phone.html', locals())
 
 @login_required
@@ -194,6 +194,9 @@ def home(request):
     from jobs.handler import JobManager
     jb = JobManager()
     jobs = jb.getAllJobs(user)
+    if user.is_staff or user.is_superuser:
+        return render(request,'admin/joblist.html', locals())
+
     return render(request,'homepage.html', locals())
 
 @login_required
@@ -206,8 +209,19 @@ def createhandymen(request):
     if request.user.is_authenticated():
         user = request.user
 
+    if request.method == "GET":
+        if request.GET.has_key('ebuser'):
+            ebuser=request.GET['ebuser']
+            try:
+                EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
+            except Exception, e:
+                return redirect('home')
+            user_form = UserCreationForm(ebuser=ebuser)
+            pagetitle = "Create a Handymen"
+            return render(request, 'admin/createuser.html', locals())
+
     if request.method == "POST":
-        user_form = UserCreationForm(request.POST)
+        user_form = UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
             useraddress = dict(city=user_form.cleaned_data['city'], streetaddress=user_form.cleaned_data['streetaddress'])
             userdata = user_form.save(commit=False)
@@ -226,7 +240,7 @@ def createhandymen(request):
             # msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.name)
             # status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             # logger.warn(status)
-            logger.warn("New handymen {0} has been created.".format(userdata.phone.as_international))
+            logger.warn("New handyman {0} has been created.".format(userdata.phone.as_international))
             try:
                 ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
                 ebuser.confirmed=True
@@ -237,12 +251,12 @@ def createhandymen(request):
 
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
-        pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        pagetitle = "Create a Handyman"
+        return render(request, 'admin/createhm.html', locals())
     else:
-        user_form = UserCreationForm()
+        user_form = UserCreationForm(ebuser=None)
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createhm.html', locals())
 
 @login_required
 @is_superuser
@@ -254,8 +268,19 @@ def createUser(request):
     if request.user.is_authenticated():
         user = request.user
 
+    if request.method == "GET":
+        if request.GET.has_key('ebuser'):
+            ebuser=request.GET['ebuser']
+            try:
+                EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
+            except Exception, e:
+                return redirect('home')
+            user_form = UserCreationForm(ebuser=ebuser)
+            pagetitle = "Create a User"
+            return render(request, 'admin/createuser.html', locals())
+
     if request.method == "POST":
-        user_form = UserCreationForm(request.POST)
+        user_form = UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
             useraddress = dict(city=user_form.cleaned_data['city'], streetaddress=user_form.cleaned_data['streetaddress'])
             userdata = user_form.save(commit=False)
@@ -269,6 +294,13 @@ def createUser(request):
             password = hashstring[:4]+hashstring[-2:]
             # password = user_form.cleaned_data['password1']
             userdata.set_password(password)
+            try:
+                ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
+                ebuser.confirmed=True
+                ebuser.save()
+            except Exception as e:
+                logger.warn("EB user {0} not found".format(userdata.phone))
+                return redirect('index')
             userdata.save()
             um = user_handler.UserManager()
             # Commenting the below for now, user would be notified of their password only after our internal portal is ready
@@ -278,22 +310,16 @@ def createUser(request):
             status = vas.sendMessage(msg, userdata)
             logger.warn("Message status \n {0}".format(status))
             logger.warn("New user {0} has been created.".format(userdata.phone.as_international))
-            try:
-                ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
-                ebuser.confirmed=True
-                ebuser.save()
-            except Exception as e:
-                pass
             return redirect('home')
 
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createuser.html', locals())
     else:
-        user_form = UserCreationForm()
+        user_form = UserCreationForm(ebuser=None)
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createuser.html', locals())
 
 @csrf_exempt
 def joinasuser(request):
@@ -324,7 +350,7 @@ def joinasuser(request):
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
             email_handler.send_newregistration_notif(phone.as_international)
-            gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
+            # gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
             return redirect('index')
         if user_form.errors:
             gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
@@ -525,3 +551,17 @@ def gaTracker(request):
     Returns the page with GA javascript, helps track conversion
     """
     return render(request, "registerresponse.html", locals())
+
+@login_required
+@is_superuser
+def viewEBUser(request):
+    """
+    Returns a list of Early Bird Users
+    """
+    user = request.user
+    um = user_handler.UserManager()
+    ebusers = um.getEBUserList()
+    return render(request, "admin/betauserlist.html", locals())
+
+
+

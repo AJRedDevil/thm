@@ -8,3 +8,8 @@ class FAQCreationForm(forms.ModelForm):
     class Meta:
         model = FAQ
         fields = ['question', 'answer']
+
+    def __init__(self, *args, **kwargs):
+        super(FAQCreationForm, self).__init__(*args, **kwargs)
+        self.fields['question'].widget.attrs={'class':'form-control'}
+        self.fields['answer'].widget.attrs={'class':'form-control'}

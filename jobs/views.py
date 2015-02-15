@@ -21,9 +21,9 @@ def createJob(request):
     user = request.user
 
     if request.method == "POST":
+        logger.debug(request.POST)
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
-            logger.debug("form is correct")
             job_form.save()
 
         if job_form.errors:
@@ -39,11 +39,40 @@ def viewJob(request, job_id):
     jm = JobManager()
     job = jm.getJobDetails(job_id)
     if request.method=="POST":
-        job_form = JobEditFormAdmin(request.POST)
+        logger.debug(request.POST)
+        job_form = JobEditFormAdmin(request.POST, instance=job)
         if job_form.is_valid():
+            # Job escalation moves one way and cannot be backward,
+            # that means if a job's status is set as accepted it cannot be
+            # reverted to New, further if it's set as Complete, it cannot be set
+            # as Accepted or New
             job = jm.getJobDetails(job_id)
-            job_form = JobEditFormAdmin(request.POST, instance=job)
+            if int(job_form.cleaned_data['status']) < int(job.status):
+                job_form = JobEditFormAdmin(instance=job)
+                return render(request, 'jobdetails.html',locals())
+            # save the job with the details provided
             job_form.save()
+            
+            job = jm.getJobDetails(job_id)
+            # if a job is set as accepted , update the accepted time
+            # only update the accepted time once
+            if job.status=='1' and job.accepted_date == None:
+                job.accepted_date= timezone.now()
+                logger.debug(job.accepted_date)
+                job.save()
+                # Notify the user that the job is complete here.
+                job = jm.getJobDetails(job_id)
+                job_form = JobEditFormAdmin(instance=job)
+                return render(request, 'jobdetails.html',locals())
+            # if a job is set as complete , update the completion time
+            # only update the completion time once
+            if job.status=='2' and job.completion_date == None:
+                job.completion_date= timezone.now()
+                job.save()
+                # Notify the user that the job is complete here.
+                job = jm.getJobDetails(job_id)
+                job_form = JobEditFormAdmin(instance=job)
+                return render(request, 'jobdetails.html',locals())
 
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)

@@ -5,7 +5,7 @@ from django.conf.urls import patterns, include, url
 
 from users import views as userviews
 from jobs import views as jobviews
-from .views import index, manage
+from .views import index
 import logging
 
 urlpatterns = patterns('',
@@ -13,7 +13,8 @@ urlpatterns = patterns('',
     url(r'^logout/$', userviews.logout, name='logout'),
     url(r'^home/$', userviews.home, name='home'),
     url(r'^createhandymen/$', userviews.createhandymen, name='createhandymen'),
-    url(r'^createuser/$', userviews.createUser, name='createUser'),
+    url(r'^createuser/', userviews.createUser, name='createUser'),
+    url(r'^newuser/$', userviews.viewEBUser, name='viewEBUser'),
     url(r'^createjob/$', jobviews.createJob, name='createJob'),
     url(r'^register/$', userviews.joinasuser, name='register'),
     url(r'^e48kucfb5pq/$', userviews.smsEndpoint, name='smsEndpoint'),
@@ -22,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
-    url(r'^manage/$', manage, name='manage'),
+    # url(r'^manage/$', manage, name='manage'),
     url(r'^$', index, name='index'),
 )
 
