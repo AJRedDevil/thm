@@ -164,6 +164,20 @@ class UserCreationForm(forms.ModelForm):
         model = UserProfile
         fields = ['name','phone']
 
+    def __init__(self, *args, **kwargs):
+        if kwargs.has_key('ebuser'):
+            ebuser = kwargs.pop('ebuser')
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        if ebuser!=None:
+            ebusers = EarlyBirdUser.objects.filter(confirmed=False, phone=ebuser).order_by('id')
+            self.fields['phone'].choices = [(h.pk, h.phone) for h in ebusers]
+        self.fields['name'].widget.attrs={'class':'form-control', 'placeholder':'Hari Sharma'}
+        self.fields['phone'].widget.attrs={'class':'form-control'}
+        self.fields['password1'].widget.attrs={'class':'form-control'}
+        self.fields['password2'].widget.attrs={'class':'form-control'}
+        self.fields['city'].widget.attrs={'class':'form-control'}
+        self.fields['streetaddress'].widget.attrs={'class':'form-control','placeholder':'Ganeshthan, Kamaladi'}
+
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")

@@ -1,7 +1,22 @@
-{% extends 'base.html' %}
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+{% block localhead %}
+{% endblock localhead %}
 {% block content %}
-{% for faq in allfaq %}
-<a href="{% url 'viewFaq' faq_id=faq.faqref %}">{{faq.id}}</a>
-{{faq.question}}
-{%endfor%}
+
+<div class="faq-section">
+
+    <ul class='faq-list'>
+
+        {%for faq in allfaq %}
+
+        <li>
+        <h2><a href="{% url 'viewFaq' faq_id=faq.faqref %}">{{faq.question}}</a></h2>
+        </li>
+
+        {% endfor %}
+    </ul>
+
+
+</div>
 {% endblock content %}
