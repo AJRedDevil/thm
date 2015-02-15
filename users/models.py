@@ -84,7 +84,7 @@ class UserProfile(AbstractBaseUser):
         default=getUniqueUUID)
     # displayname = models.CharField(_('displayname'), max_length=30, unique=True,
     #     error_messages={'unique' : 'The username provided is already taken !'})
-    name = models.CharField(_('first_name'), max_length=30)
+    name = models.CharField(_('name'), max_length=30)
     # last_name = models.CharField(_('last_name'), max_length=30)
     # email = models.EmailField(_('email'), max_length=100,
     #     error_messages={'unique' : 'It seems you already have an account registered with that email!'})

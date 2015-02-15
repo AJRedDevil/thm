@@ -59,4 +59,4 @@ def viewFaq(request, faq_id):
             logger.debug("Form has errors, %s ", faq_form.errors)
 
     faq_form = FAQCreationForm(instance=faq)
-    return render(request, 'viewfaq.html', locals())
+    return render(request, 'createfaq.html', locals())

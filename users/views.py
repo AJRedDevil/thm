@@ -195,7 +195,7 @@ def home(request):
     jb = JobManager()
     jobs = jb.getAllJobs(user)
     if user.is_staff or user.is_superuser:
-        return render(request,'adminjoblist.html', locals())
+        return render(request,'admin/joblist.html', locals())
 
     return render(request,'homepage.html', locals())
 
@@ -229,7 +229,7 @@ def createhandymen(request):
             # msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.name)
             # status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             # logger.warn(status)
-            logger.warn("New handymen {0} has been created.".format(userdata.phone.as_international))
+            logger.warn("New handyman {0} has been created.".format(userdata.phone.as_international))
             try:
                 ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
                 ebuser.confirmed=True
@@ -240,12 +240,12 @@ def createhandymen(request):
 
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
-        pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        pagetitle = "Create a Handyman"
+        return render(request, 'admin/createhm.html', locals())
     else:
         user_form = UserCreationForm()
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createhm.html', locals())
 
 @login_required
 @is_superuser
@@ -292,11 +292,11 @@ def createUser(request):
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createuser.html', locals())
     else:
         user_form = UserCreationForm()
         pagetitle = "Create a Handymen"
-        return render(request, 'createhandymen.html', locals())
+        return render(request, 'admin/createuser.html', locals())
 
 @csrf_exempt
 def joinasuser(request):

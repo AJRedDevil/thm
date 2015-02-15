@@ -29,6 +29,13 @@ class JobCreationFormAdmin(forms.ModelForm):
         fields = ['customer','jobtype','remarks','destination_home',
                     'remarks',]
 
+    def __init__(self, *args, **kwargs):
+        super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
+        self.fields['customer'].widget.attrs={'class' : 'form-control'}
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
+        self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
+        self.fields['destination_home'].attrs={'class' : 'form-control'}
+
 
 class JobEditFormAdmin(forms.ModelForm):
     """
