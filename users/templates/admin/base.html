@@ -41,7 +41,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#"><img src={% static "img/logo.png" %} class='hora-nav-brand'></a>
+      <a class="navbar-brand" href={% url 'home' %}><img src={% static "img/logo.png" %} class='hora-nav-brand'></a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -64,6 +64,7 @@
             <li><a href="{% url 'createJob' %}">Create Job</a></li>
             <li><a href="{% url 'createFaq' %}">Create FAQ</a></li>
             <li><a href="{% url 'viewAllFaq' %}">View All FAQ</a></li>
+            <li><a href="{% url 'viewEBUser' %}">New Users</a></li>
             </ul>
           </li>
         {% endif %}

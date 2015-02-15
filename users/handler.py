@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from .models import UserEvents, UserProfile, UserToken
+from .models import UserEvents, UserProfile, UserToken, EarlyBirdUser
 from libs.sparrow_handler import Sparrow
 
 from phonenumber_field.modelfields import PhoneNumber
@@ -75,6 +75,13 @@ class UserManager(object):
         status = vas.sendMessage(msg, user)
         logger.debug(msg)
         return status
+
+    def getEBUserList(self):
+        """
+        Returns EB User list
+        """
+        ebusers = EarlyBirdUser.objects.all()
+        return ebusers
 
 class UserEventManager(object):
     """docstring for UserEventManager"""

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from phonenumber_field.modelfields import PhoneNumber
 # Create your tests here.
-from users.models import UserProfile
+from users.models import UserProfile, EarlyBirdUser
 from users.forms import EBUserPhoneNumberForm
 
 import logging
@@ -195,3 +195,29 @@ class PhoneNumberTestCase(TestCase):
                 )
             user_form = EBUserPhoneNumberForm(data=post_data)
             self.assertEqual(user_form.is_valid(), True)
+
+class EBUserTestCase(TestCase):
+    """
+    Tests for Early Bird Users
+    """
+    def setUp(self):
+        super(EBUserTestCase, self).setUp()
+        self.client = Client()
+        self.phone = "+977 984-7023944"
+        self.to = "2200"
+        self.text = "Handyman"
+        self.timestamp = "2015-01-09 10%3A00%3A12"
+        self.get_data = dict(
+            # from=self.phone,
+            to=self.to,
+            text=self.text,
+            timestamp=self.timestamp,
+            )
+
+    def test1_register_from_homepage(self):
+        post_data=dict(
+            phone=self.phone
+            )
+        self.client.post(reverse('register'), data=post_data)
+        ebuser = EarlyBirdUser.objects.get(id=1)
+        self.assertEqual(ebuser.phone.as_international,self.phone)

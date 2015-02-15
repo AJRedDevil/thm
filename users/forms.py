@@ -165,7 +165,12 @@ class UserCreationForm(forms.ModelForm):
         fields = ['name','phone']
 
     def __init__(self, *args, **kwargs):
+        if kwargs.has_key('ebuser'):
+            ebuser = kwargs.pop('ebuser')
         super(UserCreationForm, self).__init__(*args, **kwargs)
+        if ebuser!=None:
+            ebusers = EarlyBirdUser.objects.filter(confirmed=False, phone=ebuser).order_by('id')
+            self.fields['phone'].choices = [(h.pk, h.phone) for h in ebusers]
         self.fields['name'].widget.attrs={'class':'form-control', 'placeholder':'Hari Sharma'}
         self.fields['phone'].widget.attrs={'class':'form-control'}
         self.fields['password1'].widget.attrs={'class':'form-control'}
