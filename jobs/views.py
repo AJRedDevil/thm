@@ -22,18 +22,18 @@ logger = logging.getLogger(__name__)
 def createJob(request):
     user = request.user
 
+    if request.method == "GET":
+        job_form = JobCreationFormAdmin()
+        return render(request, 'createjob.html',locals())
     if request.method == "POST":
         logger.debug(request.POST)
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
             job_form.save()
             return redirect('home')
-
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)
-
-    job_form = JobCreationFormAdmin()
-    return render(request, 'createjob.html', locals())
+            return render(request, 'createjob.html', locals())
 
 @login_required
 @is_superuser

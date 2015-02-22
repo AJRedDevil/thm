@@ -1,6 +1,6 @@
 
 
-from django import forms
+from django.contrib.gis import forms
 from django.utils.translation import ugettext_lazy as _
 from .models import Jobs
 from users.models import UserProfile
@@ -27,7 +27,7 @@ class JobCreationFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks',]
+                    'location',]
 
     def __init__(self, *args, **kwargs):
         super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
@@ -35,7 +35,7 @@ class JobCreationFormAdmin(forms.ModelForm):
         self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
         self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
         self.fields['destination_home'].attrs={'class' : 'form-control'}
-
+        self.fields['location'].widget = forms.OpenLayersWidget(attrs={'map_width': 800, 'map_height': 500})
 
 class JobEditFormAdmin(forms.ModelForm):
     """
@@ -52,7 +52,7 @@ class JobEditFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman',]
+                    'remarks','fee','status','handyman','location',]
 
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +64,8 @@ class JobEditFormAdmin(forms.ModelForm):
         self.fields['fee'].widget.attrs.update({'class' : 'form-control col-sm-6 col-xs-6'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
-    
+        self.fields['location'].widget = forms.OpenLayersWidget(attrs={'map_width': 800, 'map_height': 500})
+
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')
         if fee.amount < 0:
