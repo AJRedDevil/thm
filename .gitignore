@@ -28,6 +28,7 @@ __pycache__/
 local_setting.py
 Procfile.dev
 #staticfiles
+.idea
 
 
 # C extensions
