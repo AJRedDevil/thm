@@ -10,6 +10,8 @@ from django.utils import timezone
 from thm.decorators import is_superuser
 from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
 from .handler import JobManager
+from libs.sparrow_handler import Sparrow
+from libs import out_sms as messages
 import logging
 # Init Logger
 logger = logging.getLogger(__name__)
@@ -25,6 +27,7 @@ def createJob(request):
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
             job_form.save()
+            return redirect('home')
 
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)
@@ -58,8 +61,12 @@ def viewJob(request, job_id):
             # only update the accepted time once
             if job.status=='1' and job.accepted_date == None:
                 job.accepted_date= timezone.now()
-                logger.debug(job.accepted_date)
                 job.save()
+                vas = Sparrow()
+                msg = messages.JOB_ACCEPTED_MSG.format(job.handyman.all()[0].name,job.handyman.all()[0].phone.as_international)
+                logger.warn(msg)
+                status = vas.sendMessage(msg, job.customer)
+                logger.warn("Message status \n {0}".format(status))
                 # Notify the user that the job is complete here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
@@ -69,6 +76,11 @@ def viewJob(request, job_id):
             if job.status=='2' and job.completion_date == None:
                 job.completion_date= timezone.now()
                 job.save()
+                vas = Sparrow()
+                msg = messages.JOB_COMPLETE_MSG.format(job.id,job.get_jobtype_display())
+                logger.warn(msg)
+                status = vas.sendMessage(msg, job.customer)
+                logger.warn("Message status \n {0}".format(status))
                 # Notify the user that the job is complete here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)

@@ -23,7 +23,11 @@ from rest_framework.authtoken.models import Token
 # Init Logger
 logger = logging.getLogger(__name__)
 
-CITY_SELECTION = (('Kathmandu','Kathmandu'),)
+CITY_SELECTION = (
+    ('Kathmandu','Kathmandu'),
+    ('Lalitpur','Lalitpur'),
+    ('Bhaktapur','Bhaktapur'),
+    )
 
 # Create your models here.
 class UserManager(BaseUserManager):

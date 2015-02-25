@@ -187,7 +187,7 @@ SWAGGER_SETTINGS = {
         'license': 'Copyright The Handyman App 2014',
         'licenseUrl': '',
         'termsOfServiceUrl': '',
-        'title': 'The Handyman App',
+        'title': 'The Homerepair App',
     },
 }
 
