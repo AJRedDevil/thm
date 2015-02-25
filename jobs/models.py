@@ -27,7 +27,7 @@ class Jobs(models.Model):
     jobref = models.CharField(_('jobref'), max_length=100, unique=True, default=getUniqueUUID)
     customer = models.ForeignKey(UserProfile, limit_choices_to={'user_type':'2'}, related_name='jobs')
     fee = MoneyField(_('fee'), decimal_places=2,
-        max_digits=8, blank=True, null=True, default_currency='NPR')
+        max_digits=8, blank=True, null=True, default_currency='NPR', default=0.00)
     status = models.CharField(_('status'),
                     max_length=1,
                     choices=STATUS_SELECTION,

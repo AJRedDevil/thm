@@ -25,6 +25,7 @@ from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, EB
 from libs.sparrow_handler import Sparrow
 import jobs.handler as jobs_handler
 from libs import email_handler
+from libs import out_sms as messages
 from ipware.ip import get_real_ip, get_ip
 import simplejson as json
 import logging
@@ -237,7 +238,7 @@ def createhandymen(request):
             userdata.set_password(password)
             userdata.save()
             # vas = Sparrow()
-            # msg = os.environ['HANDYMAN_WELCOME_MSG'].format(userdata.name)
+            # msg = messages.HANDYMAN_WELCOME_MSG.format(userdata.name)
             # status = vas.sendMessage(msg, UserProfile.objects.get(phone=userdata.phone))
             # logger.warn(status)
             logger.warn("New handyman {0} has been created.".format(userdata.phone.as_international))
@@ -305,7 +306,7 @@ def createUser(request):
             um = user_handler.UserManager()
             # Commenting the below for now, user would be notified of their password only after our internal portal is ready
             # um.sendPasswordText(userdata.id, password)
-            msg = os.environ['USER_WELCOME_MSG']
+            msg = messages.USER_WELCOME_MSG
             vas = Sparrow()
             status = vas.sendMessage(msg, userdata)
             logger.warn("Message status \n {0}".format(status))
@@ -346,7 +347,7 @@ def joinasuser(request):
             userdata.save()
             logger.warn("{0} just registered their number as a user".format(phone))
             vas = Sparrow()
-            msg = os.environ['NEW_USER_REG_MSG']
+            msg = messages.NEW_USER_REG_MSG
             status = vas.sendDirectMessage(msg, phone)
             logger.warn(status)
             email_handler.send_newregistration_notif(phone.as_international)
@@ -378,7 +379,7 @@ def smsEndpoint(request):
                     userdata.save()
                     logger.warn("{0} just registered their number as a user. \
                         [valid entry]".format(phone))
-                    msg = os.environ['NEW_USER_REG_MSG']
+                    msg = messages.NEW_USER_REG_MSG
                     # send email to admin
                     email_handler.send_newregistration_notif(phone.as_international)
                     gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
@@ -391,7 +392,7 @@ def smsEndpoint(request):
                     except UserProfile.DoesNotExist:
                         try:
                             ebuserdetails = EarlyBirdUser.objects.get(phone=phone)
-                            msg = os.environ['DUP_USER_REG_MSG']
+                            msg = messages.DUP_USER_REG_MSG
                             logger.warn("{0} duplicate user creation request. \
                             [account being processed]".format(phone))
                             gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
@@ -406,7 +407,7 @@ def smsEndpoint(request):
                     # the call center calls
                     jm = jobs_handler.JobManager()
                     jm.createJob(userdetails)
-                    msg = os.environ['JOB_REQ_MSG']
+                    msg = messages.JOB_REQ_MSG
                     # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
@@ -425,7 +426,7 @@ def smsEndpoint(request):
                     userdata.save()
                     logger.warn("{0} just registered their number as a user. \
                         [valid entry]".format(phone))
-                    msg = os.environ['NEW_USER_REG_MSG']
+                    msg = messages.NEW_USER_REG_MSG
                     # send email to admin
                     email_handler.send_newregistration_notif(phone.as_international)
                     gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
@@ -438,7 +439,7 @@ def smsEndpoint(request):
                     except UserProfile.DoesNotExist:
                         try:
                             ebuserdetails = EarlyBirdUser.objects.get(phone=phone)
-                            msg = os.environ['DUP_USER_REG_MSG']
+                            msg = messages.DUP_USER_REG_MSG
                             logger.warn("{0} duplicate user creation request. \
                             [account being processed]".format(phone))
                             gatrackreq = requests.get(request.build_absolute_uri(reverse('gaTracker')))
@@ -452,7 +453,7 @@ def smsEndpoint(request):
                     # the call center calls
                     jm = jobs_handler.JobManager()
                     jm.createJob(userdetails)
-                    msg = os.environ['JOB_REQ_MSG']
+                    msg = messages.JOB_REQ_MSG
                     # logger.debug("Login Form has errors on GET for /register, %s ", user_form.errors)
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
