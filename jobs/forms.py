@@ -46,7 +46,8 @@ class JobEditFormAdmin(forms.ModelForm):
         'complete_job': _("Job once complete cannot be reverted"),
         }
 
-    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1), required=False)
+    handyman = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.filter(user_type=1, is_active=True),
+                                              required=False)
 
     class Meta:
         model = Jobs
