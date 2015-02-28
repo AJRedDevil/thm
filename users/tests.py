@@ -220,4 +220,4 @@ class EBUserTestCase(TestCase):
             )
         self.client.post(reverse('register'), data=post_data)
         ebuser = EarlyBirdUser.objects.get(id=1)
-        self.assertEqual(ebuser.phone.as_international,self.phone)
+        self.assertEqual(ebuser.phone.as_international, self.phone)

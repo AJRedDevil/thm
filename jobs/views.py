@@ -55,7 +55,6 @@ def viewJob(request, job_id):
                 return render(request, 'jobdetails.html',locals())
             # save the job with the details provided
             job_form.save()
-            
             job = jm.getJobDetails(job_id)
             # if a job is set as accepted , update the accepted time
             # only update the accepted time once
@@ -63,11 +62,15 @@ def viewJob(request, job_id):
                 job.accepted_date= timezone.now()
                 job.save()
                 vas = Sparrow()
-                msg = messages.JOB_ACCEPTED_MSG.format(job.handyman.all()[0].name,job.handyman.all()[0].phone.as_international)
-                logger.warn(msg)
-                status = vas.sendMessage(msg, job.customer)
-                logger.warn("Message status \n {0}".format(status))
-                # Notify the user that the job is complete here.
+                if len(job.handyman.all()) > 0:
+                    msg = messages.JOB_ACCEPTED_MSG.format(
+                        job.handyman.all()[0].name,
+                        job.handyman.all()[0].phone.as_international
+                    )
+                    logger.warn(msg)
+                    status = vas.sendMessage(msg, job.customer)
+                    logger.warn("Message status \n {0}".format(status))
+                # Notify the user that the job is accepted here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
                 return render(request, 'jobdetails.html',locals())
