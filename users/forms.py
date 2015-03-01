@@ -30,7 +30,8 @@ class VerifyPhoneForm(forms.Form):
         label=_("verf_code"),
         widget=forms.TextInput, min_length=6,
         error_messages={
-        'required' : 'Please provide with the verification code sent on your mobile !',
+            'required': _('Please provide with the verification \
+                code sent on your mobile !'),
         }
     )
 
@@ -276,6 +277,7 @@ class UserSignupForm(forms.ModelForm):
         'password_mismatch': _("The two password fields didn't match. \
             Please re-verify your passwords !"),
         'country_notsupported': _("Your country is not supported right now!"),
+        'mobile_phone': _("Please enter a valid mobile number!"),
     }
 
     class Meta:
@@ -406,6 +408,13 @@ class HMUserChangeForm(UserChangeForm):
         for fieldname in ['username']:
             del self.fields['password']
             del self.fields['username']
+        self.fields['name'].widget.attrs = {'class': 'form-control'}
+        self.fields['phone'].widget.attrs = {'class': 'form-control'}
+        self.fields['city'].widget.attrs = {'class': 'form-control'}
+        self.fields['streetaddress'].widget.attrs = {
+            'class': 'form-control',
+            'placeholder': 'Ganeshthan, Kamaladi'
+        }
 
     city = forms.ChoiceField(
         choices=CITY_SELECTION,
@@ -418,6 +427,11 @@ class HMUserChangeForm(UserChangeForm):
     streetaddress = forms.CharField(
         error_messages={'required': 'Street Address is required !', }
     )
+
+    error_messages = {
+        'country_notsupported': _("Your country is not supported right now!"),
+        'mobile_phone': _("Please enter a valid mobile number!"),
+    }
 
     class Meta:
         model = UserProfile
@@ -434,6 +448,28 @@ class HMUserChangeForm(UserChangeForm):
                 'required': 'Please provide with a valid phone address!',
             },
         }
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        return phone
 
     def save(self, commit=True):
         user = super(HMUserChangeForm, self).save(commit=False)

@@ -20,7 +20,7 @@ from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser
 from .models import UserProfile, EarlyBirdUser, UserToken
 from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, \
-    EBUserPhoneNumberForm, VerifyPhoneForm
+    EBUserPhoneNumberForm, VerifyPhoneForm, HMUserChangeForm
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -222,7 +222,7 @@ def home(request):
     if user.is_staff or user.is_superuser:
         return render(request, 'admin/joblist.html', locals())
 
-    return render(request, 'homepage.html', locals())
+    return render(request, 'admin/joblist.html', locals())
 
 
 @login_required
@@ -613,3 +613,45 @@ def viewEBUser(request):
     um = user_handler.UserManager()
     ebusers = um.getEBUserList()
     return render(request, "admin/betauserlist.html", locals())
+
+
+@login_required
+def userSettings(request):
+    """
+    Change user profile settings
+    """
+    user = request.user
+    userdata = dict(
+        name=user.name,
+        phone=user.phone,
+        city=user.address['city'],
+        streetaddress=user.address['streetaddress']
+    )
+
+    if request.method == "POST":
+        user = request.user
+        um = user_handler.UserManager()
+        userdetails = um.getUserDetails(user.id)
+        user_form = HMUserChangeForm(request.POST, instance=userdetails)
+        oldaddress = userdetails.address
+        if user_form.is_valid():
+            userdata = user_form.save(commit=False)
+            address = {}
+            address['city'] = user_form.cleaned_data['city']
+            address['streetaddress'] = user_form.cleaned_data['streetaddress']
+            userdata.address = address
+            userdata.save()
+            userdetails = um.getUserDetails(user.id)
+            newaddress = userdetails.address
+            if newaddress != oldaddress:
+                userdetails.address_coordinates = userdetails.get_lat_long(address)
+                userdetails.save()
+            logger.warn(userdetails.address_coordinates)
+            return redirect('userSettings')
+
+        if user_form.errors:
+            logger.debug("UserSettings form has erorrs %s", user_form.errors)
+            return render(request, "usersettings.html", locals())
+
+    user_form = HMUserChangeForm(initial=userdata)
+    return render(request, "usersettings.html", locals())

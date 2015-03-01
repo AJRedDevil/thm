@@ -14,7 +14,9 @@
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
+                {% if user.is_superuser or user.is_staff %}
                     <th>Action</th>
+                {% endif %}
                 </tr>
             </thead>
      
@@ -26,7 +28,9 @@
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
+                {% if user.is_superuser or user.is_staff %}
                     <th>Action</th>
+                {% endif %}
                 </tr>
             </tfoot>
      
@@ -40,9 +44,11 @@
                     <td>{{job.get_jobtype_display}}</td>
                     <td>{{job.get_status_display}}</td>
                     <td>{{job.remarks}}</td>
+                {% if user.is_superuser or user.is_staff %}
                     <td>
                         <a href="{% url 'viewJob' job_id=job.jobref %}"><button class='table-job-check'>Details</button></a>
                     </td>
+                {% endif %}
                 </tr>                
             {% endfor %}                
             </tbody>

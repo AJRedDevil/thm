@@ -33,7 +33,7 @@ def createJob(request):
             logger.debug("Form has errors, %s ", job_form.errors)
 
     job_form = JobCreationFormAdmin()
-    return render(request, 'createjob.html',locals())
+    return render(request, 'createjob.html', locals())
 
 @login_required
 @is_superuser
