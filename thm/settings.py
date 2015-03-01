@@ -125,7 +125,18 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
     },
+    'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+            }
+        },
     'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True
+        },
         'null': {
             'level': 'WARN',
             'class': 'logging.NullHandler',
@@ -137,21 +148,30 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
         'users': {
-            'handlers':['console'],
-            'level':'WARN',
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
         },
         'jobs': {
-            'handlers':['console'],
-            'level':'WARN',
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
         },
         'libs': {
-            'handlers':['console'],
-            'level':'WARN',
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
         },
         'faq': {
-            'handlers':['console'],
-            'level':'WARN',
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
         },
     }
 }
@@ -161,6 +181,15 @@ LOGGING = {
 MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
+# ERROR REPORTING
+DEFAULT_FROM_EMAIL = 'server@thehomerepairapp.com'
+SERVER_EMAIL='server@thehomerepairapp.com'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+ADMINS = (
+    ('Gaurav Ghimire', ADMIN_EMAIL),
+)
+MANAGERS = ADMINS
 
 #GOOGlE RELATED CONFIGURATIONS
 GOOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
