@@ -8,7 +8,8 @@ from jobs import views as jobviews
 from .views import index
 import logging
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^signin/$', userviews.signin, name='signin'),
     url(r'^logout/$', userviews.logout, name='logout'),
     url(r'^home/$', userviews.home, name='home'),
@@ -21,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^4DEa6cvdaP0/$', userviews.gaTracker, name='gaTracker'),
     url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
+    url(r'^settings/$', userviews.userSettings, name='userSettings'),
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     # url(r'^manage/$', manage, name='manage'),
@@ -28,11 +30,12 @@ urlpatterns = patterns('',
 )
 
 if settings.DEBUG:
-    urlpatterns += patterns('',
-    url(r'^api/v1/', include('api.urls') ),
-    url(r'^signup/$', userviews.signup, name='signup'),
-    # url(r'^profile/$', userviews.myProfile, name='myProfile'),
-    ) 
+    urlpatterns += patterns(
+        '',
+        url(r'^api/v1/', include('api.urls')),
+        url(r'^signup/$', userviews.signup, name='signup'),
+        url(r'^profile/$', userviews.myProfile, name='myProfile'),
+    )
 
 urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),

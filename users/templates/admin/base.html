@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<title>The Homerepair App | Admin</title>
-		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href={% static "css/bootstrap.css" %}>
-		<link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.css">
-		<link rel="stylesheet" href="http://cdn.datatables.net/responsive/1.0.3/css/dataTables.responsive.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/responsive/1.0.3/css/dataTables.responsive.css">
 		<link rel="stylesheet" href={% static "css/hora-admin.css" %}>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -72,6 +72,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{user.name}}<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="{% url 'logout' %}">Log Out</a></li>
+            <li><a href="{% url 'userSettings' %}">Settings</a></li>
           </ul>
         </li>
       </ul>

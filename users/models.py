@@ -110,6 +110,7 @@ class UserProfile(AbstractBaseUser):
     is_superuser = models.BooleanField(_('is_superuser'), default=False)
     is_active = models.BooleanField(default=True)
     address = jsonfield.JSONField(_('address'), default='{}', max_length=9999)
+    address_coordinates = jsonfield.JSONField(_('address_coordinates'), default='{}', max_length=9999)
     current_address = jsonfield.JSONField(_('current_address'), default='{}', max_length=9999)
     extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
 
@@ -199,10 +200,10 @@ class UserProfile(AbstractBaseUser):
     def save(self, *args, **kwargs):
         if type(self.address) != dict:
             self.address = json.loads(self.address)
-        if self.current_address == '{}':
-            self.current_address = self.get_lat_long(self.address)
-        if type(self.current_address) != dict:
-            self.current_address = json.loads(self.current_address)
+        if self.address_coordinates == '{}':
+            self.address_coordinates = self.get_lat_long(self.address)
+        if type(self.address_coordinates) != dict:
+            self.address_coordinates = json.loads(self.address_coordinates)
 
         super(UserProfile, self).save(*args, **kwargs)
 

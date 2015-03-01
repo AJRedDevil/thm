@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from phonenumber_field.modelfields import PhoneNumber
 # Create your tests here.
 from users.models import UserProfile, EarlyBirdUser
+import users.handler as user_handler
 from users.forms import EBUserPhoneNumberForm
 
 import logging
@@ -81,16 +82,68 @@ class UserTestCase(TestCase):
         self.assertNotEqual(response.status_code, 302)
 
     def test7_MyProfilePage(self):
-        post_data=dict(
+        post_data = dict(
             phone=self.phone,
             password=self.password1
-            )
+        )
         self.client.post('/signup/', data=self.post_data)
         response = self.client.post(reverse('signin'), data=post_data)
         self.assertEqual(response.status_code, 302)
         self.assertNotEqual(response.url, 'http://testserver/home/')
         response = self.client.get('/profile/')
         self.assertNotEqual(response.status_code, 200)
+
+    def test8_MySettingsPage(self):
+        new_city = 'Bhaktapur'
+        new_streetaddress = 'Gatthaghar'
+        post_data = dict(
+            phone=self.phone,
+            password=self.password1
+        )
+        self.client.post('/signup/', data=self.post_data)
+        response = self.client.post(reverse('signin'), data=post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, 'http://testserver/home/')
+        response = self.client.get(reverse('userSettings'))
+        self.assertEqual(response.status_code, 200)
+        post_data = dict(
+            phone=self.phone,
+            name=self.name,
+            city=new_city,
+            streetaddress=new_streetaddress
+        )
+        response = self.client.post(reverse('userSettings'), data=post_data)
+        self.assertEqual(response.status_code, 302)
+        um = user_handler.UserManager()
+        userdetails = um.getUserDetails('1')
+        self.assertEqual(userdetails.address['city'], new_city)
+        # Update with invalid phone
+        new_phone = "0944-7023944"
+        post_data = dict(
+            phone=new_phone,
+            name=self.name,
+            city=new_city,
+            streetaddress=new_streetaddress
+        )
+        response = self.client.post(reverse('userSettings'), data=post_data)
+        self.assertNotEqual(response.status_code, 302)
+        um = user_handler.UserManager()
+        userdetails = um.getUserDetails('1')
+        self.assertNotEqual(userdetails.phone.as_national, new_phone)
+        # Update with valid phone
+        new_phone = "0984-7023945"
+        post_data = dict(
+            phone=new_phone,
+            name=self.name,
+            city=new_city,
+            streetaddress=new_streetaddress
+        )
+        response = self.client.post(reverse('userSettings'), data=post_data)
+        self.assertEqual(response.status_code, 302)
+        um = user_handler.UserManager()
+        userdetails = um.getUserDetails('1')
+        self.assertEqual(userdetails.phone.as_national, new_phone)
+
 
 class PhoneNumberTestCase(TestCase):
     """
@@ -220,4 +273,5 @@ class EBUserTestCase(TestCase):
             )
         self.client.post(reverse('register'), data=post_data)
         ebuser = EarlyBirdUser.objects.get(id=1)
-        self.assertEqual(ebuser.phone.as_international,self.phone)
+        self.assertEqual(ebuser.phone.as_international, self.phone)
+

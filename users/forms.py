@@ -24,12 +24,16 @@ class VerifyPhoneForm(forms.Form):
     """
     error_messages = {
         'wrong_code': _("Provided code is not correct!"),
-        }
+    }
 
-    verf_code = forms.CharField(label=_("verf_code"),
+    verf_code = forms.CharField(
+        label=_("verf_code"),
         widget=forms.TextInput, min_length=6,
-        error_messages={'required' : 'Please provide with the verification code sent on your mobile !',
-                        })
+        error_messages={
+            'required': _('Please provide with the verification \
+                code sent on your mobile !'),
+        }
+    )
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -57,7 +61,7 @@ class EBUserPhoneNumberForm(forms.ModelForm):
         'country_notsupported': _("Your country is not supported as of now!"),
         'duplicate_phone': _("You have already registered!"),
         'mobile_phone': _("Please enter a valid mobile number!"),
-        }
+    }
 
     class Meta:
         model = EarlyBirdUser
@@ -76,14 +80,13 @@ class EBUserPhoneNumberForm(forms.ModelForm):
         # GSM system code for nepal is 98 as per national number plan from NTA
         # That means all the mobile number in nepal must start from 98
         GSM_Code = int(str(phone.national_number)[:2])
-        valid_GSM_Code = (96,97,98)
+        valid_GSM_Code = (96, 97, 98)
 
         if GSM_Code not in valid_GSM_Code:
             raise forms.ValidationError(
                 self.error_messages['mobile_phone'],
                 code='mobile_phone',
             )
-
 
         if phone in signedupusers:
             raise forms.ValidationError(
@@ -127,56 +130,72 @@ class EBUserPhoneNumberForm(forms.ModelForm):
 #             data.save()
 #         return data
 
+
 class UserCreationForm(forms.ModelForm):
     """
-    A form that creates a user, from the given data, this runs when the user uses the signup form
+    A form that creates a user, from the given data,
+    this runs when the user uses the signup form
     """
-    phone = forms.ModelChoiceField(EarlyBirdUser.objects.filter(confirmed=False).order_by('id'))
-    password1 = forms.CharField(label=_("Password"),
+    phone = forms.ModelChoiceField(
+        EarlyBirdUser.objects.filter(confirmed=False).order_by('id'))
+    password1 = forms.CharField(
+        label=_("Password"),
         widget=forms.PasswordInput, min_length=6,
-        error_messages={'required' : 'Please provide with a password !',
-                        'min_length' : 'The password has to be more than 6 characters !',
-                        })
-    password2 = forms.CharField(label=_("Password confirmation"),
+        error_messages={
+            'required': 'Please provide with a password !',
+            'min_length': 'The password has to be more than 6 characters !',
+        })
+    password2 = forms.CharField(
+        label=_("Password confirmation"),
         widget=forms.PasswordInput, min_length=6,
         help_text=_("Enter the same password as above, for verification."),
-        error_messages={'required' : 'Please provide with a password confirmation !',
-                        'min_length' : 'The password has to be more than 6 characters !',
-                        })
+        error_messages={
+            'required': 'Please provide with a password confirmation !',
+            'min_length': 'The password has to be more than 6 characters !',
+        })
     city = forms.ChoiceField(
         choices=CITY_SELECTION,
         error_messages={
-                        'required' : 'Name of the city is required !',
-                        'invalid_choice' : 'Please select one of the options available !'
-                        }
-        )
+            'required': 'Name of the city is required !',
+            'invalid_choice': 'Please select one of the options available !'
+        })
 
     streetaddress = forms.CharField(
-        error_messages={'required' : 'Street/Apt. Address where the shipment is to be picked up from is required !',}
-        )
+        error_messages={
+            'required': 'Street Address is required !',
+        })
 
     error_messages = {
-        'password_mismatch': _("The two password fields didn't match. Please re-verify your passwords !"),
+        'password_mismatch': _("The two password fields didn't match. \
+            Please re-verify your passwords !"),
         'country_notsupported': _("Your country is not supported right now!"),
-        }
+    }
 
     class Meta:
         model = UserProfile
-        fields = ['name','phone']
+        fields = ['name', 'phone']
 
     def __init__(self, *args, **kwargs):
-        if kwargs.has_key('ebuser'):
+        if 'ebuser' in kwargs:
             ebuser = kwargs.pop('ebuser')
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        if ebuser!=None:
-            ebusers = EarlyBirdUser.objects.filter(confirmed=False, phone=ebuser).order_by('id')
+        if ebuser is not None:
+            ebusers = EarlyBirdUser.objects.filter(
+                confirmed=False,
+                phone=ebuser).order_by('id')
             self.fields['phone'].choices = [(h.pk, h.phone) for h in ebusers]
-        self.fields['name'].widget.attrs={'class':'form-control', 'placeholder':'Hari Sharma'}
-        self.fields['phone'].widget.attrs={'class':'form-control'}
-        self.fields['password1'].widget.attrs={'class':'form-control'}
-        self.fields['password2'].widget.attrs={'class':'form-control'}
-        self.fields['city'].widget.attrs={'class':'form-control'}
-        self.fields['streetaddress'].widget.attrs={'class':'form-control','placeholder':'Ganeshthan, Kamaladi'}
+        self.fields['name'].widget.attrs = {
+            'class': 'form-control',
+            'placeholder': 'Hari Sharma'
+        }
+        self.fields['phone'].widget.attrs = {'class': 'form-control'}
+        self.fields['password1'].widget.attrs = {'class': 'form-control'}
+        self.fields['password2'].widget.attrs = {'class': 'form-control'}
+        self.fields['city'].widget.attrs = {'class': 'form-control'}
+        self.fields['streetaddress'].widget.attrs = {
+            'class': 'form-control',
+            'placeholder': 'Ganeshthan, Kamaladi'
+        }
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -225,37 +244,45 @@ class UserSignupForm(forms.ModelForm):
     A form for user signups
     """
     phone = PhoneNumberField()
-    password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput, min_length=6,
-        error_messages={'required' : 'Please provide with a password !',
-                        'min_length' : 'The password has to be more than 6 characters !',
-                        })
-    password2 = forms.CharField(label=_("Password confirmation"),
+    password1 = forms.CharField(
+        label=_("Password"),
+        widget=forms.PasswordInput,
+        min_length=6,
+        error_messages={
+            'required': 'Please provide with a password !',
+            'min_length': 'The password has to be more than 6 characters !',
+        })
+    password2 = forms.CharField(
+        label=_("Password confirmation"),
         widget=forms.PasswordInput, min_length=6,
         help_text=_("Enter the same password as above, for verification."),
-        error_messages={'required' : 'Please provide with a password confirmation !',
-                        'min_length' : 'The password has to be more than 6 characters !',
-                        })
+        error_messages={
+            'required': 'Please provide with a password confirmation !',
+            'min_length': 'The password has to be more than 6 characters !',
+        })
     city = forms.ChoiceField(
         choices=CITY_SELECTION,
         error_messages={
-                        'required' : 'Name of the city is required !',
-                        'invalid_choice' : 'Please select one of the options available !'
-                        }
-        )
+            'required': 'Name of the city is required !',
+            'invalid_choice': 'Please select one of the options available !'
+        })
 
     streetaddress = forms.CharField(
-        error_messages={'required' : 'Street/Apt. Address where the shipment is to be picked up from is required !',}
-        )
+        error_messages={
+            'required': _('Street/Apt. Address where the shipment is to be \
+            picked up from is required !'),
+        })
 
     error_messages = {
-        'password_mismatch': _("The two password fields didn't match. Please re-verify your passwords !"),
+        'password_mismatch': _("The two password fields didn't match. \
+            Please re-verify your passwords !"),
         'country_notsupported': _("Your country is not supported right now!"),
-        }
+        'mobile_phone': _("Please enter a valid mobile number!"),
+    }
 
     class Meta:
         model = UserProfile
-        fields = ['name','phone']
+        fields = ['name', 'phone']
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -279,7 +306,7 @@ class UserSignupForm(forms.ModelForm):
         # GSM system code for nepal is 98 as per national number plan from NTA
         # That means all the mobile number in nepal must start from 98
         GSM_Code = int(str(phone.national_number)[:2])
-        valid_GSM_Code = (96,97,98)
+        valid_GSM_Code = (96, 97, 98)
 
         if GSM_Code not in valid_GSM_Code:
             raise forms.ValidationError(
@@ -310,6 +337,7 @@ class UserSignupForm(forms.ModelForm):
             user.save()
         return user
 
+
 class LocalAuthenticationForm(forms.Form):
     """
     Base class for authenticating users. Extend this to get a form that accepts
@@ -321,7 +349,8 @@ class LocalAuthenticationForm(forms.Form):
     error_messages = {
         'invalid_login': _("Please enter a correct phone number and password. "
                            "Note that password may be case-sensitive."),
-        'inactive': _("This account is inactive, please contact us at info@thehomerepairapp.com ! "),
+        'inactive': _("This account is inactive, \
+            please contact us at info@thehomerepairapp.com ! "),
     }
 
     def __init__(self, request=None, *args, **kwargs):
@@ -335,7 +364,8 @@ class LocalAuthenticationForm(forms.Form):
 
         # Set the label for the "phone" field.
         UserModel = get_user_model()
-        self.username_field = UserModel._meta.get_field(UserModel.USERNAME_FIELD)
+        self.username_field = UserModel._meta.get_field(
+            UserModel.USERNAME_FIELD)
         # if self.fields['username'].label is None:
         #     self.fields['username'].label = capfirst(self.username_field.verbose_name)
 
@@ -367,75 +397,83 @@ class LocalAuthenticationForm(forms.Form):
     def get_user(self):
         return self.user_cache
 
-# class HMUserChangeForm(UserChangeForm):
-#     """
-#     Form to edit user details, this only changes the general details of the user and not the password
-#     """
-#     def __init__(self, *args, **kwargs):
-#         super(forms.ModelForm, self).__init__(*args, **kwargs)
-#         for fieldname in ['username']:
-#             del self.fields['password']
-#             del self.fields['username']
 
-#     streetaddress = forms.CharField(
-#         error_messages={'required' : 'Street/Apt. Address where the shipment is to be picked up from is required !',}
-#         )
-#     streetaddress_2 = forms.CharField(required=False)
-#     postalcode = forms.CharField(
-#         error_messages={'required' : 'Your postcode is required !',}
-#         )
-#     email = forms.CharField(required=False)
-#     avatar = forms.FileField(required=False)
+class HMUserChangeForm(UserChangeForm):
+    """
+    Form to edit user details,
+    this only changes the general details of the user and not the password
+    """
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+        for fieldname in ['username']:
+            del self.fields['password']
+            del self.fields['username']
+        self.fields['name'].widget.attrs = {'class': 'form-control'}
+        self.fields['phone'].widget.attrs = {'class': 'form-control'}
+        self.fields['city'].widget.attrs = {'class': 'form-control'}
+        self.fields['streetaddress'].widget.attrs = {
+            'class': 'form-control',
+            'placeholder': 'Ganeshthan, Kamaladi'
+        }
 
+    city = forms.ChoiceField(
+        choices=CITY_SELECTION,
+        error_messages={
+            'required': 'Name of the city is required !',
+            'invalid_choice': 'Please select one of the options available !'
+        }
+    )
 
-#     class Meta:
-#         model = UserProfile
-#         fields = ['first_name','last_name','displayname','phone']
-#         widgets = {
-#             'first_name' : forms.TextInput(attrs={'placeholder':'First Name'}),
-#             'last_name' : forms.TextInput(attrs={'placeholder':'Last Name'}),
-#             'displayname' : forms.TextInput(attrs={'placeholder':'Your Username'}),
-#             'phone' : forms.TextInput(attrs={'placeholder':'you@example.com'}),
-#         }
-#         error_messages = {
-#             'first_name' : {
-#                 'required' : 'Your first name is required!',
-#             },
-#             'last_name' : {
-#                 'required' : 'Your last name is required!',
-#             },
-#             'phone' : {
-#                 'required' : 'Please provide with a valid phone address!',
-#             },
-#             'displayname' : {
-#                 'required' : 'You need a username, don\'t you ?',
-#             },
-#         }
+    streetaddress = forms.CharField(
+        error_messages={'required': 'Street Address is required !', }
+    )
 
-#     def clean_avatar(self):
-#         avatar = self.cleaned_data['avatar']
-#         if avatar != None:
-#             if settings.AVATAR_ALLOWED_FILE_EXTS:
-#                 root, ext = os.path.splitext(avatar.name.lower())
-#                 if ext not in settings.AVATAR_ALLOWED_FILE_EXTS:
-#                     valid_exts = ", ".join(settings.AVATAR_ALLOWED_FILE_EXTS)
-#                     error = _("%(ext)s is an invalid file extension. "
-#                               "Authorized extensions are : %(valid_exts_list)s")
-#                     raise forms.ValidationError(error %
-#                                                 {'ext': ext,
-#                                                  'valid_exts_list': valid_exts})
-#             if avatar.size > settings.AVATAR_MAX_SIZE:
-#                 error = _("Your file is too big (%(size)s), "
-#                           "the maximum allowed size is %(max_valid_size)s")
-#                 raise forms.ValidationError(error % {
-#                     'size': filesizeformat(avatar.size),
-#                     'max_valid_size': filesizeformat(settings.AVATAR_MAX_SIZE)
-#                 })
-#             return avatar
+    error_messages = {
+        'country_notsupported': _("Your country is not supported right now!"),
+        'mobile_phone': _("Please enter a valid mobile number!"),
+    }
 
-#     def save(self, commit=True):
-#         user = super(HMUserChangeForm, self).save(commit=False)
-#         return user
+    class Meta:
+        model = UserProfile
+        fields = ['name', 'phone']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Hari Wagle'}),
+            'phone': forms.TextInput(attrs={'placeholder': '9802036633'}),
+        }
+        error_messages = {
+            'name': {
+                'required': 'Your name is required!',
+            },
+            'phone': {
+                'required': 'Please provide with a valid phone address!',
+            },
+        }
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        return phone
+
+    def save(self, commit=True):
+        user = super(HMUserChangeForm, self).save(commit=False)
+        return user
 
 
 
