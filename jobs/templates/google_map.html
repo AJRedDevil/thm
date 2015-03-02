@@ -1,0 +1,17 @@
+{% extends "floppyforms/gis/openlayers.html" %}
+{% block map_options %}
+var map_options = {
+    maxExtent: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508),
+    maxResolution: 156543.0339,
+    numZoomLevels: 20,
+    units: 'm',
+    type: google.maps.MapTypeId.HYBRID
+};
+{% endblock %}
+{% block options %}
+{{ block.super }}
+options['base_layer'] = new OpenLayers.Layer.Google("hybrid",map_options);
+options['default_lon'] = 85.3141498444705064;
+options['default_lat'] = 27.6942413607694782;
+options['default_zoom'] = 13;
+{% endblock %}
