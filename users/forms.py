@@ -1,7 +1,7 @@
 
 from collections import OrderedDict
 
-from django import forms
+from django.contrib.gis import forms
 from django.conf import settings
 
 from django.contrib.auth.forms import UserChangeForm
@@ -428,6 +428,11 @@ class HMUserChangeForm(UserChangeForm):
         error_messages={'required': 'Street Address is required !', }
     )
 
+    address_coordinates = forms.PointField(
+        widget=forms.OSMWidget(attrs={'map_width': 800, 'map_height': 500, }),
+        required=False
+    )
+
     error_messages = {
         'country_notsupported': _("Your country is not supported right now!"),
         'mobile_phone': _("Please enter a valid mobile number!"),
@@ -435,7 +440,7 @@ class HMUserChangeForm(UserChangeForm):
 
     class Meta:
         model = UserProfile
-        fields = ['name', 'phone']
+        fields = ['name', 'phone', 'address_coordinates']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Hari Wagle'}),
             'phone': forms.TextInput(attrs={'placeholder': '9802036633'}),

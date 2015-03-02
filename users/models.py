@@ -3,12 +3,11 @@
 #All Django Imports
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-from django.db import models
+from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-# from django.utils import six
 
 #All external imports (libs, packages)
 import hashlib
@@ -16,7 +15,6 @@ import uuid
 import simplejson as json
 import jsonfield
 import logging
-import pytz
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
 
@@ -24,17 +22,20 @@ from rest_framework.authtoken.models import Token
 logger = logging.getLogger(__name__)
 
 CITY_SELECTION = (
-    ('Kathmandu','Kathmandu'),
-    ('Lalitpur','Lalitpur'),
-    ('Bhaktapur','Bhaktapur'),
-    )
+    ('Kathmandu', 'Kathmandu'),
+    ('Lalitpur', 'Lalitpur'),
+    ('Bhaktapur', 'Bhaktapur'),
+)
 
 # Create your models here.
-class UserManager(BaseUserManager):
+
+
+class UserManager(BaseUserManager, models.GeoManager):
 
     def _create_user(self, phone, password, **extra_fields):
         """
-        Creates and saves a User with the given phone and password, user verifies the phone with a authcode.
+        Creates and saves a User with the given phone and password,
+        user verifies the phone with a authcode.
         Access to service is limited till the user verifies his phone number
         """
         now = timezone.now()
@@ -50,7 +51,10 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, password=None, **extra_fields):
-        address=dict(streetaddress='Thirbum Marg - 4, Baluwatar', city='Kathmandu')
+        address = dict(
+            streetaddress='Thirbum Marg - 4, Baluwatar',
+            city='Kathmandu'
+        )
         u = self._create_user(phone, password, address=address, **extra_fields)
         u.is_staff = True
         u.is_active = True
@@ -76,6 +80,7 @@ def getUniqueUUID():
     uniqueID = ''.join(str(uuid.uuid4()).split('-'))
     return uniqueID
 
+
 class UserProfile(AbstractBaseUser):
 
     def upload_pp_path(self, name):
@@ -84,22 +89,30 @@ class UserProfile(AbstractBaseUser):
         return str(folder) + '/' + str(name)
 
     id = models.AutoField(_('id'), primary_key=True)
-    userref = models.CharField(_('userref'), max_length=100, unique=True,
-        default=getUniqueUUID)
-    # displayname = models.CharField(_('displayname'), max_length=30, unique=True,
-    #     error_messages={'unique' : 'The username provided is already taken !'})
+    userref = models.CharField(
+        _('userref'),
+        max_length=100,
+        unique=True,
+        default=getUniqueUUID
+    )
     name = models.CharField(_('name'), max_length=30)
-    # last_name = models.CharField(_('last_name'), max_length=30)
-    # email = models.EmailField(_('email'), max_length=100,
-    #     error_messages={'unique' : 'It seems you already have an account registered with that email!'})
     phone_status = models.BooleanField(_('phone_status'), default=False)
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    profile_image = models.ImageField(max_length=1024, upload_to=upload_pp_path, blank=True, default='')
+    profile_image = models.ImageField(
+        max_length=1024,
+        upload_to=upload_pp_path,
+        blank=True,
+        default=''
+    )
     """Account Status"""
     # 1 = Active
     # 0 = Suspended
-    account_status = models.IntegerField(_('account_status'), max_length=1, default=1)
+    account_status = models.IntegerField(
+        _('account_status'),
+        max_length=1,
+        default=1
+    )
     """User Types"""
     # 0 = THM Staffs
     # 1 = Handymen
@@ -110,9 +123,25 @@ class UserProfile(AbstractBaseUser):
     is_superuser = models.BooleanField(_('is_superuser'), default=False)
     is_active = models.BooleanField(default=True)
     address = jsonfield.JSONField(_('address'), default='{}', max_length=9999)
-    address_coordinates = jsonfield.JSONField(_('address_coordinates'), default='{}', max_length=9999)
-    current_address = jsonfield.JSONField(_('current_address'), default='{}', max_length=9999)
-    extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
+    address_coordinates = models.PointField(
+        _('address_coordinates'),
+        srid=4326,
+        default='',
+        blank=True,
+        null=True
+    )
+    current_address = models.PointField(
+        _('current_address'),
+        srid=4326,
+        default='',
+        blank=True,
+        null=True
+    )
+    extrainfo = jsonfield.JSONField(
+        _('extrainfo'),
+        default='{}',
+        max_length=9999
+    )
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['name']
@@ -123,14 +152,15 @@ class UserProfile(AbstractBaseUser):
         return str(self.name+' ('+str(self.phone)+')')
 
     def get_name(self):
-        return self_name
+        return self.name
 
     def thumbnail_exists(self, size):
         from django.core.files.storage import default_storage as storage
         return storage.exists(self.profile_image.name)
 
     def __generate_hash(self):
-        return hashlib.sha256(str(self.date_joined) + str(self.phone)).hexdigest()
+        return hashlib.sha256(
+            str(self.date_joined) + str(self.phone)).hexdigest()
 
     def get_lat_long(self, address):
         from libs.googleapi_handler import GeoCoding
@@ -147,7 +177,8 @@ class UserProfile(AbstractBaseUser):
             return
         file_path = self.profile_image.name
         filename_base, filename_ext = os.path.splitext(file_path)
-        avatar_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') % (filename_base)
+        avatar_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') \
+            % (filename_base)
         try:
             if not storage.exists(avatar_file_path):
                 try:
@@ -166,7 +197,11 @@ class UserProfile(AbstractBaseUser):
                     image = image.resize((size, size), Image.ANTIALIAS)
                     # logger.warn(thumb)
                     avatar_image = storage.open(avatar_file_path, "w")
-                    image.save(avatar_image, settings.AVATAR_THUMB_FORMAT, quality=quality)
+                    image.save(
+                        avatar_image,
+                        settings.AVATAR_THUMB_FORMAT,
+                        quality=quality
+                    )
                     avatar_image.close()
                     return avatar_file_path
                 except IOError, e:
@@ -185,9 +220,10 @@ class UserProfile(AbstractBaseUser):
         file_path = self.profile_image.name
         logger.warn("file path is %s" % file_path)
         filename_base, filename_ext = os.path.splitext(file_path)
-        normal_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') % (filename_base)
+        normal_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') \
+            % (filename_base)
 
-        ##See if the AWS connection exists or works if doesn't return default file path
+        # See if the file exists, if doesn't return default file path
         try:
             if storage.exists(normal_file_path):
                 # logger.debug(storage.url(normal_file_path))
@@ -200,10 +236,10 @@ class UserProfile(AbstractBaseUser):
     def save(self, *args, **kwargs):
         if type(self.address) != dict:
             self.address = json.loads(self.address)
-        if self.address_coordinates == '{}':
-            self.address_coordinates = self.get_lat_long(self.address)
-        if type(self.address_coordinates) != dict:
-            self.address_coordinates = json.loads(self.address_coordinates)
+        if self.address_coordinates == '':
+            myLatLng = self.get_lat_long(self.address)
+            self.address_coordinates = "POINT("+str(myLatLng['lng'])+" \
+                "+str(myLatLng['lat'])+")"
 
         super(UserProfile, self).save(*args, **kwargs)
 
@@ -223,13 +259,19 @@ class UserEvents(models.Model):
 
     user = models.ForeignKey(UserProfile)
     event = models.IntegerField(_('event'), max_length=2, default=1)
-    updated_on = models.DateTimeField(_('updated_on'),
-        default=timezone.now)
-    extrainfo = jsonfield.JSONField(_('extrainfo'), default='{}', max_length=9999)
-
+    updated_on = models.DateTimeField(
+        _('updated_on'),
+        default=timezone.now
+    )
+    extrainfo = jsonfield.JSONField(
+        _('extrainfo'),
+        default='{}',
+        max_length=9999
+    )
 
     def save(self, *args, **kwargs):
         super(UserEvents, self).save(*args, **kwargs)
+
 
 class EarlyBirdUser(models.Model):
     """
@@ -237,8 +279,10 @@ class EarlyBirdUser(models.Model):
     """
 
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
-    registered_on = models.DateTimeField(_('updated_on'),
-        default=timezone.now)
+    registered_on = models.DateTimeField(
+        _('updated_on'),
+        default=timezone.now
+    )
     confirmed = models.BooleanField(_('confirmed'), default=False)
 
     def __unicode__(self):
@@ -263,9 +307,11 @@ class EarlyBirdUser(models.Model):
 #             self.registered_on = timezone.now
 #         super(EarlyBirdHandymen, self).save(*args, **kwargs)
 
+
 class UserToken(models.Model):
     """
-    Token Model Class for user's verification, password reset and other such services
+    Token Model Class for user's verification,
+    password reset and other such services
     """
     user = models.ForeignKey(UserProfile)
     token = models.CharField(_('id'), max_length=20, primary_key=True)
@@ -289,8 +335,9 @@ class UserToken(models.Model):
         Generates a token with first 14 hash and last 6 as verification code
         """
         from random import randint
-        strhash = hashlib.sha256(str(timezone.now()) + str(uuid.uuid4())).hexdigest()[:14]
-        randnum = str(randint(123456,999889))
+        strhash = hashlib.sha256(
+            str(timezone.now()) + str(uuid.uuid4())).hexdigest()[:14]
+        randnum = str(randint(123456, 999889))
         return strhash+randnum
 
     def __unicode__(self):

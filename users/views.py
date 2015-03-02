@@ -639,14 +639,16 @@ def userSettings(request):
             address = {}
             address['city'] = user_form.cleaned_data['city']
             address['streetaddress'] = user_form.cleaned_data['streetaddress']
+            logging.warn(user_form.cleaned_data['address_coordinates'])
             userdata.address = address
             userdata.save()
             userdetails = um.getUserDetails(user.id)
             newaddress = userdetails.address
             if newaddress != oldaddress:
-                userdetails.address_coordinates = userdetails.get_lat_long(address)
+                myLatLng = userdetails.get_lat_long(address)
+                userdetails.address_coordinates = "POINT(" + \
+                    str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
                 userdetails.save()
-            logger.warn(userdetails.address_coordinates)
             return redirect('userSettings')
 
         if user_form.errors:
