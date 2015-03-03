@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from django.contrib.gis import forms
 from django.conf import settings
-
+from django.core.files.storage import default_storage as storage
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -411,10 +411,15 @@ class HMUserChangeForm(UserChangeForm):
         self.fields['name'].widget.attrs = {'class': 'form-control'}
         self.fields['phone'].widget.attrs = {'class': 'form-control'}
         self.fields['city'].widget.attrs = {'class': 'form-control'}
+        self.fields['address_coordinates'].widget = forms.OSMWidget(attrs={'map_width': 800, 'map_height': 500})
         self.fields['streetaddress'].widget.attrs = {
             'class': 'form-control',
             'placeholder': 'Ganeshthan, Kamaladi'
         }
+
+    profile_image = forms.ImageField(
+        required=False
+    )
 
     city = forms.ChoiceField(
         choices=CITY_SELECTION,
@@ -429,7 +434,6 @@ class HMUserChangeForm(UserChangeForm):
     )
 
     address_coordinates = forms.PointField(
-        widget=forms.OSMWidget(attrs={'map_width': 800, 'map_height': 500, }),
         required=False
     )
 
@@ -440,7 +444,7 @@ class HMUserChangeForm(UserChangeForm):
 
     class Meta:
         model = UserProfile
-        fields = ['name', 'phone', 'address_coordinates']
+        fields = ['name', 'phone', 'profile_image', 'address_coordinates']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Hari Wagle'}),
             'phone': forms.TextInput(attrs={'placeholder': '9802036633'}),
@@ -475,6 +479,36 @@ class HMUserChangeForm(UserChangeForm):
             )
 
         return phone
+
+    def clean_profile_image(self):
+        avatar = self.cleaned_data['profile_image']
+        # upload file data is of type bool if is cleared
+        if type(avatar) is not bool and avatar is not None:
+            ALLOWED_FILE_EXTS = ['.png', '.jpg', 'jpeg']
+            AVATAR_MAX_SIZE = 2097152
+            root, ext = os.path.splitext(avatar.name.lower())
+            if ext not in ALLOWED_FILE_EXTS:
+                valid_exts = ", ".join(ALLOWED_FILE_EXTS)
+                error = _("%(ext)s is an invalid file extension. \
+                    Allowed file types are : %(valid_exts_list)s")
+                raise forms.ValidationError(error %
+                                            {'ext': ext,
+                                            'valid_exts_list': valid_exts})
+            try:
+                if avatar.size > AVATAR_MAX_SIZE:
+                    error = _("Your profile picture is too big (%(size)s), "
+                              "the maximum allowed size is %(max_valid_size)s")
+                    raise forms.ValidationError(error % {
+                        'size': filesizeformat(avatar.size),
+                        'max_valid_size': filesizeformat(AVATAR_MAX_SIZE)
+                    })
+            except Exception:
+                # returned because of a possibility where by the profile
+                # image is removed for some reason either manually or by mistake
+                return avatar
+
+            return avatar
+        return avatar
 
     def save(self, commit=True):
         user = super(HMUserChangeForm, self).save(commit=False)

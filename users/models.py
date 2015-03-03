@@ -4,15 +4,22 @@
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.contrib.gis.db import models
+from django.core.files import File
+from django.core.files.storage import default_storage as storage
+from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.utils import six
+
 
 #All external imports (libs, packages)
 import hashlib
+import os
 import uuid
 import simplejson as json
+import time
 import jsonfield
 import logging
 from phonenumber_field.modelfields import PhoneNumberField
@@ -82,11 +89,12 @@ def getUniqueUUID():
 
 
 class UserProfile(AbstractBaseUser):
+    """
+    User Profile
+    """
 
-    def upload_pp_path(self, name):
-        # name = 'pp'
-        folder = self.id
-        return str(folder) + '/' + str(name)
+    def __get_pp_path(self, profile_image):
+        return 'avatars/'+str(self.userref[8:24])+'/'+str(self.__generate_hash()[:8]+'.jpg')
 
     id = models.AutoField(_('id'), primary_key=True)
     userref = models.CharField(
@@ -101,7 +109,7 @@ class UserProfile(AbstractBaseUser):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     profile_image = models.ImageField(
         max_length=1024,
-        upload_to=upload_pp_path,
+        upload_to=__get_pp_path,
         blank=True,
         default=''
     )
@@ -154,38 +162,42 @@ class UserProfile(AbstractBaseUser):
     def get_name(self):
         return self.name
 
-    def thumbnail_exists(self, size):
+    def thumbnail_exists(self):
         from django.core.files.storage import default_storage as storage
-        return storage.exists(self.profile_image.name)
+        return storage.exists(
+            os.path.join(
+                settings.MEDIA_ROOT,
+                os.path.splitext(
+                    self.profile_image.name.lower())[0]+'_normal.jpeg'))
 
     def __generate_hash(self):
         return hashlib.sha256(
-            str(self.date_joined) + str(self.phone)).hexdigest()
+            str(self.date_joined) + str(time.time())).hexdigest()
 
     def get_lat_long(self, address):
         from libs.googleapi_handler import GeoCoding
         gc = GeoCoding()
         return gc.get_lat_long(address)
 
-    def create_thumbnail(self, size, quality=None):
-        # invalidate the cache of the thumbnail with the given size first
-        import os
-        from PIL import Image
-        from django.core.files.storage import default_storage as storage
-        if not self.profile_image:
-            logger.debug("No item image available")
-            return
-        file_path = self.profile_image.name
-        filename_base, filename_ext = os.path.splitext(file_path)
-        avatar_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') \
-            % (filename_base)
-        try:
-            if not storage.exists(avatar_file_path):
-                try:
-                    orig = storage.open(file_path, 'rb')
-                    image = Image.open(orig)
-                    quality = quality or settings.AVATAR_THUMB_QUALITY
-                    w, h = image.size
+    def get_profile_pic(self):
+        if storage.exists(os.path.join(
+                settings.MEDIA_ROOT,
+                os.path.splitext(
+                            self.profile_image.name.lower())[0]+'_normal.jpeg')):
+            return storage.url(self.profile_image.name.split('.')[0])+'_normal.jpeg'
+        return "/static/img/logo.png"
+
+    def create_thumbnail(self, size=400, quality=None):
+        if self.profile_image != '':
+            try:
+                from PIL import Image
+                from cStringIO import StringIO
+                self.profile_image.seek(0)
+                orig = self.profile_image.read()
+                image = Image.open(StringIO(orig))
+                quality = 85
+                w, h = image.size
+                if w != size or h != size:
                     if w > h:
                         diff = int((w - h) / 2)
                         image = image.crop((diff, 0, w - diff, h))
@@ -195,43 +207,24 @@ class UserProfile(AbstractBaseUser):
                     if image.mode != "RGB":
                         image = image.convert("RGB")
                     image = image.resize((size, size), Image.ANTIALIAS)
-                    # logger.warn(thumb)
-                    avatar_image = storage.open(avatar_file_path, "w")
-                    image.save(
-                        avatar_image,
-                        settings.AVATAR_THUMB_FORMAT,
-                        quality=quality
+                    # thumb = six.BytesIO()
+                    file_path = os.path.join(
+                        settings.MEDIA_ROOT,
+                        os.path.splitext(self.profile_image.name.lower())[0]+'_normal.jpeg'
+                        )
+                    image.save(file_path, 'JPEG', quality=quality)
+                    # thumb_file = ContentFile(thumb.getvalue())
+                # else:
+                    # thumb_file = File(orig)
+                file_path = os.path.join(
+                    settings.MEDIA_ROOT,
+                    os.path.splitext(self.profile_image.name.lower())[0]+'_normal.jpeg'
                     )
-                    avatar_image.close()
-                    return avatar_file_path
-                except IOError, e:
-                    logger.warn(e)
-                    return
-        except Exception, e:
-            return
-
-    def get_profile_pic(self):
-        """Returns the url of the profile image"""
-        import os
-        from django.core.files.storage import default_storage as storage
-        default_file_path = settings.STATIC_URL+"img/default.png"
-        if not self.profile_image:
-            return default_file_path
-        file_path = self.profile_image.name
-        logger.warn("file path is %s" % file_path)
-        filename_base, filename_ext = os.path.splitext(file_path)
-        normal_file_path = ('%s'+'_'+self.__generate_hash()[:10]+'.jpg') \
-            % (filename_base)
-
-        # See if the file exists, if doesn't return default file path
-        try:
-            if storage.exists(normal_file_path):
-                # logger.debug(storage.url(normal_file_path))
-                return storage.url(normal_file_path)
-        except Exception:
-            return default_file_path
-
-        return default_file_path
+                image.save(file_path, 'JPEG', quality=quality)
+            except Exception, e:
+                # logger.warn('file not found')
+                logger.warn(e)
+                return  # What should we do here?  Render a "sorry, didn't work" img?
 
     def save(self, *args, **kwargs):
         if type(self.address) != dict:
@@ -240,12 +233,8 @@ class UserProfile(AbstractBaseUser):
             myLatLng = self.get_lat_long(self.address)
             self.address_coordinates = "POINT("+str(myLatLng['lng'])+" \
                 "+str(myLatLng['lat'])+")"
-
+        # self.create_thumbnail()
         super(UserProfile, self).save(*args, **kwargs)
-
-        if self.profile_image:
-            self.create_thumbnail(500)
-
 
 # Create Token for users when a user is created
 @receiver(post_save, sender=UserProfile)

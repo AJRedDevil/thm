@@ -54,7 +54,8 @@ MIDDLEWARE_CLASSES = (
 # AUTH BACKEND DEFINITIONS
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    )
+)
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -93,20 +94,21 @@ DATABASES = {
     "default": dj_database_url.config()
 }
 
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 # Static asset configuration
 # STATIC_URL = 'http://s3.amazonaws.com/%s/' % AWS_STATIC_BUCKET
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+# Use local storage
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
+MEDIA_URL = '/media/'
 # CONFIGURING USERPROFILE AS THE AUTH BACKEND
 AUTH_USER_MODEL = 'users.UserProfile'
 # LOGIN URL DEFINITIONS
@@ -127,10 +129,10 @@ LOGGING = {
         },
     },
     'filters': {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse'
-            }
-        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
@@ -184,7 +186,7 @@ EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
 # ERROR REPORTING
 DEFAULT_FROM_EMAIL = 'server@thehomerepairapp.com'
-SERVER_EMAIL='server@thehomerepairapp.com'
+SERVER_EMAIL = 'server@thehomerepairapp.com'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 ADMINS = (
@@ -225,7 +227,10 @@ SWAGGER_SETTINGS = {
 CURRENCIES = ('NPR',)
 # Phone number setting
 PHONENUMBER_DEFAULT_REGION = 'NP'
-# LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py, required only for a dev env
+
+# LOCAL CONFIG IMPORT, IMPORTS ALL CONFIG FROM local_setting.py,
+# required only for a dev env
+
 try:
     from local_setting import *
 except ImportError:

@@ -1,13 +1,14 @@
 
 
 #All Djang Imports
-# from django.conf import settings
+from django.conf import settings
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
+from django.core.files.storage import default_storage as storage
 # from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, Http404
@@ -625,30 +626,63 @@ def userSettings(request):
         name=user.name,
         phone=user.phone,
         city=user.address['city'],
-        streetaddress=user.address['streetaddress']
+        streetaddress=user.address['streetaddress'],
+        profile_image=user.profile_image,
+        address_coordinates=user.address_coordinates,
     )
 
     if request.method == "POST":
         user = request.user
         um = user_handler.UserManager()
         userdetails = um.getUserDetails(user.id)
-        user_form = HMUserChangeForm(request.POST, instance=userdetails)
+        user_form = HMUserChangeForm(
+            request.POST,
+            request.FILES,
+            instance=userdetails)
         oldaddress = userdetails.address
+        old_profile_image = userdetails.profile_image
         if user_form.is_valid():
             userdata = user_form.save(commit=False)
             address = {}
             address['city'] = user_form.cleaned_data['city']
             address['streetaddress'] = user_form.cleaned_data['streetaddress']
-            logging.warn(user_form.cleaned_data['address_coordinates'])
             userdata.address = address
             userdata.save()
             userdetails = um.getUserDetails(user.id)
             newaddress = userdetails.address
+            if 'profile_image' in request.FILES:
+                new_profile_image = request.FILES['profile_image']
+                # remove older profile picture when new image is uploaded
+                if old_profile_image != '' and \
+                        new_profile_image != old_profile_image:
+                    storage.delete(old_profile_image.name)
+                    storage.delete(
+                        os.path.join(
+                            settings.MEDIA_ROOT,
+                            os.path.splitext(
+                                user.profile_image.name.lower())[0]+'_normal.jpeg'))
+
+                if new_profile_image != '':
+                    userdetails.create_thumbnail()
+
+            new_profile_image = userdetails.profile_image
+            if new_profile_image == '' and old_profile_image.name != '':
+                storage.delete(old_profile_image.name)
+                storage.delete(old_profile_image.name+'_normal.jpeg')
+                storage.delete(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        os.path.splitext(
+                            user.profile_image.name.lower())[0]+'_normal.jpeg'))
+
+            # If address is changed, update lat, lon in coordinates
             if newaddress != oldaddress:
                 myLatLng = userdetails.get_lat_long(address)
                 userdetails.address_coordinates = "POINT(" + \
                     str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
-                userdetails.save()
+
+            userdetails.save()
+
             return redirect('userSettings')
 
         if user_form.errors:
