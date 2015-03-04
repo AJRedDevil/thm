@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 #All local imports (libs, contribs, models)
 import handler as user_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
-from thm.decorators import is_superuser
+from thm.decorators import is_superuser, is_verified
 from .models import UserProfile, EarlyBirdUser, UserToken
 from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, \
     EBUserPhoneNumberForm, VerifyPhoneForm, HMUserChangeForm
@@ -183,7 +183,7 @@ def verifyPhone(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'verify_phone.html', locals())
 
-    # user_form = UserCreationForm
+    user_form = VerifyPhoneForm()
     return render(request, 'verify_phone.html', locals())
 
 
@@ -205,14 +205,14 @@ def sendVrfCode(request):
             client_internal_ip=client_internal_ip
         )
         eventhandler.setevent(request.user, 3, extrainfo)
-        ### Send user a SMS stating that his phone has been verified
-        um.sendVerfTextApp(user.id)
+        um.sendVerfText(user.id)
         logger.debug("Verification code sent to the {0}".format(user.phone))
         return redirect('verifyPhone')
     return redirect('home')
 
 
 @login_required
+@is_verified
 def home(request):
     """Post login this is returned and displays user's home page"""
     user = request.user
@@ -587,6 +587,7 @@ def smsEndpoint(request):
 
 
 @login_required
+@is_verified
 def myProfile(request):
     """
     Displays profile of the logged in user
@@ -641,6 +642,7 @@ def userSettings(request):
             instance=userdetails)
         oldaddress = userdetails.address
         old_profile_image = userdetails.profile_image
+        old_phone = userdetails.phone
         if user_form.is_valid():
             userdata = user_form.save(commit=False)
             address = {}
@@ -650,6 +652,7 @@ def userSettings(request):
             userdata.save()
             userdetails = um.getUserDetails(user.id)
             newaddress = userdetails.address
+            new_phone = userdetails.phone
             if 'profile_image' in request.FILES:
                 new_profile_image = request.FILES['profile_image']
                 # remove older profile picture when new image is uploaded
@@ -680,6 +683,14 @@ def userSettings(request):
                 myLatLng = userdetails.get_lat_long(address)
                 userdetails.address_coordinates = "POINT(" + \
                     str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
+
+            if new_phone != old_phone:
+                UserToken.objects.create(user=user)
+                ### Update User Events
+                eventhandler = user_handler.UserEventManager()
+                eventhandler.setevent(request.user, 3)
+                userdetails.phone_status = False
+                um.sendVerfText(user.id)
 
             userdetails.save()
 

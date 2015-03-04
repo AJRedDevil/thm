@@ -25,7 +25,6 @@ urlpatterns = patterns(
     url(r'^settings/$', userviews.userSettings, name='userSettings'),
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
-    # url(r'^manage/$', manage, name='manage'),
     url(r'^$', index, name='index'),
 )
 

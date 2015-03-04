@@ -4,9 +4,12 @@ from collections import OrderedDict
 from django.contrib.gis import forms
 from django.conf import settings
 from django.core.files.storage import default_storage as storage
+from django.core.urlresolvers import reverse
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth import authenticate, get_user_model
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+
 from django.template.defaultfilters import filesizeformat
 
 from .models import UserProfile, CITY_SELECTION, EarlyBirdUser
@@ -27,7 +30,7 @@ class VerifyPhoneForm(forms.Form):
     }
 
     verf_code = forms.CharField(
-        label=_("verf_code"),
+        label=_("Verification Code"),
         widget=forms.TextInput, min_length=6,
         error_messages={
             'required': _('Please provide with the verification \
@@ -38,6 +41,8 @@ class VerifyPhoneForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(VerifyPhoneForm, self).__init__(*args, **kwargs)
+        self.fields['verf_code'].widget.attrs = {'class': 'form-control'}
+
 
     def clean_verf_code(self):
         um = user_handler.UserManager()

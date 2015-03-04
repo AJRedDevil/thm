@@ -19,7 +19,7 @@ if settings.DEBUG:
         url(r'^users/(?P<pk>\w+)/$', apiview.UsersDetail.as_view()),
 		url(r'^signup/$', apiview.UserSignup.as_view()),
 		url(r'^users/$', apiview.UsersList.as_view()),
-        url(r'^verify/$', apiview.VerifyPhone.as_view(), name='verifyPhone'),
+        # url(r'^verify/$', apiview.VerifyPhone.as_view(), name='verifyPhoneFromApp'),
         ) 
 
 urlpatterns = format_suffix_patterns(urlpatterns)
