@@ -306,6 +306,7 @@ class UserToken(models.Model):
     token = models.CharField(_('id'), max_length=20, primary_key=True)
     timeframe = models.DateTimeField(_('timeframe'), default=timezone.now)
     status = models.BooleanField(_('status'), default=False)
+    tokentype = models.IntegerField(_('0'), default=0)
 
     def is_alive(self):
         timedelta = timezone.now() - self.timeframe

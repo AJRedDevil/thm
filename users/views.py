@@ -20,8 +20,7 @@ import handler as user_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser, is_verified
 from .models import UserProfile, EarlyBirdUser, UserToken
-from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, \
-    EBUserPhoneNumberForm, VerifyPhoneForm, HMUserChangeForm
+import users.forms as userforms
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -67,7 +66,7 @@ def signin(request):
         return redirect('home')
 
     if request.method == "POST":
-        auth_form = LocalAuthenticationForm(data=request.POST)
+        auth_form = userforms.LocalAuthenticationForm(data=request.POST)
         if auth_form.is_valid():
             auth_login(request, auth_form.get_user())
             eventhandler = user_handler.UserEventManager()
@@ -113,7 +112,7 @@ def signup(request):
         except Exception as e:
             return redirect('signup')
 
-        user_form = UserSignupForm(request.POST)
+        user_form = userforms.UserSignupForm(request.POST)
         if user_form.is_valid():
             userdata = user_form.save(commit=False)
             userdata.address = dict(
@@ -141,7 +140,7 @@ def signup(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'signup.html', locals())
 
-    user_form = UserSignupForm
+    user_form = userforms.UserSignupForm()
     return render(request, 'signup.html', locals())
 
 
@@ -157,7 +156,7 @@ def verifyPhone(request):
         return redirect('home')
 
     if request.method == "POST":
-        user_form = VerifyPhoneForm(request.POST, request=request)
+        user_form = userforms.VerifyPhoneForm(request.POST, request=request)
         if user_form.is_valid():
             um = user_handler.UserManager()
             user = request.user
@@ -178,12 +177,15 @@ def verifyPhone(request):
             logger.debug("User Details : \n {0}".format(
                 serializers.serialize('json', [userdata, ])
             ))
+            verf_token = UserToken.objects.get(verf_code=user_form.cleaned_data['verf_code'])
+            verf_token.status = True
+            verf_token.save()
             return redirect('home')
         if user_form.errors:
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'verify_phone.html', locals())
 
-    user_form = VerifyPhoneForm()
+    user_form = userforms.VerifyPhoneForm()
     return render(request, 'verify_phone.html', locals())
 
 
@@ -243,12 +245,12 @@ def createhandymen(request):
                 EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
             except Exception, e:
                 return redirect('home')
-            user_form = UserCreationForm(ebuser=ebuser)
+            user_form = userforms.UserCreationForm(ebuser=ebuser)
             pagetitle = "Create a Handymen"
             return render(request, 'admin/createuser.html', locals())
 
     if request.method == "POST":
-        user_form = UserCreationForm(request.POST, ebuser=None)
+        user_form = userforms.UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
             useraddress = dict(
                 city=user_form.cleaned_data['city'],
@@ -284,7 +286,7 @@ def createhandymen(request):
         pagetitle = "Create a Handyman"
         return render(request, 'admin/createhm.html', locals())
     else:
-        user_form = UserCreationForm(ebuser=None)
+        user_form = userforms.UserCreationForm(ebuser=None)
         pagetitle = "Create a Handymen"
         return render(request, 'admin/createhm.html', locals())
 
@@ -306,12 +308,12 @@ def createUser(request):
                 EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
             except Exception, e:
                 return redirect('home')
-            user_form = UserCreationForm(ebuser=ebuser)
+            user_form = userforms.UserCreationForm(ebuser=ebuser)
             pagetitle = "Create a User"
             return render(request, 'admin/createuser.html', locals())
 
     if request.method == "POST":
-        user_form = UserCreationForm(request.POST, ebuser=None)
+        user_form = userforms.UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
             useraddress = dict(
                 city=user_form.cleaned_data['city'],
@@ -356,7 +358,7 @@ def createUser(request):
         pagetitle = "Create a Handymen"
         return render(request, 'admin/createuser.html', locals())
     else:
-        user_form = UserCreationForm(ebuser=None)
+        user_form = userforms.UserCreationForm(ebuser=None)
         pagetitle = "Create a Handymen"
         return render(request, 'admin/createuser.html', locals())
 
@@ -381,7 +383,7 @@ def joinasuser(request):
 
         request_dict['phone'] = phone
         logging.warn(request_dict)
-        user_form = EBUserPhoneNumberForm(request_dict)
+        user_form = userforms.EBUserPhoneNumberForm(request_dict)
         if user_form.is_valid():
             phone = user_form.cleaned_data['phone']
             userdata = user_form.save(commit=False)
@@ -415,7 +417,7 @@ def smsEndpoint(request):
             phone = urllib.unquote(request.GET['from'])
             userphone = dict(phone=phone)
             text = urllib.unquote(request.GET['text'])
-            user_form = EBUserPhoneNumberForm(userphone)
+            user_form = userforms.EBUserPhoneNumberForm(userphone)
             # If no keyword on the message
             if len(text.lower().split()) == 1 and text.lower().split()[0] in os.environ['SMS_KEYWORD'].split(','):
                 if user_form.is_valid():
@@ -636,7 +638,7 @@ def userSettings(request):
         user = request.user
         um = user_handler.UserManager()
         userdetails = um.getUserDetails(user.id)
-        user_form = HMUserChangeForm(
+        user_form = userforms.HMUserChangeForm(
             request.POST,
             request.FILES,
             instance=userdetails)
@@ -700,5 +702,136 @@ def userSettings(request):
             logger.debug("UserSettings form has erorrs %s", user_form.errors)
             return render(request, "usersettings.html", locals())
 
-    user_form = HMUserChangeForm(initial=userdata)
+    user_form = userforms.HMUserChangeForm(initial=userdata)
     return render(request, "usersettings.html", locals())
+
+
+def changePassword(request):
+    """
+    Helps a user to change his password
+    """
+    user = request.user
+    user_form = userforms.PasswordChangeForm(user)
+    if request.POST:
+        logger.debug(request.POST)
+        user_form = userforms.PasswordChangeForm(user, request.POST)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('home')
+
+        if user_form.errors:
+            logger.debug("ChangePassword form has erorrs %s", user_form.errors)
+            return render(request, "changepassword.html", locals())
+
+    return render(request, 'changepassword.html', locals())
+
+
+def resetPasswordToken(request):
+    """
+    Verifies a Token and redirects the user to the reset form
+    """
+    if request.user.is_authenticated():
+        return redirect('home')
+
+    if 'resetkey' in request.GET and 'phone' in request.GET:
+        if request.POST:
+            resetkey = request.GET['resetkey']
+            phone = str(urllib.unquote(request.GET['phone']))
+            phone = intlphone.from_string(phone)
+            try:
+                user = UserProfile.objects.get(phone=phone)
+            except UserProfile.DoesNotExist:
+                # An error occured
+                user_form = userforms.ResetPasswordTokenForm()
+                return render(request, 'tokenresetpassword.html', locals())
+
+            user_form = userforms.ResetPasswordForm(user, request.POST)
+            if user_form.is_valid():
+                user_form.save()
+                # Expire the token
+                token = UserToken.objects.get(user=user.id, status=False, tokentype=1)
+                token.status = True
+                token.save()
+                return redirect('home')
+
+            if user_form.errors:
+                logger.debug("ResetPassword form has erorrs %s", user_form.errors)
+                return render(request, "resetpassword.html", locals())
+
+            return render(request, 'resetpassword.html', locals())
+
+        resetkey = request.GET['resetkey']
+        phone = intlphone.from_string(request.GET['phone'])
+        try:
+            user = UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            # An error occured
+            user_form = userforms.ResetPasswordTokenForm()
+            return render(request, 'tokenresetpassword.html', locals())
+        user_form = userforms.ResetPasswordForm(user)
+        return render(request, 'resetpassword.html', locals())
+
+    if request.POST:
+        logger.warn('crap')
+        logger.debug(request.POST)
+        user_form = userforms.ResetPasswordTokenForm(request.POST)
+        if user_form.is_valid():
+            phone = user_form.cleaned_data.get("phone")
+            try:
+                user = UserProfile.objects.get(phone=phone)
+            except UserProfile.DoesNotExist:
+                # An error occured
+                user_form = userforms.ResetPasswordTokenForm()
+                return render(request, 'tokenresetpassword.html', locals())
+            resetkey = user_form.cleaned_data['verf_code']
+            userphone = str(user.phone.as_e164)
+            get_req = {'resetkey': resetkey, 'phone': userphone}
+            encoded_get_req = urllib.urlencode(get_req)
+            reset_url = "{0}/resetpassword/?{1}".format(
+                settings.URL, encoded_get_req)
+            return redirect(reset_url)
+
+        if user_form.errors:
+            logger.debug("ResetPassword form has erorrs %s", user_form.errors)
+            return render(request, "tokenresetpassword.html", locals())
+
+    user_form = userforms.ResetPasswordTokenForm()
+    return render(request, 'tokenresetpassword.html', locals())
+
+
+def sendPasswdVrfCode(request):
+    """
+    Lets a user send a verification code to his phone number
+    """
+    client_internal_ip = get_real_ip(request)
+    client_public_ip = get_ip(request)
+    if request.POST:
+        user_form = userforms.ForgetPasswordForm(request.POST)
+        if user_form.is_valid():
+            um = user_handler.UserManager()
+            phone = user_form.cleaned_data['phone']
+            try:
+                user = UserProfile.objects.get(phone=phone)
+            except UserProfile.DoesNotExist:
+                user_form = userforms.ForgetPasswordForm()
+                return render(request, 'forgetpassword.html', locals())
+            # Generate a verification Token
+            UserToken.objects.create(user=user, tokentype=1)
+            # Update User Events
+            eventhandler = user_handler.UserEventManager()
+            extrainfo = dict(
+                client_public_ip=client_public_ip,
+                client_internal_ip=client_internal_ip
+            )
+            eventhandler.setevent(user, 3, extrainfo)
+            um.sendPasswordVerfText(user.id)
+            logger.debug("Password Verification code sent to \
+                the {0}".format(user.phone))
+            return redirect('resetPasswordToken')
+
+        if user_form.errors:
+            logger.debug("ForgetPassword form has erorrs %s", user_form.errors)
+            return render(request, "forgetpassword.html", locals())
+
+    user_form = userforms.ForgetPasswordForm()
+    return render(request, 'forgetpassword.html', locals())

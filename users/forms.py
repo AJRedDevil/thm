@@ -17,6 +17,8 @@ import handler as user_handler
 
 import os
 from phonenumber_field.formfields import PhoneNumberField
+from phonenumber_field.phonenumber import PhoneNumber as intlphone
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ class VerifyPhoneForm(forms.Form):
     A form that takes phone number as the data
     """
     error_messages = {
-        'wrong_code': _("Provided code is not correct!"),
+        'wrong_code': _("Provided code is either invalid or not correct!"),
     }
 
     verf_code = forms.CharField(
@@ -42,7 +44,6 @@ class VerifyPhoneForm(forms.Form):
         self.request = kwargs.pop('request', None)
         super(VerifyPhoneForm, self).__init__(*args, **kwargs)
         self.fields['verf_code'].widget.attrs = {'class': 'form-control'}
-
 
     def clean_verf_code(self):
         um = user_handler.UserManager()
@@ -105,35 +106,6 @@ class EBUserPhoneNumberForm(forms.ModelForm):
         if commit:
             data.save()
         return data
-
-# class HMUserPhoneNumberForm(forms.ModelForm):
-#     """
-#     A form that takes phone number as the data
-#     """
-#     phone = PhoneNumberField()
-
-#     error_messages = {
-#         'country_notsupported': _("Your country is not supported right now!"),
-#         }
-
-#     class Meta:
-#         model = EarlyBirdHandymen
-#         fields = ['phone']
-
-#     def clean_phone(self):
-#         phone = self.cleaned_data.get("phone")
-#         if str(phone.country_code) != '977':
-#             raise forms.ValidationError(
-#                 self.error_messages['country_notsupported'],
-#                 code='country_notsupported',
-#             )
-#         return phone
-
-#     def save(self, commit=True):
-#         data = super(HMUserPhoneNumberForm, self).save(commit=False)
-#         if commit:
-#             data.save()
-#         return data
 
 
 class UserCreationForm(forms.ModelForm):
@@ -213,15 +185,26 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def clean_phone(self):
-        # self.cleaned_data.get("phone") is a User object
-        phone = self.cleaned_data.get("phone").phone
+
+        phone = self.cleaned_data.get("phone")
         if str(phone.country_code) != '977':
             raise forms.ValidationError(
                 self.error_messages['country_notsupported'],
                 code='country_notsupported',
             )
-        return phone
 
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        return phone
     # def clean_email(self):
     #     # Since User.username is unique, this check is redundant,
     #     # but it sets a nicer error message than the ORM. See #13147.
@@ -520,73 +503,242 @@ class HMUserChangeForm(UserChangeForm):
         return user
 
 
+class SetPasswordForm(forms.Form):
+    """
+    A form that lets a user change set his/her password without entering the
+    old password
+    """
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+        'password1': {
+            'required': 'Please provide with a password !',
+        },
+        'password2': {
+            'required': 'Please provide with a password confirmation !',
+        },
+    }
+    new_password1 = forms.CharField(label=_("New password"),
+                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=_("New password confirmation"),
+                                    widget=forms.PasswordInput)
 
-# class SetPasswordForm(forms.Form):
-#     """
-#     A form that lets a user change set his/her password without entering the
-#     old password
-#     """
-#     error_messages = {
-#         'password_mismatch': _("The two password fields didn't match."),
-#         'password1' : {
-#             'required' : 'Please provide with a password !',
-#         },
-#         'password2' : {
-#             'required' : 'Please provide with a password confirmation !',
-#         },
-#     }
-#     new_password1 = forms.CharField(label=_("New password"),
-#                                     widget=forms.PasswordInput)
-#     new_password2 = forms.CharField(label=_("New password confirmation"),
-#                                     widget=forms.PasswordInput)
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs = {'class': 'form-control'}
+        self.fields['new_password2'].widget.attrs = {'class': 'form-control'}
 
-#     def __init__(self, user, *args, **kwargs):
-#         self.user = user
-#         super(SetPasswordForm, self).__init__(*args, **kwargs)
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError(
+                    self.error_messages['password_mismatch'],
+                    code='password_mismatch',
+                )
+        return password2
 
-#     def clean_new_password2(self):
-#         password1 = self.cleaned_data.get('new_password1')
-#         password2 = self.cleaned_data.get('new_password2')
-#         if password1 and password2:
-#             if password1 != password2:
-#                 raise forms.ValidationError(
-#                     self.error_messages['password_mismatch'],
-#                     code='password_mismatch',
-#                 )
-#         return password2
-
-#     def save(self, commit=True):
-#         self.user.set_password(self.cleaned_data['new_password1'])
-#         if commit:
-#             self.user.save()
-#         return self.user
+    def save(self, commit=True):
+        self.user.set_password(self.cleaned_data['new_password1'])
+        if commit:
+            self.user.save()
+        return self.user
 
 
-# class PasswordChangeForm(SetPasswordForm):
-#     """
-#     A form that lets a user change his/her password by entering
-#     their old password.
-#     """
-#     error_messages = dict(SetPasswordForm.error_messages, **{
-#         'password_incorrect': _("Your old password was entered incorrectly. "
-#                                 "Please enter it again."),
-#     })
-#     old_password = forms.CharField(label=_("Old password"),
-#                                    widget=forms.PasswordInput)
+class ResetPasswordTokenForm(forms.Form):
+    """
+    A form that verifies the password reset authenticity of a user
+    """
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+        'doesnt_exist': _("A user by that phone is not registered!"),
+        'wrong_code': _("Provided code is either invalid or not correct!"),
+        'password1': {
+            'required': 'Please provide with a password !',
+        },
+        'password2': {
+            'required': 'Please provide with a password confirmation !',
+        },
+    }
+    phone = PhoneNumberField(
+        label=_("Mobile Number"),
+    )
 
-#     def clean_old_password(self):
-#         """
-#         Validates that the old_password field is correct.
-#         """
-#         old_password = self.cleaned_data["old_password"]
-#         if not self.user.check_password(old_password):
-#             raise forms.ValidationError(
-#                 self.error_messages['password_incorrect'],
-#                 code='password_incorrect',
-#             )
-#         return old_password
+    verf_code = forms.CharField(
+        label=_("Verification Code"),
+        widget=forms.TextInput
+    )
 
-# PasswordChangeForm.base_fields = OrderedDict(
-#     (k, PasswordChangeForm.base_fields[k])
-#     for k in ['old_password', 'new_password1', 'new_password2']
-# )
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordTokenForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].widget.attrs = {'class': 'form-control'}
+        self.fields['verf_code'].widget.attrs = {'class': 'form-control'}
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        try:
+            UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            raise forms.ValidationError(
+                self.error_messages['doesnt_exist'],
+                code='doesnt_exist',
+            )
+
+        return phone
+
+    def clean_verf_code(self):
+        phone = self.cleaned_data.get("phone")
+        try:
+            user = UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            raise forms.ValidationError(
+                self.error_messages['wrong_code'],
+                code='wrong_code',
+            )
+        verf_code = self.cleaned_data.get("verf_code")
+        um = user_handler.UserManager()
+        if not um.checkPasswdVerfCode(user, verf_code):
+            raise forms.ValidationError(
+                self.error_messages['wrong_code'],
+                code='wrong_code',
+            )
+        return verf_code
+
+
+class ResetPasswordForm(forms.Form):
+    """
+    A form that lets a user reset his/her password
+    """
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+        'wrong_code': _("Provided code is either invalid or not correct!"),
+        'password1': {
+            'required': 'Please provide with a password !',
+        },
+        'password2': {
+            'required': 'Please provide with a password confirmation !',
+        },
+    }
+    new_password1 = forms.CharField(label=_("New password"),
+                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=_("New password confirmation"),
+                                    widget=forms.PasswordInput)
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs = {'class': 'form-control'}
+        self.fields['new_password2'].widget.attrs = {'class': 'form-control'}
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError(
+                    self.error_messages['password_mismatch'],
+                    code='password_mismatch',
+                )
+        return password2
+
+    def save(self, commit=True):
+        self.user.set_password(self.cleaned_data['new_password1'])
+        if commit:
+            self.user.save()
+        return self.user
+
+class PasswordChangeForm(SetPasswordForm):
+    """
+    A form that lets a user change his/her password by entering
+    their old password.
+    """
+    error_messages = dict(SetPasswordForm.error_messages, **{
+        'password_incorrect': _("Your old password was entered incorrectly. "
+                                "Please enter it again."),
+    })
+    old_password = forms.CharField(label=_("Old password"),
+                                   widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs = {'class': 'form-control'}
+
+    def clean_old_password(self):
+        """
+        Validates that the old_password field is correct.
+        """
+        old_password = self.cleaned_data["old_password"]
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError(
+                self.error_messages['password_incorrect'],
+                code='password_incorrect',
+            )
+        return old_password
+
+PasswordChangeForm.base_fields = OrderedDict(
+    (k, PasswordChangeForm.base_fields[k])
+    for k in ['old_password', 'new_password1', 'new_password2']
+)
+
+
+class ForgetPasswordForm(forms.Form):
+    """
+    A form that takes phone number as the data
+    """
+    phone = PhoneNumberField()
+
+    error_messages = {
+        'country_notsupported': _("Your country is not supported as of now!"),
+        'doesnt_exist': _("Couldn't find a user with that phone, \
+            please enter a correct mobile number!"),
+        'mobile_phone': _("Please enter a valid mobile number!"),
+    }
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        try:
+            UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            raise forms.ValidationError(
+                self.error_messages['doesnt_exist'],
+                code='doesnt_exist',
+            )
+
+        return phone

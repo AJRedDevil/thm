@@ -51,8 +51,24 @@ class UserManager(object):
 
     def checkVerfCode(self, user, verf_code):
         """Checks if the user provided code is true"""
-        token = UserToken.objects.get(user_id=user.id, status=False)
-        if token:
+        try:
+            token = UserToken.objects.get(user_id=user.id, status=False)
+        except Exception:
+            return False
+        if token.is_alive:
+            if token.get_vrfcode() == verf_code:
+                return True
+            else:
+                return False
+        return False
+
+    def checkPasswdVerfCode(self, user, verf_code):
+        """Checks if the user provided code is true"""
+        try:
+            token = UserToken.objects.get(user_id=user.id, status=False)
+        except Exception:
+            return False
+        if token.is_alive and token.tokentype == 1:
             if token.get_vrfcode() == verf_code:
                 return True
             else:
@@ -68,13 +84,14 @@ class UserManager(object):
         status = vas.sendMessage(msg, user)
         return status
 
-    def sendPasswordText(self, user_id, password):
+    def sendPasswordVerfText(self, user_id):
         """Sends a text to the user with his password"""
         user = self.getUserDetails(user_id)
+        token = UserToken.objects.get(user_id=user, tokentype=1, status=False)
         vas = Sparrow()
-        msg = messages.SEND_PASSWD_MSG.format(password)
-        status = vas.sendMessage(msg, user)
+        msg = messages.SEND_PASSWD_MSG.format(token.get_vrfcode())
         logger.debug(msg)
+        status = vas.sendMessage(msg, user)
         return status
 
     def getEBUserList(self):
@@ -83,6 +100,7 @@ class UserManager(object):
         """
         ebusers = EarlyBirdUser.objects.all()
         return ebusers
+
 
 class UserEventManager(object):
     """docstring for UserEventManager"""
