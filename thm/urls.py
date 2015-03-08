@@ -23,12 +23,15 @@ urlpatterns = patterns(
     url(r'^verify/$', userviews.verifyPhone, name='verifyPhone'),
     url(r'^sendvrfcode/$', userviews.sendVrfCode, name='sendVrfCode'),
     url(r'^settings/$', userviews.userSettings, name='userSettings'),
+    url(r'^settings/changepassword/$', userviews.changePassword, name='changePassword'),
+    url(r'^resetpassword/', userviews.resetPasswordToken, name='resetPasswordToken'),
+    url(r'^forgetpassword/$', userviews.sendPasswdVrfCode, name='sendPasswdVrfCode'),
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     url(r'^$', index, name='index'),
 )
 
-if settings.DEBUG:
+if not settings.DEBUG:
     urlpatterns += patterns(
         '',
         url(r'^api/v1/', include('api.urls')),
