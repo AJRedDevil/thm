@@ -1,13 +1,14 @@
 
 
 #All Djang Imports
-# from django.conf import settings
+from django.conf import settings
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
+from django.core.files.storage import default_storage as storage
 # from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, Http404
@@ -17,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 #All local imports (libs, contribs, models)
 import handler as user_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
-from thm.decorators import is_superuser
+from thm.decorators import is_superuser, is_verified
 from .models import UserProfile, EarlyBirdUser, UserToken
 from .forms import UserCreationForm, UserSignupForm, LocalAuthenticationForm, \
     EBUserPhoneNumberForm, VerifyPhoneForm, HMUserChangeForm
@@ -182,7 +183,7 @@ def verifyPhone(request):
             logger.debug("Login Form has errors, %s ", user_form.errors)
             return render(request, 'verify_phone.html', locals())
 
-    # user_form = UserCreationForm
+    user_form = VerifyPhoneForm()
     return render(request, 'verify_phone.html', locals())
 
 
@@ -204,14 +205,14 @@ def sendVrfCode(request):
             client_internal_ip=client_internal_ip
         )
         eventhandler.setevent(request.user, 3, extrainfo)
-        ### Send user a SMS stating that his phone has been verified
-        um.sendVerfTextApp(user.id)
+        um.sendVerfText(user.id)
         logger.debug("Verification code sent to the {0}".format(user.phone))
         return redirect('verifyPhone')
     return redirect('home')
 
 
 @login_required
+@is_verified
 def home(request):
     """Post login this is returned and displays user's home page"""
     user = request.user
@@ -586,6 +587,7 @@ def smsEndpoint(request):
 
 
 @login_required
+@is_verified
 def myProfile(request):
     """
     Displays profile of the logged in user
@@ -625,15 +627,22 @@ def userSettings(request):
         name=user.name,
         phone=user.phone,
         city=user.address['city'],
-        streetaddress=user.address['streetaddress']
+        streetaddress=user.address['streetaddress'],
+        profile_image=user.profile_image,
+        address_coordinates=user.address_coordinates,
     )
 
     if request.method == "POST":
         user = request.user
         um = user_handler.UserManager()
         userdetails = um.getUserDetails(user.id)
-        user_form = HMUserChangeForm(request.POST, instance=userdetails)
+        user_form = HMUserChangeForm(
+            request.POST,
+            request.FILES,
+            instance=userdetails)
         oldaddress = userdetails.address
+        old_profile_image = userdetails.profile_image
+        old_phone = userdetails.phone
         if user_form.is_valid():
             userdata = user_form.save(commit=False)
             address = {}
@@ -643,10 +652,48 @@ def userSettings(request):
             userdata.save()
             userdetails = um.getUserDetails(user.id)
             newaddress = userdetails.address
+            new_phone = userdetails.phone
+            if 'profile_image' in request.FILES:
+                new_profile_image = request.FILES['profile_image']
+                # remove older profile picture when new image is uploaded
+                if old_profile_image != '' and \
+                        new_profile_image != old_profile_image:
+                    storage.delete(old_profile_image.name)
+                    storage.delete(
+                        os.path.join(
+                            settings.MEDIA_ROOT,
+                            os.path.splitext(
+                                user.profile_image.name.lower())[0]+'_normal.jpeg'))
+
+                if new_profile_image != '':
+                    userdetails.create_thumbnail()
+
+            new_profile_image = userdetails.profile_image
+            if new_profile_image == '' and old_profile_image.name != '':
+                storage.delete(old_profile_image.name)
+                storage.delete(old_profile_image.name+'_normal.jpeg')
+                storage.delete(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        os.path.splitext(
+                            user.profile_image.name.lower())[0]+'_normal.jpeg'))
+
+            # If address is changed, update lat, lon in coordinates
             if newaddress != oldaddress:
-                userdetails.address_coordinates = userdetails.get_lat_long(address)
-                userdetails.save()
-            logger.warn(userdetails.address_coordinates)
+                myLatLng = userdetails.get_lat_long(address)
+                userdetails.address_coordinates = "POINT(" + \
+                    str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
+
+            if new_phone != old_phone:
+                UserToken.objects.create(user=user)
+                ### Update User Events
+                eventhandler = user_handler.UserEventManager()
+                eventhandler.setevent(request.user, 3)
+                userdetails.phone_status = False
+                um.sendVerfText(user.id)
+
+            userdetails.save()
+
             return redirect('userSettings')
 
         if user_form.errors:

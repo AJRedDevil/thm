@@ -25,7 +25,6 @@ urlpatterns = patterns(
     url(r'^settings/$', userviews.userSettings, name='userSettings'),
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
-    # url(r'^manage/$', manage, name='manage'),
     url(r'^$', index, name='index'),
 )
 
@@ -39,4 +38,5 @@ if settings.DEBUG:
 
 urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )
