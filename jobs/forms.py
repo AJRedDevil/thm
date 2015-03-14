@@ -11,6 +11,7 @@ class GMapPointWidget(floppyforms.gis.BaseGeometryWidget):
     map_heght = 500
     map_srid = 900913  # Use the google projection
     template_name = 'google_map.html'
+    is_point = True
 
     class Media:
         js = (

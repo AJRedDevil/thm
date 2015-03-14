@@ -1,17 +1,72 @@
 {% extends "floppyforms/gis/openlayers.html" %}
 {% block map_options %}
 var map_options = {
-    maxExtent: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508),
+    maxExtent: new OpenLayers.Bounds(9493225.71882,3207178.289733,9503697.587846,3217482.953092),
     maxResolution: 156543.0339,
     numZoomLevels: 20,
     units: 'm',
-    type: google.maps.MapTypeId.HYBRID
+    type: google.maps.MapTypeId.ROADMAP,
+    layers: [
+      new OpenLayers.Layer.Google("ROADMAP", { type: google.maps.MapTypeId.ROADMAP }),
+      new OpenLayers.Layer.Google("HYBRID", { type: google.maps.MapTypeId.HYBRID }),
+      new OpenLayers.Layer.Google("TERRAIN", { type: google.maps.MapTypeId.TERRAIN }),
+      new OpenLayers.Layer.Google("SATELLITE", { type: google.maps.MapTypeId.SATELLITE })
+    ]
 };
 {% endblock %}
 {% block options %}
 {{ block.super }}
-options['base_layer'] = new OpenLayers.Layer.Google("hybrid",map_options);
-options['default_lon'] = 85.3141498444705064;
-options['default_lat'] = 27.6942413607694782;
+options['base_layer'] = map_options['layers'][0];
+options['default_lon'] = 85.3261328;
+options['default_lat'] = 27.7089604;
 options['default_zoom'] = 13;
+options['layerswitcher'] = true;
+$("#{{ attrs.id }}_span_map").after('<input id="{{ attrs.id }}_map_search" type="text" style="width: 100%" placeholder="Search Location">');
+var searchInput = $("#{{ attrs.id }}_map_search")[0];
+<!-- var ktmBounds = new OpenLayers.Bounds(85.279098,27.667984,85.373168,27.749937); -->
+var ktmBounds = new google.maps.LatLngBounds(
+  new google.maps.LatLng(27.667984, 85.279098),
+  new google.maps.LatLng(27.749937, 85.373168)
+);
+var searchOptions = {
+  bounds: ktmBounds,
+  componentRestrictions: {country: 'np'}
+};
+google.maps.event.addDomListener(searchInput , 'keydown', function(e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+    }
+  });
+var {{ module }}_search = new google.maps.places.Autocomplete(searchInput, searchOptions);
+{{ module }}_search.addListener('place_changed', function(){
+  var place = {{ module }}_search.getPlace();
+  console.log(place);
+  var fromProj = new OpenLayers.Projection("EPSG:4326");
+  var map = {{ module }}.map;
+  if(place.geometry){
+    var point = new OpenLayers.LonLat(place.geometry.location.D, place.geometry.location.k)
+    point.transform(fromProj, map.getProjectionObject());
+    map.setCenter(point);
+    if(place.geometry.viewport){
+      var viewport = {};
+      viewport.sw = [place.geometry.viewport.ua.j,place.geometry.viewport.Ba.k];
+      viewport.ne = [place.geometry.viewport.ua.k,place.geometry.viewport.Ba.j];
+      var bounds = new OpenLayers.Bounds();
+      bounds.extend(new OpenLayers.LonLat(viewport.ne[0], viewport.ne[1]));
+      bounds.extend(new OpenLayers.LonLat(viewport.sw[0],viewport.sw[1]));
+      bounds.transform(fromProj, map.getProjectionObject());
+      map.zoomToExtent(bounds);
+      var newSearchBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(viewport.sw[1], viewport.sw[0]),
+        new google.maps.LatLng(viewport.ne[1], viewport.ne[0])
+      );
+      {{ module }}_search.setBounds(newSearchBounds);
+    }else{
+      map.zoomTo(map.numZoomLevels - 1);
+      {{ module }}_search.setBounds(ktmBounds);
+    }
+  }
+  return false;
+});
 {% endblock %}
+
