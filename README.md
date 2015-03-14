@@ -31,6 +31,12 @@ gaumire=# create user thm with password 'thm';
 CREATE ROLE
 gaumire=# create database thm owner thm;
 CREATE DATABASE
+
+psql -d thm -U thm -W
+# in the psql shell
+CREATE EXTENSION IF NOT EXISTS postgis;
+ \q
+
 ```
 
 * How to run tests
