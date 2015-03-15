@@ -22,7 +22,9 @@ class JobGalleryImages(models.Model):
         return 'job_assets/'+str(self.__generate_hash()[:8]+'.jpg')
 
     def __generate_hash(self):
-        return hashlib.sha256(str(time.time())).hexdigest()
+        return hashlib.sha256(
+            str(time.time()) + str(self.image.name)
+        ).hexdigest()
 
     job = models.ForeignKey(Jobs, related_name="gallery")
 

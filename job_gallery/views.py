@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 import job_gallery.forms as jgforms
 from jobs.handler import JobManager
+import simplejson as json
 
 import logging
 # Init Logger
@@ -23,11 +25,29 @@ def uploadJobPhotos(request, job_id):
             img = img_form.save(commit=False)
             img.job = job
             img.save()
+            logger.warn(request.FILES['image'])
+            result = []
+            filerecord = {}
+            filerecord['name'] = request.FILES['image'].name
+            filerecord['size'] = 'size'
+            filerecord['url'] = 'url'
+            filerecord['thumbnail_url'] = 'thumbnail_url'
+            filerecord['delete_url'] = 'delete_url'
+            filerecord['delete_type'] = 'delete_type'
+            result.append(filerecord)
+            responsedata = {}
+            responsedata['files'] = result
+            logger.warn(responsedata)
+            return HttpResponse(json.dumps(responsedata), content_type="application/json",)
 
         if img_form.errors:
             logger.debug(
                 "JobGalleryImageForm form has erorrs %s", img_form.errors)
-            return render(request, "uploadjobphotos.html", locals())
+            responsedata = dict(data=img_form.errors, success=False)
+            return HttpResponse(
+                json.dumps(responsedata), content_type="application/json", )
 
-    img_form = jgforms.JobGalleryImageForm()
-    return render(request, "uploadjobphotos.html", locals())
+    responsedata = dict(success=False)
+    return HttpResponse(
+        json.dumps(responsedata),
+        content_type="application/json", status=400)
