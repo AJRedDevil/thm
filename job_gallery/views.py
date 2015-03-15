@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 
-def uploadBeforeJobPics(request, job_id):
+def uploadJobPhotos(request, job_id):
+    logger.warn("hello")
     user = request.user
     if not user.is_staff:
         return redirect('home')
@@ -16,6 +17,7 @@ def uploadBeforeJobPics(request, job_id):
     job = jm.getJobDetails(job_id)
     if request.POST:
         logger.debug(request.POST)
+        logger.debug(request.FILES)
         img_form = jgforms.JobGalleryImageForm(request.POST, request.FILES)
         if img_form.is_valid():
             img = img_form.save(commit=False)
@@ -23,7 +25,8 @@ def uploadBeforeJobPics(request, job_id):
             img.save()
 
         if img_form.errors:
-            logger.debug("JobGalleryImageForm form has erorrs %s", img_form.errors)
+            logger.debug(
+                "JobGalleryImageForm form has erorrs %s", img_form.errors)
             return render(request, "uploadjobphotos.html", locals())
 
     img_form = jgforms.JobGalleryImageForm()

@@ -1,12 +1,17 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis import forms
 from django.template.defaultfilters import filesizeformat
-
-from .models import JobGalleryImages
+from .models import JobGalleryImages, IMAGE_TYPE_SELECTION
 import os
 
 
 class JobGalleryImageForm(forms.ModelForm):
+
+    img_type = forms.ChoiceField(
+        choices=IMAGE_TYPE_SELECTION,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = JobGalleryImages
         field = ['image', 'img_type']
@@ -15,7 +20,6 @@ class JobGalleryImageForm(forms.ModelForm):
         super(JobGalleryImageForm, self).__init__(*args, **kwargs)
         del self.fields['job']
         self.fields['image'].widget.attrs = {'class': 'form-control'}
-        self.fields['img_type'].widget.attrs = {'class': 'form-control'}
 
     def clean_image(self):
         image = self.cleaned_data['image']

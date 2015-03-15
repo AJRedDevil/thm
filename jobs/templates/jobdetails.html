@@ -3,15 +3,19 @@
 {% block localhead %}
   {{ job_form.media }}
 <link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/dark-hive/jquery-ui.css" id="theme">
+<link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href={% static "css/jquery.fileupload.css" %}>
+<link rel="stylesheet" href={% static "css/jquery.fileupload-ui.css" %}>
+<!-- CSS adjustments for browsers with JavaScript disabled -->
+<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-noscript.css" %}></noscript>
+<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-ui-noscript.css" %}></noscript>
 {% endblock localhead %}
 {% block content %}
 <div class='page-container container list-table'>
 	<h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
 	<h1>Job <span class='jobId'>#{{job.id}}</span>
-		<a href="{% url 'uploadBeforeJobPics' job.jobref %}">
-			<button class="btn btn-default">Upload Photos</button><br>
-		</a>
 	</h1>
 
 	<div class="hora-job-form">
@@ -48,8 +52,8 @@
 					</div>
 
 					<div class="control-box">                            
-						<a data-slide="prev" href="#myCarouselBefore" class="carousel-control left">‹</a>
-						<a data-slide="next" href="#myCarouselBefore" class="carousel-control right">›</a>
+						<a data-slide="prev" href="#myCarouselBefore" class="jcarousel-control-prev">‹</a>
+						<a data-slide="next" href="#myCarouselBefore" class="jcarousel-control-next">›</a>
 					</div><!-- /.control-box -->   
 
 				</div><!-- /#myCarousel -->
@@ -78,16 +82,82 @@
 					</div>
 
 					<div class="control-box">                            
-						<a data-slide="prev" href="#myCarouselAfter" class="carousel-control left">‹</a>
-						<a data-slide="next" href="#myCarouselAfter" class="carousel-control right">›</a>
+						<a data-slide="prev" href="#myCarouselAfter" class="jcarousel-control-prev">‹</a>
+						<a data-slide="next" href="#myCarouselAfter" class="jcarousel-control-next">›</a>
 					</div><!-- /.control-box -->   
 
 				</div><!-- /#myCarousel -->
 				{% endif %}
+				<form action={% url 'uploadJobPhotos' job_id=job.jobref %} method="POST" enctype="multipart/form-data">{% csrf_token %}
+				<div class="col-md-8">
+					    <!-- The fileinput-button span is used to style the file input field as button -->
+					    <div class="col-md-6">
+					    	{{img_form.img_type}}
+					    </div>
+					    <div class="col-md-6">
+					    	<span class="btn btn-success fileinput-button">
+					    	    <i class="glyphicon glyphicon-plus"></i>
+					    	    <span>Upload the before/after photos here</span>
+					    	    <!-- The file input field used as target for the file upload widget -->
+					    	    <input id="fileupload" type="file" name="image" multiple>
+					    	</span>
+					    </div>
+				</div>
+				</form>
 			</div>
+			{% else %}
+			<form action={% url 'uploadJobPhotos' job_id=job.jobref %} method="POST" enctype="multipart/form-data">{% csrf_token %}
+			<div class="col-md-8">
+				    <!-- The fileinput-button span is used to style the file input field as button -->
+				    <div class="col-md-6">
+				    	{{img_form.img_type}}
+				    </div>
+				    <div class="col-md-6">
+				    	<span class="btn btn-success fileinput-button">
+				    	    <i class="glyphicon glyphicon-plus"></i>
+				    	    <span>Upload the before/after photos here</span>
+				    	    <!-- The file input field used as target for the file upload widget -->
+				    	    <input id="fileupload" type="file" name="image" multiple>
+				    	</span>
+				    </div>
+			</div>
+			</form>
 			{% endif %}
 		</div>
 	</div>
 	<!-- eo hora-job-form -->
 </div>
 {% endblock content %}
+{% block scripts %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src={% static "js/jquery.iframe-transport.js" %}></script>
+<!-- The basic File Upload plugin -->
+<script src={% static "js/jquery.fileupload.js" %}></script>
+<script>
+/*jslint unparam: true */
+/*global window, $ */
+$(function () {
+    'use strict';
+    // Change this to the location of your server-side upload handler:
+    var url = "{% url 'uploadJobPhotos' job_id=job.jobref %}";
+    $('#fileupload').fileupload({
+        url: url,
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo('#files');
+            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .progress-bar').css(
+                'width',
+                progress + '%'
+            );
+        }
+    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+});
+</script>
+{% endblock scripts %}

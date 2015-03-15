@@ -7,5 +7,5 @@ import job_gallery.views as jgviews
 
 urlpatterns = patterns(
     '',
-    url(r'upload/(?P<job_id>[\w\d]+)/$', jgviews.uploadBeforeJobPics, name='uploadBeforeJobPics'),
+    url(r'upload/(?P<job_id>[\w\d]+)/$', jgviews.uploadJobPhotos, name='uploadJobPhotos'),
 )

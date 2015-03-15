@@ -42,8 +42,8 @@ a {
 .caption {
     height: 20px;
     width: 100%;
-    margin: 20px 0px;
-    padding: 20px;
+    margin: 15px 0px;
+    padding: 0px;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
@@ -71,11 +71,35 @@ a {
             font-size: 0.63rem;
             text-shadow: none !important;
             }
-.carousel-control {
-    top: 80%;
+
+.jcarousel-control-prev,
+.jcarousel-control-next {
+    position: absolute;
+    top: 40%;
+    margin-top: -15px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    background: #8E8D8D;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 0 1px #000;
+    font: 24px/27px Arial, sans-serif;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    -webkit-box-shadow: 0 0 4px #F0EFE7;
+    -moz-box-shadow: 0 0 4px #F0EFE7;
+    box-shadow: 0 0 4px #F0EFE7;
 }
 
+.jcarousel-control-prev {
+    left: 15px;
+}
 
+.jcarousel-control-next {
+    right: 15px;
+}
 
 
 /*/* Footer */
