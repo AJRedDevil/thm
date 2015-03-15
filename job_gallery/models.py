@@ -19,7 +19,7 @@ class JobGalleryImages(models.Model):
     Gallery Images model
     """
     def __get_path(self, image):
-        return 'job_assets/'+str(self.__generate_hash()[:8]+'.jpg')
+        return 'job_assets/'+str(self.job.jobref)+"/"+str(self.__generate_hash()[:8]+'.jpg')
 
     def __generate_hash(self):
         return hashlib.sha256(

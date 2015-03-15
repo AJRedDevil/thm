@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import job_gallery.forms as jgforms
 from jobs.handler import JobManager
+from thm.decorators import is_superuser
+
+
 import simplejson as json
 
 import logging
@@ -10,6 +14,8 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 
+@login_required
+@is_superuser
 def uploadJobPhotos(request, job_id):
     logger.warn("hello")
     user = request.user
@@ -38,7 +44,8 @@ def uploadJobPhotos(request, job_id):
             responsedata = {}
             responsedata['files'] = result
             logger.warn(responsedata)
-            return HttpResponse(json.dumps(responsedata), content_type="application/json",)
+            return HttpResponse(
+                json.dumps(responsedata), content_type="application/json",)
 
         if img_form.errors:
             logger.debug(
