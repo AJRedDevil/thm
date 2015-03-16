@@ -1,4 +1,7 @@
 {% extends "admin/base.html" %}
+{% block localhead %}
+  {{ job_form.media }}
+{% endblock localhead %}
 {% block content %}
 	<div class='page-container container list-table'>
 	<h1><a href={% url 'home' %} class='link main-back'><</a></h1>

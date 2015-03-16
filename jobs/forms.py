@@ -1,6 +1,25 @@
 
 
-from django import forms
+from django.contrib.gis import forms
+import floppyforms as floppyforms
+
+# class GMapPointWidget(floppyforms.gis.PointWidget, floppyforms.gis.BaseGMapWidget):
+    # pass
+
+class GMapPointWidget(floppyforms.gis.BaseGeometryWidget):
+    map_width = 800
+    map_heght = 500
+    map_srid = 900913  # Use the google projection
+    template_name = 'google_map.html'
+    is_point = True
+
+    class Media:
+        js = (
+            'http://openlayers.org/api/2.13/OpenLayers.js',
+            'floppyforms/js/MapWidget.js',
+            '//maps.google.com/maps/api/js?v=3&sensor=false&libraries=places',
+        )
+
 from django.utils.translation import ugettext_lazy as _
 from .models import Jobs
 from users.models import UserProfile
@@ -27,7 +46,7 @@ class JobCreationFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks',]
+                    'location',]
 
     def __init__(self, *args, **kwargs):
         super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
@@ -35,7 +54,11 @@ class JobCreationFormAdmin(forms.ModelForm):
         self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
         self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
         self.fields['destination_home'].attrs={'class' : 'form-control'}
-
+        # gcoord = SpatialReference(4326)
+        # mycoord = SpatialReference(900913)
+        # trans = CoordTransform(gcoord, mycoord)
+        # self.fields['location'].transform(trans)
+        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 800, 'map_height': 500})
 
 class JobEditFormAdmin(forms.ModelForm):
     """
@@ -52,7 +75,7 @@ class JobEditFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman',]
+                    'remarks','fee','status','handyman','location',]
 
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +87,8 @@ class JobEditFormAdmin(forms.ModelForm):
         self.fields['fee'].widget.attrs.update({'class' : 'form-control col-sm-6 col-xs-6'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
-    
+        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 800, 'map_height': 500})
+
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')
         if fee.amount < 0:

@@ -1,9 +1,10 @@
 
 
 from django.conf import settings
-from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+from django.contrib.gis.db import models
 
 from users.models import UserProfile
 
@@ -55,6 +56,8 @@ class Jobs(models.Model):
     considered_handymen = models.TextField(_('considered_handymen'), default=[])
     remarks = models.TextField(_('remarks'), blank=False)
     destination_home =  models.BooleanField(_('destination_home'), default=True)
+    location = models.PointField(srid=4326, default='POINT (85.3141498444705064 27.6942413607694782)', blank=True, null=True)
+    objects = models.GeoManager()
 
     def __unicode__(self):
         return str(self.jobref)
