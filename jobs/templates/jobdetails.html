@@ -1,24 +1,93 @@
 {% extends "admin/base.html" %}
+{% load staticfiles %}
 {% block localhead %}
   {{ job_form.media }}
+<link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
 {% endblock localhead %}
 {% block content %}
-	<div class='page-container container list-table'>
+<div class='page-container container list-table'>
 	<h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-		<h1>Job <span class='jobId'>#{{job.id}}</span></h1>
+	<h1>Job <span class='jobId'>#{{job.id}}</span>
+		<a href="{% url 'uploadBeforeJobPics' job.jobref %}">
+			<button class="btn btn-default">Upload Photos</button><br>
+		</a>
+	</h1>
 
 	<div class="hora-job-form">
 		<div class='row'>
-		<div class="col-md-6">
+		<div class="col-md-4">
+			<form action="" method="post">{% csrf_token %}
+				{{job_form.as_p}}
 
-	<form action="" method="post">{% csrf_token %}
+				<button type="submit" class="btn btn-default submit">Update</button><br>
+			</form>
+		</div>
+			{% if job_before or job_after %}
+			{% if job_before %}
+			<div class="col-md-8">
+				<div class="carousel slide" id="myCarouselBefore">
+					<div class="carousel-inner">
+						{% for img in job_before  %}
+						{% if forloop.first %}
+							<div class="item active">
+						{% else %}
+							<div class="item">						
+						{% endif %}
+							<div class="bannerImage">
+								<a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+							</div>
+							<div class="caption row-fluid">
+							    <div class="span4"><h3>Before</h3>
+							    </div>                	
+							</div>
 
-	{{job_form.as_p}}
+						</div><!-- /Slide1 --> 
+						{% endfor %}
 
+					</div>
+
+					<div class="control-box">                            
+						<a data-slide="prev" href="#myCarouselBefore" class="carousel-control left">‹</a>
+						<a data-slide="next" href="#myCarouselBefore" class="carousel-control right">›</a>
+					</div><!-- /.control-box -->   
+
+				</div><!-- /#myCarousel -->
+				{% endif %}
+				{% if job_after %}
+				<div class="carousel slide" id="myCarouselAfter">
+					<div class="carousel-inner">
+						{% for img in job_after  %}
+						{% if forloop.first %}
+							<div class="item active">
+						{% else %}
+							<div class="item">						
+						{% endif %}
+							<div class="bannerImage">
+								<a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+							</div>
+							<div class="caption row-fluid">
+							    <div class="span4"><h3>After</h3>
+							    </div>                	
+							</div>
+
+
+						</div><!-- /Slide1 --> 
+						{% endfor %}
+
+					</div>
+
+					<div class="control-box">                            
+						<a data-slide="prev" href="#myCarouselAfter" class="carousel-control left">‹</a>
+						<a data-slide="next" href="#myCarouselAfter" class="carousel-control right">›</a>
+					</div><!-- /.control-box -->   
+
+				</div><!-- /#myCarousel -->
+				{% endif %}
+			</div>
+			{% endif %}
+		</div>
 	</div>
-		 </div>
-	</div>
-	<button type="submit" class="btn btn-default submit">Update</button>
 	<!-- eo hora-job-form -->
+</div>
 {% endblock content %}

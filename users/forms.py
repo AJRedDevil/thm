@@ -186,7 +186,10 @@ class UserCreationForm(forms.ModelForm):
 
     def clean_phone(self):
 
-        phone = self.cleaned_data.get("phone")
+        user = self.cleaned_data.get("phone")
+        # While creating users from registered pool
+        # the phone field is actually the userprofile object
+        phone = user.phone
         if str(phone.country_code) != '977':
             raise forms.ValidationError(
                 self.error_messages['country_notsupported'],

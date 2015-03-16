@@ -41,6 +41,8 @@ def viewJob(request, job_id):
     user = request.user
     jm = JobManager()
     job = jm.getJobDetails(job_id)
+    job_before = job.gallery.filter(img_type=0)
+    job_after = job.gallery.filter(img_type=1)
     if request.method=="POST":
         logger.debug(request.POST)
         job_form = JobEditFormAdmin(request.POST, instance=job)
