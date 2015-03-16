@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 @login_required
 @is_superuser
 def uploadJobPhotos(request, job_id):
-    logger.warn("hello")
     user = request.user
     if not user.is_staff:
         return redirect('home')
