@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from thm.decorators import is_superuser
 from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
+import job_gallery.forms as jgforms
 from .handler import JobManager
 from libs.sparrow_handler import Sparrow
 from libs import out_sms as messages
@@ -34,6 +35,7 @@ def createJob(request):
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)
             return render(request, 'createjob.html', locals())
+
 
 @login_required
 @is_superuser
@@ -95,4 +97,5 @@ def viewJob(request, job_id):
             logger.debug("Form has errors, %s ", job_form.errors)
 
     job_form = JobEditFormAdmin(instance=job)
+    img_form = jgforms.JobGalleryImageForm()
     return render(request, 'jobdetails.html',locals())

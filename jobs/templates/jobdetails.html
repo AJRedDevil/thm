@@ -3,91 +3,320 @@
 {% block localhead %}
   {{ job_form.media }}
 <link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/dark-hive/jquery-ui.css" id="theme">
+<link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href={% static "css/jquery.fileupload.css" %}>
+<link rel="stylesheet" href={% static "css/jquery.fileupload-ui.css" %}>
+<!-- CSS adjustments for browsers with JavaScript disabled -->
+<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-noscript.css" %}></noscript>
+<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-ui-noscript.css" %}></noscript>
 {% endblock localhead %}
 {% block content %}
 <div class='page-container container list-table'>
-	<h1><a href={% url 'home' %} class='link main-back'><</a></h1>
+    <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-	<h1>Job <span class='jobId'>#{{job.id}}</span>
-		<a href="{% url 'uploadBeforeJobPics' job.jobref %}">
-			<button class="btn btn-default">Upload Photos</button><br>
-		</a>
-	</h1>
+    <h1>Job <span class='jobId'>#{{job.id}}</span>
+    </h1>
 
-	<div class="hora-job-form">
-		<div class='row'>
-		<div class="col-md-4">
-			<form action="" method="post">{% csrf_token %}
-				{{job_form.as_p}}
+    <div class="hora-job-form">
+        <div class='row'>
+            <div class="col-md-4">
+                {% if job_before or job_after %}
+                <a data-toggle="modal" id ="image-modalBefore" href="#myModalJobPhotos">
+                    <button type="submit" class="btn btn-block btn-default">
+                        <span>Photos</span>
+                    </button>
+                </a>
+                {% endif %}
+                <form action="" method="post">{% csrf_token %}
+                    {{job_form.as_p}}
 
-				<button type="submit" class="btn btn-default submit">Update</button><br>
-			</form>
-		</div>
-			{% if job_before or job_after %}
-			{% if job_before %}
-			<div class="col-md-8">
-				<div class="carousel slide" id="myCarouselBefore">
-					<div class="carousel-inner">
-						{% for img in job_before  %}
-						{% if forloop.first %}
-							<div class="item active">
-						{% else %}
-							<div class="item">						
-						{% endif %}
-							<div class="bannerImage">
-								<a href="#"><img src="{{img.get_img_url}}" alt=""></a>
-							</div>
-							<div class="caption row-fluid">
-							    <div class="span4"><h3>Before</h3>
-							    </div>                	
-							</div>
-
-						</div><!-- /Slide1 --> 
-						{% endfor %}
-
-					</div>
-
-					<div class="control-box">                            
-						<a data-slide="prev" href="#myCarouselBefore" class="carousel-control left">‹</a>
-						<a data-slide="next" href="#myCarouselBefore" class="carousel-control right">›</a>
-					</div><!-- /.control-box -->   
-
-				</div><!-- /#myCarousel -->
-				{% endif %}
-				{% if job_after %}
-				<div class="carousel slide" id="myCarouselAfter">
-					<div class="carousel-inner">
-						{% for img in job_after  %}
-						{% if forloop.first %}
-							<div class="item active">
-						{% else %}
-							<div class="item">						
-						{% endif %}
-							<div class="bannerImage">
-								<a href="#"><img src="{{img.get_img_url}}" alt=""></a>
-							</div>
-							<div class="caption row-fluid">
-							    <div class="span4"><h3>After</h3>
-							    </div>                	
-							</div>
-
-
-						</div><!-- /Slide1 --> 
-						{% endfor %}
-
-					</div>
-
-					<div class="control-box">                            
-						<a data-slide="prev" href="#myCarouselAfter" class="carousel-control left">‹</a>
-						<a data-slide="next" href="#myCarouselAfter" class="carousel-control right">›</a>
-					</div><!-- /.control-box -->   
-
-				</div><!-- /#myCarousel -->
-				{% endif %}
-			</div>
-			{% endif %}
-		</div>
-	</div>
-	<!-- eo hora-job-form -->
+                    <button type="submit" class="btn btn-block btn-default submit">Update</button><br>
+                </form>
+            </div>
+                   {% if not job_before and not job_after %}
+                   <div class="col-md-8">
+                       <form id="fileupload" action="{% url 'uploadJobPhotos' job_id=job.jobref %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <!-- Redirect browsers with JavaScript disabled to the origin page -->
+                        <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+                        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                        <div class="fileupload-buttonbar">
+                           <div>
+                               {{img_form.img_type}}
+                           </div><br>
+                           <div>
+                            <!-- The fileinput-button span is used to style the file input field as button -->
+                            <span class="btn btn-success btn-block fileinput-button">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                <span>Add files...</span>
+                                <input type="file" name="image" multiple>
+                            </span>
+                            <button type="submit" class="btn btn-primary btn-block start">
+                                <i class="glyphicon glyphicon-upload"></i>
+                                <span>Start upload</span>
+                            </button>
+                            <!-- The global file processing state -->
+                            <span class="fileupload-process"></span>
+                            <!-- The global progress state -->
+                            <div class="fileupload-progress fade">
+                                <!-- The global progress bar -->
+                                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                                </div>
+                                <!-- The extended global progress state -->
+                                <div class="progress-extended">&nbsp;</div>
+                            </div>
+                            <!-- The table listing the files available for upload/download -->
+                            <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+                   {% endif %} 
+        </div>       
+    </div>
 </div>
 {% endblock content %}
+{% block scripts %}
+{% verbatim %}
+    <!-- The template to display files available for upload -->
+    <script id="template-upload" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+        <tr class="template-upload fade">
+            <td>
+                <span class="preview"></span>
+            </td>
+            <td>
+                <p class="name">{%=file.name%}</p>
+                <strong class="error text-danger"></strong>
+            </td>
+            <td>
+                <p class="size">Processing...</p>
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+            </td>
+            <td>
+                {% if (!i && !o.options.autoUpload) { %}
+                    <button class="btn btn-primary start" disabled>
+                        <i class="glyphicon glyphicon-upload"></i>
+                        <span>Start</span>
+                    </button>
+                {% } %}
+                {% if (!i) { %}
+                    <button class="btn btn-warning cancel">
+                        <i class="glyphicon glyphicon-ban-circle"></i>
+                        <span>Cancel</span>
+                    </button>
+                {% } %}
+            </td>
+        </tr>
+    {% } %}
+    </script>
+    <!-- The template to display files available for download -->
+    <script id="template-download" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+        <tr class="template-download fade">
+            <td>
+                <span class="preview">
+                    {% if (file.thumbnailUrl) { %}
+                        <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                    {% } %}
+                </span>
+            </td>
+            <td>
+                <p class="name">
+                    {% if (file.url) { %}
+                        <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                    {% } else { %}
+                        <span>{%=file.name%}</span>
+                    {% } %}
+                </p>
+                {% if (file.error) { %}
+                    <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                {% } %}
+            </td>
+            <td>
+                <span class="size">{%=o.formatFileSize(file.size)%}</span>
+            </td>
+            <td>
+                {% if (file.deleteUrl) { %}
+                    <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                        <i class="glyphicon glyphicon-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                    <input type="checkbox" name="delete" value="1" class="toggle">
+                {% } %}
+            </td>
+        </tr>
+    {% } %}
+    </script>
+{% endverbatim %}
+{% if job_before or job_after %}
+<div class="modal" id="myModalJobPhotos" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal">×</button>
+          <h3 class="modal-title"></h3>
+      </div>
+      <div class="modal-body">
+        {% if job_before %}
+            <div class="carousel slide" id="myCarouselBefore">
+                <div class="carousel-inner">
+                    {% for img in job_before  %}
+                    {% if forloop.first %}
+                        <div class="item active">
+                    {% else %}
+                        <div class="item">                      
+                    {% endif %}
+                        <div class="bannerImage">
+                            <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+                        </div>
+                        <div class="caption row-fluid">
+                            <div class="span4"><h3>Before</h3>
+                            </div>                  
+                        </div>
+
+                    </div><!-- /Slide1 --> 
+                    {% endfor %}
+
+                </div>
+
+                <div class="control-box">                            
+                    <a data-slide="prev" href="#myCarouselBefore" class="jcarousel-control-prev">‹</a>
+                    <a data-slide="next" href="#myCarouselBefore" class="jcarousel-control-next">›</a>
+                </div><!-- /.control-box -->   
+
+            </div><!-- /#myCarousel -->
+        {% endif %}
+        
+        {% if job_after %}
+            
+        <div class="carousel slide" id="myCarouselAfter">
+            <div class="carousel-inner">
+                {% for img in job_after  %}
+                {% if forloop.first %}
+                    <div class="item active">
+                {% else %}
+                    <div class="item">                      
+                {% endif %}
+                    <div class="bannerImage">
+                        <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+                    </div>
+                    <div class="caption row-fluid">
+                        <div class="span4"><h3>After</h3>
+                        </div>                  
+                    </div>
+
+                </div><!-- /Slide1 --> 
+                {% endfor %}
+
+            </div>
+
+            <div class="control-box">                            
+                <a data-slide="prev" href="#myCarouselAfter" class="jcarousel-control-prev">‹</a>
+                <a data-slide="next" href="#myCarouselAfter" class="jcarousel-control-next">›</a>
+            </div><!-- /.control-box -->   
+
+        </div><!-- /#myCarousel -->            
+        {% endif %}
+      </div>
+      <form id="fileupload" action="{% url 'uploadJobPhotos' job_id=job.jobref %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                             <!-- Redirect browsers with JavaScript disabled to the origin page -->
+                             <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+                             <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                             <div class="fileupload-buttonbar">
+                                  <div>
+                                      {{img_form.img_type}}
+                                  </div><br>
+                                  <div>
+                                     <!-- The fileinput-button span is used to style the file input field as button -->
+                                     <span class="btn btn-success btn-block fileinput-button">
+                                         <i class="glyphicon glyphicon-plus"></i>
+                                         <span>Add files...</span>
+                                         <input type="file" name="image" multiple>
+                                     </span>
+                                     <button type="submit" class="btn btn-primary btn-block start">
+                                         <i class="glyphicon glyphicon-upload"></i>
+                                         <span>Start upload</span>
+                                     </button>
+                                     <!-- The global file processing state -->
+                                     <span class="fileupload-process"></span>
+                                     <!-- The global progress state -->
+                                     <div class="fileupload-progress fade">
+                                         <!-- The global progress bar -->
+                                         <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                             <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                                         </div>
+                                         <!-- The extended global progress state -->
+                                         <div class="progress-extended">&nbsp;</div>
+                                     </div>
+                                     <!-- The table listing the files available for upload/download -->
+                                     <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+                                 </div>
+                             </div>
+                         </form>
+      <div class="modal-footer">
+          <button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+<script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+<script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src={% static "js/jquery.iframe-transport.js" %}></script>
+<!-- The basic File Upload plugin -->
+<script src={% static "js/jquery.fileupload.js" %}></script>
+<!-- The File Upload processing plugin -->
+<script src={% static "js/jquery.fileupload-process.js" %}></script>
+<!-- The File Upload image preview & resize plugin -->
+<script src={% static "js/jquery.fileupload-image.js" %}></script>
+<!-- The File Upload validation plugin -->
+<script src={% static "js/jquery.fileupload-validate.js" %}></script>
+<!-- The File Upload user interface plugin -->
+<script src={% static "js/jquery.fileupload-ui.js" %}></script>
+<!-- The main application script -->
+<script src={% static "js/main.js" %}></script>
+<script type="text/javascript">
+    // Initialize the jQuery File Upload widget:
+    $('#fileupload').fileupload({
+        // Uncomment the following to send cross-domain cookies:
+        //xhrFields: {withCredentials: true},
+        url: "{% url 'uploadJobPhotos' job_id=job.jobref %}"
+    });
+</script>
+
+{% comment %}
+    <script>
+    /*jslint unparam: true */
+    /*global window, $ */
+    $(function () {
+        'use strict';
+        // Change this to the location of your server-side upload handler:
+        var url = "{% url 'uploadJobPhotos' job_id=job.jobref %}";
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'html',
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $('<p/>').text(file.name).appendTo('#files');
+                });
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
+    </script>
+{% endcomment %}
+{% endblock scripts %}

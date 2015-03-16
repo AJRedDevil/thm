@@ -32,7 +32,7 @@ urlpatterns = patterns(
     url(r'^$', index, name='index'),
 )
 
-if not settings.DEBUG:
+if settings.DEBUG:
     urlpatterns += patterns(
         '',
         url(r'^api/v1/', include('api.urls')),
