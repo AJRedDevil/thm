@@ -57,6 +57,10 @@ class Jobs(models.Model):
     remarks = models.TextField(_('remarks'), blank=False)
     destination_home =  models.BooleanField(_('destination_home'), default=True)
     location = models.PointField(srid=4326, default='POINT (85.3141498444705064 27.6942413607694782)', blank=True, null=True)
+    location_landmark = models.CharField(
+        _('Nearest Address'),
+        max_length=100
+    )
     objects = models.GeoManager()
 
     def __unicode__(self):
