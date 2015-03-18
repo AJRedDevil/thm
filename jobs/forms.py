@@ -7,7 +7,7 @@ import floppyforms as floppyforms
     # pass
 
 class GMapPointWidget(floppyforms.gis.BaseGeometryWidget):
-    map_width = 800
+    map_width = 750
     map_heght = 500
     map_srid = 900913  # Use the google projection
     template_name = 'google_map.html'
@@ -58,7 +58,8 @@ class JobCreationFormAdmin(forms.ModelForm):
         # mycoord = SpatialReference(900913)
         # trans = CoordTransform(gcoord, mycoord)
         # self.fields['location'].transform(trans)
-        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 800, 'map_height': 500})
+        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 750, 'map_height': 500})
+        self.fields['location'].widget.attrs={'class' : 'form-control'}
 
 class JobEditFormAdmin(forms.ModelForm):
     """
@@ -75,7 +76,7 @@ class JobEditFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman','location',]
+                    'remarks','fee','status','handyman','location', 'location_landmark']
 
 
     def __init__(self, *args, **kwargs):
@@ -84,10 +85,11 @@ class JobEditFormAdmin(forms.ModelForm):
         self.fields['jobtype'].widget.attrs.update({'class' : 'form-control'})
         self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
         self.fields['destination_home'].widget.attrs.update({'class' : 'checkbox'})
-        self.fields['fee'].widget.attrs.update({'class' : 'form-control col-sm-6 col-xs-6'})
+        self.fields['fee'].widget.attrs.update({'class' : 'form-control'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
-        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 800, 'map_height': 500})
+        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 750, 'map_height': 500})
+        self.fields['location_landmark'].widget = forms.HiddenInput()
 
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')

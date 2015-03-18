@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load staticfiles %}
+{% load staticfiles floppyforms %}
 {% block localhead %}
   {{ job_form.media }}
 <link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
@@ -20,59 +20,58 @@
 
     <div class="hora-job-form">
         <div class='row'>
-            <div class="col-md-4">
-                {% if job_before or job_after %}
-                <a data-toggle="modal" id ="image-modalBefore" href="#myModalJobPhotos">
-                    <button type="submit" class="btn btn-block btn-default">
-                        <span>Photos</span>
-                    </button>
-                </a>
-                {% endif %}
-                <form action="" method="post">{% csrf_token %}
-                    {{job_form.as_p}}
+        {% if not job_before and not job_after %}
+        <div class="col-md-4">
+        <a data-toggle="modal" id ="image-modalBefore" href="#myModalUploadPhotos">
+            <button type="submit" class="btn btn-block btn-default">
+                <span>Upload Photos</span>
+            </button>
+        </a>
+         <form action="" method="post" id="jobEditForm">{% csrf_token %}
+             {{job_form.customer.label_tag}} {{job_form.customer}}
+             {{job_form.jobtype.label_tag}} {{job_form.jobtype}}
+             {{job_form.remarks.label_tag}} {{job_form.remarks}}
+             {{job_form.destination_home.label_tag}} {{job_form.destination_home}}
+             {{job_form.fee.label_tag}} {{job_form.fee}}
+             {{job_form.status.label_tag}} {{job_form.status}}
+             {{job_form.handyman.label_tag}} {{job_form.handyman}}
+             {{job_form.location_landmark}}
+             <br><button type="submit" class="btn btn-block btn-default submit">Update</button><br>
+         </div>
 
-                    <button type="submit" class="btn btn-block btn-default submit">Update</button><br>
-                </form>
-            </div>
-                   {% if not job_before and not job_after %}
-                   <div class="col-md-8">
-                       <form id="fileupload" action="{% url 'uploadJobPhotos' job_id=job.jobref %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <!-- Redirect browsers with JavaScript disabled to the origin page -->
-                        <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
-                        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-                        <div class="fileupload-buttonbar">
-                           <div>
-                               {{img_form.img_type}}
-                           </div><br>
-                           <div>
-                            <!-- The fileinput-button span is used to style the file input field as button -->
-                            <span class="btn btn-success btn-block fileinput-button">
-                                <i class="glyphicon glyphicon-plus"></i>
-                                <span>Add files...</span>
-                                <input type="file" name="image" multiple>
-                            </span>
-                            <button type="submit" class="btn btn-primary btn-block start">
-                                <i class="glyphicon glyphicon-upload"></i>
-                                <span>Start upload</span>
-                            </button>
-                            <!-- The global file processing state -->
-                            <span class="fileupload-process"></span>
-                            <!-- The global progress state -->
-                            <div class="fileupload-progress fade">
-                                <!-- The global progress bar -->
-                                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
-                                </div>
-                                <!-- The extended global progress state -->
-                                <div class="progress-extended">&nbsp;</div>
-                            </div>
-                            <!-- The table listing the files available for upload/download -->
-                            <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-                        </div>
-                    </div>
-                </form>
-            </div>
-                   {% endif %} 
+         <div class="col-md-8">
+            {{job_form.location_landmark.label_tag}} {{job_form.location_landmark.value}}
+
+            {% widget job_form.location %}
+         </div>
+         </form>
+        {% endif %} 
+        {% if job_before or job_after %}
+        <div class="col-md-4">
+            <a data-toggle="modal" id ="image-modalBefore" href="#myModalJobPhotos">
+                <button type="submit" class="btn btn-block btn-default">
+                    <span>Photos</span>
+                </button>
+            </a>
+        <form action="" method="post" id="jobEditForm">{% csrf_token %}
+            {{job_form.customer.label_tag}} {{job_form.customer}}
+            {{job_form.jobtype.label_tag}} {{job_form.jobtype}}
+            {{job_form.remarks.label_tag}} {{job_form.remarks}}
+            {{job_form.destination_home.label_tag}} {{job_form.destination_home}}
+            {{job_form.fee.label_tag}} {{job_form.fee}}
+            {{job_form.status.label_tag}} {{job_form.status}}
+            {{job_form.handyman.label_tag}} {{job_form.handyman}}
+            {{job_form.location_landmark}}
+
+               <br><button type="submit" class="btn btn-block btn-default submit">Update</button>
+           </div>
+               <div class="col-md-8">
+                {{job_form.location_landmark.label_tag}}{{job_form.location_landmark.value}}
+                   {% widget job_form.location %}
+               </div>
+        </form>
+        </div>
+        {% endif %}
         </div>       
     </div>
 </div>
@@ -260,7 +259,60 @@
       </div>
     </div>
   </div>
+  </div>
+  </div>
+  </div>
 {% endif %}
+<div class="modal" id="myModalUploadPhotos" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal">×</button>
+          <h3 class="modal-title"></h3>
+      </div>
+      <div class="modal-body">
+            <form id="fileupload" action="{% url 'uploadJobPhotos' job_id=job.jobref %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+             <!-- Redirect browsers with JavaScript disabled to the origin page -->
+             <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+             <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+             <div class="fileupload-buttonbar">
+                <div>
+                    {{img_form.img_type}}
+                </div><br>
+                <div>
+                 <!-- The fileinput-button span is used to style the file input field as button -->
+                 <span class="btn btn-success btn-block fileinput-button">
+                     <i class="glyphicon glyphicon-plus"></i>
+                     <span>Add files...</span>
+                     <input type="file" name="image" multiple>
+                 </span>
+                 <button type="submit" class="btn btn-primary btn-block start">
+                     <i class="glyphicon glyphicon-upload"></i>
+                     <span>Start upload</span>
+                 </button>
+                 <!-- The global file processing state -->
+                 <span class="fileupload-process"></span>
+                 <!-- The global progress state -->
+                 <div class="fileupload-progress fade">
+                     <!-- The global progress bar -->
+                     <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                         <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                     </div>
+                     <!-- The extended global progress state -->
+                     <div class="progress-extended">&nbsp;</div>
+                 </div>
+                 <!-- The table listing the files available for upload/download -->
+                 <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+             </div>
+         </div>
+         </form>
+      <div class="modal-footer">
+          <button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 <!-- The Templates plugin is included to render the upload/download listings -->
 <script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
@@ -290,7 +342,12 @@
         url: "{% url 'uploadJobPhotos' job_id=job.jobref %}"
     });
 </script>
-
+<script type="text/javascript">
+    $('#jobEditForm').submit(function(){
+       $('input#id_location_landmark').val($('input#id_location_map_search').val());
+       return true;
+    });
+</script>
 {% comment %}
     <script>
     /*jslint unparam: true */

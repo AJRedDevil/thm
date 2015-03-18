@@ -21,7 +21,7 @@ options['default_lon'] = 85.3261328;
 options['default_lat'] = 27.7089604;
 options['default_zoom'] = 13;
 options['layerswitcher'] = true;
-$("#{{ attrs.id }}_span_map").after('<input id="{{ attrs.id }}_map_search" type="text" style="width: 100%" placeholder="Search Location">');
+$("#{{ attrs.id }}_span_map").before('<input class="form-control input=lg" id="{{ attrs.id }}_map_search" type="text" style="width: 100%" placeholder="Search Location">');
 var searchInput = $("#{{ attrs.id }}_map_search")[0];
 <!-- var ktmBounds = new OpenLayers.Bounds(85.279098,27.667984,85.373168,27.749937); -->
 var ktmBounds = new google.maps.LatLngBounds(
