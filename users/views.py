@@ -392,7 +392,6 @@ def joinasuser(request):
             vas = Sparrow()
             msg = messages.NEW_USER_REG_MSG
             status = vas.sendDirectMessage(msg, phone)
-            logger.warn(status)
             email_handler.send_newregistration_notif(phone.as_international)
             # requests.get(
             #     request.build_absolute_uri(reverse('gaTracker'))

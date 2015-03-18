@@ -29,15 +29,23 @@ class Sparrow(object):
 
     def sendMessage(self, message, user):
         getparams = self.setparams(message, user)
-        req = requests.post(self.__outgoingurl, getparams, verify=False)
-        if req.status_code == 200:
-            logger.warn(message)
-            sm = SMSLogManager()
-            sm.updateLog(user, message)
-            return req.content
-        else:
-            logger.warn("Error sending SMS to {0}".format(user.phone.as_international))
-            return req.content
+        try:
+            req = requests.post(self.__outgoingurl, getparams, verify=False)
+            if req.status_code == 200:
+                logger.warn(message)
+                sm = SMSLogManager()
+                sm.updateLog(user, message)
+                return req.content
+            else:
+                logger.warn("Error sending SMS to {0}".format(
+                    user.phone.as_international))
+                return req.content
+        except Exception, e:
+            logger.warn("Error sending SMS to {0}".format(
+                user.phone.as_international))
+            logger.warn("Error : {0}".format(e))
+            # Because the request doesn't turn out well, we just pass it
+            return e
 
 
     def sendDirectMessage(self, message, phone):
@@ -49,6 +57,13 @@ class Sparrow(object):
             to = phone.as_international,
             text = message
             )
-        req = requests.post(self.__outgoingurl, params, verify=False)
-        resp = req.content
-        return resp
+        try:
+            req = requests.post(self.__outgoingurl, params, verify=False)
+            resp = req.content
+            return resp
+        except Exception, e:
+            logger.warn("Error sending SMS to {0}".format(
+                phone.as_international))
+            logger.warn("Error : {0}".format(e))
+            # Because the request doesn't turn out well, we just pass it
+            return e
