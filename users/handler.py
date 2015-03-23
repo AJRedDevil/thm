@@ -44,7 +44,7 @@ class UserManager(object):
         user = self.getUserDetails(user_id)
         token = UserToken.objects.get(user_id=user, status=False)
         vas = Sparrow()
-        msg = "{0}".format(token.get_vrfcode())
+        msg = messages.PHONE_VERF_MSG.format(token.get_vrfcode())
         logger.debug(msg)
         status = vas.sendMessage(msg, user)
         return status

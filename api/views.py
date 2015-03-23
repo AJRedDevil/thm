@@ -26,13 +26,19 @@ import simplejson as json
 # Init Logger
 logger = logging.getLogger(__name__)
 
-class UsersList(APIView):
+# # Below shoudl be commented out because
+# # we do not return list of all users
+# class UsersList(APIView):
 
-    def get(self, request, format=None):
-        users = UserProfile.objects.all()
-        serialized_users = serializers.UserSerializer(users, many=True)
-        responsedata = dict(data=serialized_users.data, success=True)
-        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+#     def get(self, request, format=None):
+#         users = UserProfile.objects.all()
+#         serialized_users = serializers.UserSerializer(users, many=True)
+#         responsedata = dict(detail=serialized_users.data, success=True)
+#         return HttpResponse(
+#             json.dumps(responsedata),
+#             content_type="application/json",
+#             status=status.HTTP_200_OK)
+
 
 class UsersDetail(APIView):
     """
@@ -45,7 +51,6 @@ class UsersDetail(APIView):
         except UserProfile.DoesNotExist:
             raise Http404
 
-
     def get(self, request, pk, format=None):
         """
         Returns detail of a user
@@ -54,14 +59,19 @@ class UsersDetail(APIView):
         """
         user = self.get_object(pk)
         serialized_user = serializers.UserSerializer(user)
-        responsedata = dict(data=serialized_user.data, status=status.HTTP_200_OK ,success=True)
-        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+        responsedata = dict(detail=serialized_user.data, success=True)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json",
+            status=status.HTTP_200_OK)
+
 
 class UserSignup(APIView):
     """
     User signup resource
     """
     permission_classes = (AllowAny,)
+
     def post(self, request, format=None):
         """
         Allows a user to signup
@@ -72,31 +82,47 @@ class UserSignup(APIView):
         user = request.user
         ## Error if user is already authenticated
         if user.is_authenticated():
-            responsedata = dict (status=status.HTTP_400_BAD_REQUEST, success=False)
-            return HttpResponse(responsedata, content_type="application/json")
-        ## Creating an mutable dict from the request.DATA so we can add address details to it
+            responsedata = dict(success=False)
+            return HttpResponse(
+                json.dumps(responsedata),
+                content_type="application/json",
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # Creating an mutable dict from the request.DATA
+        # so we can add address details to it
         data = request.DATA.copy()
         ## Creating a address object
         serialized_user = serializers.UserSignupValidationSerializer(data=data)
         if serialized_user.is_valid():
-            data['address'] = json.dumps(dict(city=data['city'], streetaddress=data['streetaddress']))
+            data['address'] = json.dumps(dict(
+                city=data['city'],
+                streetaddress=data['streetaddress']))
             serialized_user = serializers.UserSignupSerializer(data=data)
             if serialized_user.is_valid():
                 user = serialized_user.save()
-                ## Creating a user transaction token for the user
+                # Creating a user transaction token for the user
                 UserToken.objects.create(user=user)
-                ## Using User hander send out verification code to the user on the phone
+                # Using User handler to send out verification
+                # code to the user on the phone
                 um = user_handler.UserManager()
                 msgstatus = um.sendVerfTextApp(user.id)
                 logging.warn(msgstatus)
-                logging.warn("user {0} is created".format(user.phone))
-                ## Creating a auth token for the user and return the same as response
+                logging.warn("user {0} is created from app".format(user.phone))
+                # Creating a auth token for the user
+                # and return the same as response
                 token = Token.objects.get(user=user)
                 tokendata = dict(token=token.key)
-                responsedata = dict(data=tokendata, status=status.HTTP_201_CREATED, success=True)
-                return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        responsedata=dict(data=serialized_user.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
-        return HttpResponse(json.dumps(responsedata), content_type="application/json")
+                responsedata = dict(detail=tokendata, success=True)
+                return HttpResponse(
+                    json.dumps(responsedata),
+                    content_type="application/json",
+                    status=status.HTTP_201_CREATED)
+        responsedata = dict(detail=serialized_user.errors)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json",
+            status=status.HTTP_400_BAD_REQUEST)
+
 
 class ObtainAuthToken(APIView):
     """
@@ -104,14 +130,17 @@ class ObtainAuthToken(APIView):
     """
     throttle_classes = ()
     permission_classes = ()
-    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    parser_classes = (
+        parsers.FormParser,
+        parsers.MultiPartParser,
+        parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = serializers.AuthTokenSerializer
     model = Token
 
     def post(self, request):
         """
-        Allows a user to login 
+        Allows a user to login
         ---
         request_serializer: serializers.AuthTokenSerializer
         response_serializer: serializers.SigninResponseSerializer
@@ -121,12 +150,18 @@ class ObtainAuthToken(APIView):
             user = serializer.object['user']
             token, created = Token.objects.get_or_create(user=user)
             tokendata = dict(token=token.key)
-            responsedata = dict(data=tokendata, status=status.HTTP_200_OK, success=True)
-            return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        responsedata=dict(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
-        return HttpResponse(json.dumps(responsedata), content_type="application/json")
+            responsedata = dict(detail=tokendata, success=True)
+            return HttpResponse(
+                json.dumps(responsedata),
+                content_type="application/json")
+        responsedata = dict(detail=serializer.errors, success=False)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json",
+            status=status.HTTP_400_BAD_REQUEST)
 
 obtain_auth_token = ObtainAuthToken.as_view()
+
 
 class JobDetail(APIView):
     """
@@ -250,6 +285,7 @@ class JobsDetail(APIView):
         responsedata=dict(data=serialized_job.errors, status=status.HTTP_400_BAD_REQUEST, success=False)
         return HttpResponse(json.dumps(responsedata),content_type="application/json")
 
+
 class VerifyPhone(APIView):
     """
     Phone verification resource
@@ -262,35 +298,63 @@ class VerifyPhone(APIView):
         user = request.user
         client_internal_ip = get_real_ip(request)
         client_public_ip = get_ip(request)
-        if user.phone_status == False:
+        if user.phone_status is False:
             um = user_handler.UserManager()
             UserToken.objects.create(user=user)
             ### Update User Events
             eventhandler = user_handler.UserEventManager()
-            extrainfo = dict(client_public_ip=client_public_ip, client_internal_ip=client_internal_ip)
-            eventhandler.setevent(request.user, 3, extrainfo)                
+            extrainfo = dict(
+                client_public_ip=client_public_ip,
+                client_internal_ip=client_internal_ip)
+            eventhandler.setevent(request.user, 3, extrainfo)
             ### Send user a SMS stating that his phone has been verified
             um.sendVerfTextApp(user.id)
             logger.debug("Verification code sent to the {0}".format(user.phone))
-            responsedata = dict(status=status.HTTP_200_OK, success=True)
-            return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        responsedata=dict(detail="Phone already verified", status=status.HTTP_400_BAD_REQUEST, success=False)
-        return HttpResponse(json.dumps(responsedata), content_type="application/json")
+            responsedata = dict(success=True)
+            return HttpResponse(
+                json.dumps(responsedata),
+                content_type="application/json")
+        responsedata = dict(detail="Phone already verified", success=False)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json",
+            status=status.HTTP_400_BAD_REQUEST,)
 
     def post(self, request):
         """
-        Allows a user to verify his phone 
+        Allows a user to verify his phone
         ---
         request_serializer: serializers.PhoneVerifySerializer
         response_serializer: serializers.JobAPIResponseSerializer
         """
-        serializer = serializers.PhoneVerifySerializer(data=request.POST, context={'request': request})
+        serializer = serializers.PhoneVerifySerializer(
+            data=request.POST, context={'request': request})
         if serializer.is_valid():
             user = request.user
             user.phone_status = True
             user.save()
-            responsedata = dict(status=status.HTTP_200_OK, success=True)
-            return HttpResponse(json.dumps(responsedata), content_type="application/json")
-        responsedata=dict(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST, success=False)
-        return HttpResponse(json.dumps(responsedata), content_type="application/json")
+            responsedata = dict(success=True)
+            return HttpResponse(
+                json.dumps(responsedata),
+                content_type="application/json")
+        responsedata = dict(detail=serializer.errors, success=False)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json",
+            status=status.HTTP_400_BAD_REQUEST,)
 
+
+class CheckPhoneStatus(APIView):
+    """
+    Phone status resource
+    """
+
+    def get(self, request, format=None):
+        """
+        Returns the status of the phone verification
+        """
+        user = request.user
+        responsedata = dict(success=user.phone_status)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json")
