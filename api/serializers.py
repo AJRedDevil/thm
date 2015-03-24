@@ -81,10 +81,11 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'password1',
             'password2',
             'current_address'
-            )
+        )
 
     def restore_object(self, attrs, instance=None):
-        instance = super(UserSignupSerializer, self).restore_object(attrs, instance)
+        instance = super(UserSignupSerializer, self).restore_object(
+            attrs, instance)
         instance.set_password(attrs['password2'])
         return instance
 
@@ -114,48 +115,52 @@ class AuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+
 class SigninResponseSerializer(serializers.Serializer):
     token = serializers.CharField()
     success = serializers.BooleanField()
+
 
 class SignupResponseSerializer(serializers.Serializer):
     token = serializers.CharField()
     success = serializers.BooleanField()
     status = serializers.IntegerField()
 
+
 class JobSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Jobs
         fields = (
             'jobtype',
             'remarks',
             'destination_home',
-            )
+        )
+
 
 class NewJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Jobs
         fields = (
             'customer',
-            'fee',
             'jobtype',
             'remarks',
             'destination_home',
-            )
+        )
+
 
 class JobResponseSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Jobs
         fields = (
-            'id',
-            'customer',
-            'fee',
             'status',
             'creation_date',
             'completion_date',
             'jobtype',
             'remarks',
-            )
+        )
+
 
 class JobAPIResponseSerializer(serializers.Serializer):
     """
@@ -163,6 +168,7 @@ class JobAPIResponseSerializer(serializers.Serializer):
     """
     success = serializers.BooleanField()
     status = serializers.IntegerField()
+
 
 class PhoneVerifySerializer(serializers.Serializer):
     """
@@ -176,7 +182,7 @@ class PhoneVerifySerializer(serializers.Serializer):
         request = self.context.get('request', None)
 
         if verf_code:
-            if request.user.phone_status == True:
+            if request.user.phone_status is True:
                 msg = _('Phone already verified!')
                 raise exceptions.PermissionDenied(msg)
 
