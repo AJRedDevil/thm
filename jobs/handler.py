@@ -9,6 +9,7 @@ import logging
 # Init Logger
 logger = logging.getLogger(__name__)
 
+
 class JobManager(object):
     """docstring for JobManager"""
     def getJobDetails(self, job_id):
@@ -16,19 +17,27 @@ class JobManager(object):
         job = get_object_or_404(Jobs, jobref=job_id)
         return job
 
+    # def getJobsForHandyman(self, user):
+    #     jobs = jobs.objects.filter(handyman!=None)
+
     def getAllJobs(self, user):
         if user.user_type == 0:
             jobs = Jobs.objects.filter()
         ## If it's a handymen, only show requests which they were assigned to
         elif user.user_type == 1:
-            jobs = Jobs.objects.filter(handyman_id=user.id)
+            alljobs = Jobs.objects.exclude(handyman=None)
+            # get the jobs where the handyman is listed
+            # as the one chosen for the particular work
+            jobs = [x for x in alljobs if user in x.handyman.all()]
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
             jobs = Jobs.objects.filter(customer_id=user.id)
         else:
             jobs = []
 
-        logger.debug("Job Details : \n {0}".format(serializers.serialize('json',jobs)))
+        logger.debug("Job Details : \n {0}".format(
+            serializers.serialize('json', jobs))
+        )
         return jobs
 
     def getAllJobsByDate(self, user, date):
@@ -39,7 +48,8 @@ class JobManager(object):
             jobs = Jobs.objects.filter(creation_date__gte=date)
         ## If it's a handymen, only show requests which they were assigned to
         elif user.user_type == 1:
-            jobs = Jobs.objects.filter(handyman_id=user.id, creation_date__gte=date)
+            alljobs = Jobs.objects.filter(creation_date__gte=date).exclude(handyman=None)
+            jobs = [x for x in alljobs if user in x.handyman.all()]
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
             jobs = Jobs.objects.filter(customer_id=user.id, creation_date__gte=date)

@@ -202,28 +202,28 @@ GOOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
 #User Token Expiry in days
 USER_TOKEN_EXPIRY = int(os.environ['USER_TOKEN_EXPIRY'])
 
-SWAGGER_SETTINGS = {
-    "exclude_namespaces": [],
-    "api_version": '1',
-    "api_path": "/",
-    "enabled_methods": [
-        'get',
-        'post',
-    ],
-    "api_key": '',
-    "is_authenticated": True,
-    "is_superuser": True,
-    "permission_denied_handler": None,
-    "info": {
-        'contact': 'dev@thehomerepairapp.com',
-        'description': 'This is a API documentation server. '
-                       'To use the API please use your token auth.',
-        'license': 'Copyright The Handyman App 2014',
-        'licenseUrl': '',
-        'termsOfServiceUrl': '',
-        'title': 'The Homerepair App',
-    },
-}
+# SWAGGER_SETTINGS = {
+#     "exclude_namespaces": [],
+#     "api_version": '1',
+#     "api_path": "/",
+#     "enabled_methods": [
+#         'get',
+#         'post',
+#     ],
+#     "api_key": '',
+#     "is_authenticated": True,
+#     "is_superuser": True,
+#     "permission_denied_handler": None,
+#     "info": {
+#         'contact': 'dev@thehomerepairapp.com',
+#         'description': 'This is a API documentation server. '
+#                        'To use the API please use your token auth.',
+#         'license': 'Copyright The Handyman App 2014',
+#         'licenseUrl': '',
+#         'termsOfServiceUrl': '',
+#         'title': 'The Homerepair App',
+#     },
+# }
 
 # Currency Setting
 CURRENCIES = ('NPR',)

@@ -165,25 +165,24 @@ obtain_auth_token = ObtainAuthToken.as_view()
 
 class JobDetail(APIView):
     """
-    Jobdetail resource
+    Information on a single job
     """
 
     def get_object(self, pk, user):
         try:
             ## For staffs show all
-            if user.user_type==0:
+            if user.user_type == 0:
                 return Jobs.objects.get(jobref=pk)
             ## For handymen, show data only if they were assigned to it
-            elif user.user_type==1:
+            elif user.user_type == 1:
                 return Jobs.objects.get(jobref=pk, handyman_id=user.id)
             ## For Customers, show data only if they created it
-            elif user.user_type==2:
+            elif user.user_type == 2:
                 return Jobs.objects.get(jobref=pk, customer_id=user.id)
             else:
                 raise Http404
         except Jobs.DoesNotExist:
             raise Http404
-
 
     def get(self, request, pk, format=None):
         """
@@ -195,14 +194,21 @@ class JobDetail(APIView):
         job = self.get_object(pk, user)
         serialized_user = serializers.JobResponseSerializer(job)
         data = serialized_user.data
+        if job.status == '1':
+            data['contact_number'] = str(job.handyman.all()[0].phone.as_e164)
         data['creation_date'] = str(data['creation_date'])
+        data['hm_image'] = str(job.handyman.all()[0].get_profile_pic())
         data['completion_date'] = str(data['completion_date'])
-        responsedata = dict(data=data, status=status.HTTP_200_OK, success=True)
-        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+        logger.warn(data)
+        responsedata = dict(detail=data, success=True)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json")
+
 
 class JobsDetail(APIView):
     """
-    New Job resource
+    Information on all the jobs
     """
     def get(self, request, format=None):
         user = request.user
@@ -241,8 +247,10 @@ class JobsDetail(APIView):
         for datum in data:
             datum['creation_date'] = str(datum['creation_date'])
             datum['completion_date'] = str(datum['completion_date'])
-        responsedata = dict(data=data, status=status.HTTP_200_OK, success=True)
-        return HttpResponse(json.dumps(responsedata),content_type="application/json")
+        responsedata = dict(detail=data, success=True)
+        return HttpResponse(
+            json.dumps(responsedata),
+            content_type="application/json")
 
     def post(self, request, format=None):
         """
