@@ -5,20 +5,25 @@ from users.models import UserProfile, CITY_SELECTION
 from jobs.models import Jobs
 
 from rest_framework import exceptions, serializers
+from phonenumber_field.phonenumber import PhoneNumber as intlphone
+
 import users.handler as user_handler
 
 import logging
+# Init Logger
+logger = logging.getLogger(__name__)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id',
             'name',
             'user_type',
             'profile_image',
             'phone_status',
-            )
+        )
+
 
 class UserSignupValidationSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -32,10 +37,36 @@ class UserSignupValidationSerializer(serializers.Serializer):
     def validate(self, attrs):
         password1 = attrs.get('password1')
         password2 = attrs.get('password2')
+        phone_number = attrs.get('phone')
+
+        # Password length validation
+        if password1 and password2:
+            if len(password1) < 6 or len(password2) < 6:
+                msg = _('Password must be more than 6 chars.')
+                raise exceptions.ParseError(msg)
+
+        # Password match validation
         if password1 and password2 and password1 != password2:
             msg = _('Passwords do not match.')
             raise exceptions.ParseError(msg)
-        return password2
+
+        # Phone number validation
+        phone = intlphone.from_string(phone_number)
+        if str(phone.country_code) != '977':
+            msg = _("Your country is not supported as of now!")
+            raise exceptions.ParseError(msg)
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            msg = _("Please enter a valid mobile number!"),
+            raise exceptions.ParseError(msg)
+
+        return attrs
+
 
 class UserSignupSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField()
