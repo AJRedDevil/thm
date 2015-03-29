@@ -9,4 +9,4 @@ PHONE_VERF_MSG='Your phone verification code is {0}. Thankyou, The Homerepair Ap
 SEND_PASSWD_MSG='Your password reset code is : {0} . If you did not request for one, please ignore. Thankyou, The Homerepair App.'
 USER_WELCOME_MSG='Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.'
 JOB_ACCEPTED_MSG='Our repair expert {0} ({1}) has been assigned for your request! Thankyou, The Homerepair App.'
-JOB_COMPLETE_MSG='Your request ID:{0}, Type:{1} has been completed! Thankyou, The Homerepair App.'
+JOB_COMPLETE_MSG='Your request ID:{0} has been completed! Thankyou, The Homerepair App.'
