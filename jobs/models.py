@@ -16,12 +16,25 @@ from moneyed import Money, NPR
 from djmoney.models.fields import MoneyField
 # Create your models here.
 
-STATUS_SELECTION = (('0','New'),('1','Accepted'),('2','Completed'))
-JOBS_SELECTION = (('0','N/A'),('1','Plumbing'),('2','Electrical'))
+STATUS_SELECTION = (
+    ('0', 'New'),
+    ('1', 'Accepted'),
+    ('2', 'Completed')
+)
+
+JOBS_SELECTION = (
+    ('0', 'N/A'),
+    ('1', 'Plumbing'),
+    ('2', 'Electrical'),
+    ('3', 'Furnishing'),
+    ('4', 'Masonry'),
+)
+
 
 def getUniqueUUID():
     uniqueID = ''.join(str(uuid.uuid4()).split('-'))
     return uniqueID
+
 
 class Jobs(models.Model):
 
@@ -37,8 +50,7 @@ class Jobs(models.Model):
     creation_date = models.DateTimeField(_('creation_date'),
         default=timezone.now)
     jobtype = models.CharField(_('jobtype'),
-                    max_length=1,
-                    choices=JOBS_SELECTION,
+                    max_length=250,
                     default='0',
                     )
     handyman = models.ManyToManyField(UserProfile, related_name='orders')
