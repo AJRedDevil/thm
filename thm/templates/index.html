@@ -38,12 +38,12 @@
 		</div>
 		<div class="btn">
 			<div class="register">
-				Register Now!
+				Schedule a visit?<br>
 			</div>
 			<form action="{% url 'register' %}" method="post"> {%csrf_token%}
 				<input type="text" name='phone' placeholder='+977 Mobile Number' onfocus="this.placeholder = ''" onblur="this.placeholder = '+977 Mobile Number'" class="dark_grey">
 				<div class='clearfix'></div>
-				<input type="submit" value="REGISTER" class="btn-register">
+				<input type="submit" value="Book Now!" class="btn-register">
 			</form>
 		</div>
 		<footer>

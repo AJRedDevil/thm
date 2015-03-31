@@ -84,7 +84,7 @@ def viewJob(request, job_id):
                 job.completion_date= timezone.now()
                 job.save()
                 vas = Sparrow()
-                msg = messages.JOB_COMPLETE_MSG.format(job.id,job.get_jobtype_display())
+                msg = messages.JOB_COMPLETE_MSG.format(job.id)
                 logger.warn(msg)
                 status = vas.sendMessage(msg, job.customer)
                 logger.warn("Message status \n {0}".format(status))
