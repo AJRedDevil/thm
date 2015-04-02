@@ -83,3 +83,5 @@ localtemplates/
 thm/media/
 
 beta/static/assets/img/aid.jpg
+#bower
+bower_components/
