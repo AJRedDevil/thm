@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'djrill',
     'floppyforms',
     'job_gallery',
+    'search',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -158,7 +159,17 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'users': {
+        'api': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'faq': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'job_gallery': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',
@@ -173,7 +184,12 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'faq': {
+        'search': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'users': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',

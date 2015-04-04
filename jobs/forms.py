@@ -1,29 +1,10 @@
 
 
 from django.contrib.gis import forms
-import floppyforms as floppyforms
-
-# class GMapPointWidget(floppyforms.gis.PointWidget, floppyforms.gis.BaseGMapWidget):
-    # pass
-
-class GMapPointWidget(floppyforms.gis.BaseGeometryWidget):
-    map_width = 750
-    map_heght = 500
-    map_srid = 900913  # Use the google projection
-    template_name = 'google_map.html'
-    is_point = True
-
-    class Media:
-        js = (
-            'http://openlayers.org/api/2.13/OpenLayers.js',
-            'floppyforms/js/MapWidget.js',
-            '//maps.google.com/maps/api/js?v=3&sensor=false&libraries=places',
-        )
-
 from django.utils.translation import ugettext_lazy as _
 from .models import Jobs, JOBS_SELECTION
 from users.models import UserProfile
-
+from libs.googleapi_handler import GMapPointWidget
 from moneyed import Money, NPR
 import logging
 logger = logging.getLogger(__name__)
@@ -49,7 +30,6 @@ class JobCreationForm(forms.ModelForm):
                 }
             ),
         )
-
 
 
 class JobCreationFormAdmin(forms.ModelForm):

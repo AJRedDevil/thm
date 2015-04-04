@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
 from .models import UserProfile, CITY_SELECTION, EarlyBirdUser
+from libs.googleapi_handler import GMapPointWidget
 import handler as user_handler
 
 import os
@@ -402,7 +403,9 @@ class HMUserChangeForm(UserChangeForm):
         self.fields['name'].widget.attrs = {'class': 'form-control'}
         self.fields['phone'].widget.attrs = {'class': 'form-control'}
         self.fields['city'].widget.attrs = {'class': 'form-control'}
-        self.fields['address_coordinates'].widget = forms.OSMWidget(attrs={'map_width': 800, 'map_height': 500})
+        self.fields['address_coordinates'].widget = GMapPointWidget(
+            attrs={'map_width': 750, 'map_height': 500})
+        self.fields['address_coordinates'].widget.attrs={'class': 'form-control'}
         self.fields['streetaddress'].widget.attrs = {
             'class': 'form-control',
             'placeholder': 'Ganeshthan, Kamaladi'

@@ -13,6 +13,7 @@ import os
 # Init Logger
 logger = logging.getLogger(__name__)
 
+
 class UserManager(object):
     """docstring for UserManager"""
     def getUserDetails(self, user_id):
@@ -100,6 +101,19 @@ class UserManager(object):
         """
         ebusers = EarlyBirdUser.objects.all()
         return ebusers
+
+    def getUserList(self, phone):
+        """
+        Returns list of the users in the phone
+        searches via the phone number
+        """
+        # for users might not want to put a +977
+        phone = '+977'+phone
+        userlist = UserProfile.objects.filter(
+            phone__startswith=phone,
+            user_type='2'
+        )
+        return userlist
 
 
 class UserEventManager(object):
