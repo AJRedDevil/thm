@@ -229,7 +229,7 @@ class UserProfile(AbstractBaseUser):
     def save(self, *args, **kwargs):
         if type(self.address) != dict:
             self.address = json.loads(self.address)
-        if self.address_coordinates == '':
+        if self.address_coordinates == '' or self.address_coordinates is None:
             myLatLng = self.get_lat_long(self.address)
             self.address_coordinates = "POINT("+str(myLatLng['lng'])+" \
                 "+str(myLatLng['lat'])+")"

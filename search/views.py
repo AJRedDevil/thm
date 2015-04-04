@@ -1,14 +1,20 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
+
 
 from users import handler as userhandler
+from libs.googleapi_handler import GMapPointWidget
 import simplejson as json
 import logging
-
+import re
+# Init Logger
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 
+@login_required
 def userSearch(request, phone=None):
     """
     Searches a user for the matching pattern and
@@ -16,9 +22,6 @@ def userSearch(request, phone=None):
     """
     user = request.user
     logging.warn(request.GET)
-    if not user.is_authenticated():
-        return redirect('home')
-
     if not user.is_superuser:
         return redirect('home')
 
@@ -37,11 +40,23 @@ def userSearch(request, phone=None):
     return redirect('home')
 
 
-def userSearchDetail(request, phone=None):
+@login_required
+def userSearchDetail(request):
     """
     Searches a user from the mobile number provided
     And lists their detail
     """
-    if phone is not None:
-        pass
+    user = request.user
+
+    if not user.is_superuser:
+        return redirect('home')
+
+    if request.method == "POST":
+        logger.debug(request.POST)
+        phone = request.POST['phone']
+        phone = re.findall('\((.*?)\)', phone)[-1]
+        um = userhandler.UserManager()
+        customer = um.getUserDetailsFromPhone(phone)
+        job = um.getLatestOrderDetails(customer)
+        return render(request, 'userdetails.html', locals())
     return redirect('home')

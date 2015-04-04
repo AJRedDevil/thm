@@ -252,11 +252,11 @@ def createhandymen(request):
     if request.method == "POST":
         user_form = userforms.UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
+            userdata = user_form.save(commit=False)
             useraddress = dict(
                 city=user_form.cleaned_data['city'],
                 streetaddress=user_form.cleaned_data['streetaddress']
             )
-            userdata = user_form.save(commit=False)
             userdata.address = json.dumps(useraddress)
             userdata.phone_status = True
             userdata.user_type = 1
@@ -315,11 +315,11 @@ def createUser(request):
     if request.method == "POST":
         user_form = userforms.UserCreationForm(request.POST, ebuser=None)
         if user_form.is_valid():
+            userdata = user_form.save(commit=False)
             useraddress = dict(
                 city=user_form.cleaned_data['city'],
                 streetaddress=user_form.cleaned_data['streetaddress']
             )
-            userdata = user_form.save(commit=False)
             userdata.address = json.dumps(useraddress)
             userdata.phone_status = True
             userdata.user_type = 2

@@ -76,7 +76,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-        <form action={% url 'userSearch' %} method='POST' class="navbar-form navbar-left hora-nav-search" role="search">{% csrf_token %}
+        <form action={% url 'userSearchDetail' %} method='POST' class="navbar-form navbar-left hora-nav-search" role="search">{% csrf_token %}
             <div class="form-group">
                 <input type="text" name="phone" class="typeahead form-control">
             </div>
