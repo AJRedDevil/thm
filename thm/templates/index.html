@@ -36,27 +36,16 @@
 			</ul>
 
 		</div>
-		<div class="btn">
-			<div class="register">
-				Schedule a visit?<br>
-			</div>
-			<form action="{% url 'register' %}" method="post"> {%csrf_token%}
-				<input type="text" name='phone' placeholder='+977 Mobile Number' onfocus="this.placeholder = ''" onblur="this.placeholder = '+977 Mobile Number'" class="dark_grey">
-				<div class='clearfix'></div>
-				<input type="submit" value="Book Now!" class="btn-register">
-			</form>
-		</div>
 		<footer>
-			{% if user_form.errors %}
-			{% for field, error in user_form.errors.items  %}
-			<span class="sms">{{ error | striptags }}</span>
-			{% endfor %}
-			{% endif %}
-			<span class="or">OR</span>
+			<div class="btn">
+				<div class="register">
+					Want to schedule a visit ?<br>
+				</div>
+			</div>
 			<span class="sms">SMS</span>
-			<span class="handyman">REPAIR</span>
+			<span class="handyman">&nbsp;REPAIR&nbsp;</span>
 			<span class="sms">to</span>
-			<span class="handyman">2200</span>
+			<span class="handyman">&nbsp;2200</span><br><br>
 			<div class='sms'>** Carrier charges may apply on SMS</div>
 			<span class="sms"><img src={% static 'img/cell.jpg' %}></span>
 
