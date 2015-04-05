@@ -363,11 +363,13 @@ def createUser(request):
         return render(request, 'admin/createuser.html', locals())
 
 
-@csrf_exempt
+@is_superuser
+@login_required
 def joinasuser(request):
     """
     Early bird Register as a user
     """
+    user = request.user
     # If a user joins from the web
     if request.method == "POST":
         request_dict = request.POST.copy()
@@ -406,7 +408,7 @@ def joinasuser(request):
         return redirect('index')
 
     # disbale GET
-    return redirect('index')
+    return render(request, 'register.html', locals())
 
 
 @csrf_exempt

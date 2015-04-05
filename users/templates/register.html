@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <div class='page-container container list-table'>
+    <div class="hora-job-form">
+    <div class='row'>
+    <div class="col-md-6">
+    Register a new number here !
+    <form action="{% url 'registeruser' %}" method="post"> {%csrf_token%}
+        <input type="text" name='phone' placeholder='+977 Mobile Number' class="form-control">
+        <button type="submit" class="btn btn-default submit">Register</button>
+    </form>
+
+    </div>
+         </div>
+    </div>
+    <!-- eo hora-job-form -->
+    </div>
+{% endblock content %}
