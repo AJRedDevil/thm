@@ -57,6 +57,5 @@ def userSearchDetail(request):
         phone = re.findall('\((.*?)\)', phone)[-1]
         um = userhandler.UserManager()
         customer = um.getUserDetailsFromPhone(phone)
-        job = um.getLatestOrderDetails(customer)
         return render(request, 'userdetails.html', locals())
     return redirect('home')
