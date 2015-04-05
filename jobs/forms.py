@@ -17,7 +17,7 @@ class JobCreationForm(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['jobtype', 'remarks', 'destination_home']
+        fields = ['jobtype', 'remarks']
 
     def __init__(self, *args, **kwargs):
         super(JobCreationForm, self).__init__(*args, **kwargs)
@@ -39,7 +39,7 @@ class JobCreationFormAdmin(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['customer','jobtype','remarks','destination_home',
+        fields = ['customer','jobtype','remarks',
                     'location',]
 
     def __init__(self, *args, **kwargs):
@@ -55,12 +55,11 @@ class JobCreationFormAdmin(forms.ModelForm):
             ),
         )
         self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
-        self.fields['destination_home'].attrs={'class' : 'form-control'}
         # gcoord = SpatialReference(4326)
         # mycoord = SpatialReference(900913)
         # trans = CoordTransform(gcoord, mycoord)
         # self.fields['location'].transform(trans)
-        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 750, 'map_height': 500})
+        self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 555, 'map_height': 500})
         self.fields['location'].widget.attrs={'class' : 'form-control'}
 
 
@@ -78,8 +77,8 @@ class JobEditFormAdmin(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['customer','jobtype','remarks','destination_home',
-                    'remarks','fee','status','handyman','location', 'location_landmark']
+        fields = ['customer', 'jobtype', 'remarks', 'fee', 'status', 'handyman',
+        'location', 'location_landmark']
 
 
     def __init__(self, *args, **kwargs):
@@ -95,7 +94,6 @@ class JobEditFormAdmin(forms.ModelForm):
             ),
         )
         self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['destination_home'].widget.attrs.update({'class' : 'checkbox'})
         self.fields['fee'].widget.attrs.update({'class' : 'form-control'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})

@@ -134,7 +134,6 @@ class JobSerializer(serializers.ModelSerializer):
         fields = (
             'jobtype',
             'remarks',
-            'destination_home',
         )
 
 
@@ -145,7 +144,6 @@ class NewJobSerializer(serializers.ModelSerializer):
             'customer',
             'jobtype',
             'remarks',
-            'destination_home',
         )
 
 
