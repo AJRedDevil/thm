@@ -107,7 +107,7 @@ p {
 
 .register {
 	color: #2c2d2d;
-	font-size: 24px;
+	font-size: 35px;
 	font-family: 'Montserrat', sans-serif;
 	letter-spacing: -1px;
 	font-weight: 700;
@@ -180,6 +180,9 @@ footer .handyman {
 }
 footer .to {
 	font-size: 32px;
+}
+footer .handyman-sms {
+	font-size: 65px;
 }
 
 .wrapper{ width:70%;position: relative; z-index: 1;

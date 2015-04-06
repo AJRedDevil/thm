@@ -54,14 +54,15 @@ class GeoCoding(object):
 class GMapPointWidget(floppyforms.gis.BaseGeometryWidget):
     map_width = 750
     map_height = 500
-    map_srid = 900913  # Use the google projection
+    #map_srid = 900913  # Use the google projection
+    map_srid = 3857  # Use the google projection
     template_name = 'google_map.html'
     is_point = True
     mero_name = 'Gaumire'
 
     class Media:
         js = (
-            'http://openlayers.org/api/2.13/OpenLayers.js',
+            'js/OpenLayers.js',
             'floppyforms/js/MapWidget.js',
-            '//maps.google.com/maps/api/js?v=3&sensor=false&libraries=places',
+            'https://maps.google.com/maps/api/js?v=3&sensor=false&libraries=places',
         )
