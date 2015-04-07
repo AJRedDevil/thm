@@ -74,19 +74,19 @@ class Jobs(models.Model):
     # jobs that are deleted or are to be purged would have this flag
     # set as true, no data would be permanently removed
     ishidden = models.BooleanField(_('ishidden'), default=False)
-    distance = models.DecimalField(
-        _('distance'),
-        decimal_places=2,
-        max_digits=1000, default=0)
+    # distance = models.DecimalField(
+    #     _('distance'),
+    #     decimal_places=2,
+    #     max_digits=1000, default=0)
     accepted_date = models.DateTimeField(
         _('accepted_date'),
         blank=True, null=True, editable=False)
     completion_date = models.DateTimeField(
         _('completion_date'),
         blank=True, null=True, editable=False)
-    available_handymen = jsonfield.JSONField(
-        _('available_handymen'), default={})
-    considered_handymen = models.TextField(_('considered_handymen'), default=[])
+    # available_handymen = jsonfield.JSONField(
+    #     _('available_handymen'), default={})
+    # considered_handymen = models.TextField(_('considered_handymen'), default=[])
     remarks = models.TextField(_('remarks'), blank=False)
     # location / coordinates of the exact jobsite
     location = models.PointField(srid=4326, blank=True, null=True)
