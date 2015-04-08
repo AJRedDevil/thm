@@ -77,7 +77,8 @@ def viewJob(request, job_id):
                 # Notify the user that the job is accepted here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
-                return render(request, 'jobdetails.html',locals())
+                return redirect('home')
+                # return render(request, 'jobdetails.html',locals())
             # if a job is set as complete , update the completion time
             # only update the completion time once
             if job.status=='2' and job.completion_date == None:
@@ -91,7 +92,9 @@ def viewJob(request, job_id):
                 # Notify the user that the job is complete here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
-                return render(request, 'jobdetails.html',locals())
+                return redirect('home')
+                # return render(request, 'jobdetails.html',locals())
+            return redirect('home')
 
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)

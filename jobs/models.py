@@ -17,7 +17,10 @@ from djmoney.models.fields import MoneyField
 STATUS_SELECTION = (
     ('0', 'New'),
     ('1', 'Accepted'),
-    ('2', 'Completed')
+    ('3', 'Inspection'),
+    ('2', 'Completed'),
+    ('4', 'Rejected'),
+    ('5', 'Discarded'),
 )
 
 # Type of jobs
