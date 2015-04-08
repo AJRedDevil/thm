@@ -682,10 +682,10 @@ def userSettings(request):
                             user.profile_image.name.lower())[0]+'_normal.jpeg'))
 
             # If address is changed, update lat, lon in coordinates
-            if newaddress != oldaddress:
-                myLatLng = userdetails.get_lat_long(address)
-                userdetails.address_coordinates = "POINT(" + \
-                    str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
+            # if newaddress != oldaddress:
+            #     myLatLng = userdetails.get_lat_long(address)
+            #     userdetails.address_coordinates = "POINT(" + \
+            #         str(myLatLng['lng'])+" "+str(myLatLng['lat']) + ")"
 
             if new_phone != old_phone:
                 UserToken.objects.create(user=user)
