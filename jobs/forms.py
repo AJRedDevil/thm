@@ -21,15 +21,8 @@ class JobCreationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(JobCreationForm, self).__init__(*args, **kwargs)
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
+        self.fields['remarks'].widget.attrs={'class' : 'form-control'}
 
 
 class JobCreationFormAdmin(forms.ModelForm):
@@ -45,15 +38,7 @@ class JobCreationFormAdmin(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
         self.fields['customer'].widget.attrs={'class' : 'form-control'}
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
         self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
         # gcoord = SpatialReference(4326)
         # mycoord = SpatialReference(900913)
@@ -83,15 +68,7 @@ class JobEditFormAdmin(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(JobEditFormAdmin, self).__init__(*args, **kwargs)
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs.update({'class' : 'form-control'})
         self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
         self.fields['fee'].widget.attrs.update({'class' : 'form-control'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})

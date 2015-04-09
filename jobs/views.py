@@ -38,14 +38,13 @@ def createJob(request):
 
 
 @login_required
-@is_superuser
 def viewJob(request, job_id):
     user = request.user
     jm = JobManager()
     job = jm.getJobDetails(job_id)
     job_before = job.gallery.filter(img_type=0)
     job_after = job.gallery.filter(img_type=1)
-    if request.method=="POST":
+    if request.method == "POST" and user.is_superuser:
         logger.debug(request.POST)
         job_form = JobEditFormAdmin(request.POST, instance=job)
         if job_form.is_valid():
@@ -56,14 +55,14 @@ def viewJob(request, job_id):
             job = jm.getJobDetails(job_id)
             if int(job_form.cleaned_data['status']) < int(job.status):
                 job_form = JobEditFormAdmin(instance=job)
-                return render(request, 'jobdetails.html',locals())
+                return render(request, 'jobdetails.html', locals())
             # save the job with the details provided
             job_form.save()
             job = jm.getJobDetails(job_id)
             # if a job is set as accepted , update the accepted time
             # only update the accepted time once
-            if job.status=='2' and job.accepted_date == None:
-                job.accepted_date= timezone.now()
+            if job.status == '2' and job.accepted_date is None:
+                job.accepted_date = timezone.now()
                 job.save()
                 vas = Sparrow()
                 if len(job.handyman.all()) > 0:
@@ -81,8 +80,8 @@ def viewJob(request, job_id):
                 # return render(request, 'jobdetails.html',locals())
             # if a job is set as complete , update the completion time
             # only update the completion time once
-            if job.status=='3' and job.completion_date == None:
-                job.completion_date= timezone.now()
+            if job.status == '3' and job.completion_date is None:
+                job.completion_date = timezone.now()
                 job.save()
                 vas = Sparrow()
                 msg = messages.JOB_COMPLETE_MSG.format(job.id)
@@ -99,6 +98,14 @@ def viewJob(request, job_id):
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)
 
-    job_form = JobEditFormAdmin(instance=job)
-    img_form = jgforms.JobGalleryImageForm()
-    return render(request, 'jobdetails.html',locals())
+        return render(request, 'jobdetails.html', locals())
+
+    if user.is_superuser:
+        job_form = JobEditFormAdmin(instance=job)
+        img_form = jgforms.JobGalleryImageForm()
+        return render(request, 'jobdetails.html', locals())
+
+    if user.is_staff:
+        return render(request, 'jobdetails_hm.html', locals())
+
+    return render(request, 'jobdetails_user.html', locals())

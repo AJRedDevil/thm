@@ -72,6 +72,7 @@ class Jobs(models.Model):
     jobtype = models.CharField(
         _('jobtype'),
         max_length=250,
+        choices=JOBS_SELECTION,
         default='0',)
     handyman = models.ManyToManyField(UserProfile, related_name='orders')
     # jobs that are deleted or are to be purged would have this flag

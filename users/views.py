@@ -225,7 +225,7 @@ def home(request):
     if user.is_staff or user.is_superuser:
         return render(request, 'admin/joblist.html', locals())
 
-    return render(request, 'admin/joblist.html', locals())
+    return render(request, 'admin/joblist_user.html', locals())
 
 
 @login_required

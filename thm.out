@@ -1,0 +1,1994 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: auth_group; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE auth_group (
+    id integer NOT NULL,
+    name character varying(80) NOT NULL
+);
+
+
+ALTER TABLE auth_group OWNER TO thm;
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE auth_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_group_id_seq OWNER TO thm;
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE auth_group_id_seq OWNED BY auth_group.id;
+
+
+--
+-- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE auth_group_permissions (
+    id integer NOT NULL,
+    group_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+ALTER TABLE auth_group_permissions OWNER TO thm;
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE auth_group_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_group_permissions_id_seq OWNER TO thm;
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE auth_group_permissions_id_seq OWNED BY auth_group_permissions.id;
+
+
+--
+-- Name: auth_permission; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE auth_permission (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    content_type_id integer NOT NULL,
+    codename character varying(100) NOT NULL
+);
+
+
+ALTER TABLE auth_permission OWNER TO thm;
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE auth_permission_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_permission_id_seq OWNER TO thm;
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
+
+
+--
+-- Name: authtoken_token; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE authtoken_token (
+    key character varying(40) NOT NULL,
+    user_id integer NOT NULL,
+    created timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE authtoken_token OWNER TO thm;
+
+--
+-- Name: django_content_type; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE django_content_type (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    app_label character varying(100) NOT NULL,
+    model character varying(100) NOT NULL
+);
+
+
+ALTER TABLE django_content_type OWNER TO thm;
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE django_content_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE django_content_type_id_seq OWNER TO thm;
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
+
+
+--
+-- Name: django_session; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE django_session (
+    session_key character varying(40) NOT NULL,
+    session_data text NOT NULL,
+    expire_date timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE django_session OWNER TO thm;
+
+--
+-- Name: faq_faq; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE faq_faq (
+    id integer NOT NULL,
+    faqref character varying(100) NOT NULL,
+    question text NOT NULL,
+    answer text NOT NULL
+);
+
+
+ALTER TABLE faq_faq OWNER TO thm;
+
+--
+-- Name: faq_faq_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE faq_faq_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE faq_faq_id_seq OWNER TO thm;
+
+--
+-- Name: faq_faq_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE faq_faq_id_seq OWNED BY faq_faq.id;
+
+
+--
+-- Name: job_gallery_jobgalleryimages; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE job_gallery_jobgalleryimages (
+    id integer NOT NULL,
+    image character varying(1024) NOT NULL,
+    img_type integer NOT NULL,
+    job_id integer NOT NULL
+);
+
+
+ALTER TABLE job_gallery_jobgalleryimages OWNER TO thm;
+
+--
+-- Name: job_gallery_jobgalleryimages_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE job_gallery_jobgalleryimages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE job_gallery_jobgalleryimages_id_seq OWNER TO thm;
+
+--
+-- Name: job_gallery_jobgalleryimages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE job_gallery_jobgalleryimages_id_seq OWNED BY job_gallery_jobgalleryimages.id;
+
+
+--
+-- Name: jobs_jobevents; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE jobs_jobevents (
+    id integer NOT NULL,
+    job_id integer NOT NULL,
+    event integer NOT NULL,
+    updated_on timestamp with time zone NOT NULL,
+    extrainfo text NOT NULL
+);
+
+
+ALTER TABLE jobs_jobevents OWNER TO thm;
+
+--
+-- Name: jobs_jobevents_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE jobs_jobevents_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE jobs_jobevents_id_seq OWNER TO thm;
+
+--
+-- Name: jobs_jobevents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE jobs_jobevents_id_seq OWNED BY jobs_jobevents.id;
+
+
+--
+-- Name: jobs_jobs; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE jobs_jobs (
+    id integer NOT NULL,
+    customer_id integer NOT NULL,
+    fee numeric(8,2),
+    status character varying(1) NOT NULL,
+    creation_date timestamp with time zone NOT NULL,
+    ishidden boolean NOT NULL,
+    completion_date timestamp with time zone,
+    jobtype character varying(250) NOT NULL,
+    remarks text NOT NULL,
+    jobref character varying(100) NOT NULL,
+    fee_currency character varying(3) NOT NULL,
+    accepted_date timestamp with time zone,
+    location geometry(Point,4326),
+    location_landmark character varying(100) NOT NULL
+);
+
+
+ALTER TABLE jobs_jobs OWNER TO thm;
+
+--
+-- Name: jobs_jobs_handyman; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE jobs_jobs_handyman (
+    id integer NOT NULL,
+    jobs_id integer NOT NULL,
+    userprofile_id integer NOT NULL
+);
+
+
+ALTER TABLE jobs_jobs_handyman OWNER TO thm;
+
+--
+-- Name: jobs_jobs_handyman_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE jobs_jobs_handyman_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE jobs_jobs_handyman_id_seq OWNER TO thm;
+
+--
+-- Name: jobs_jobs_handyman_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE jobs_jobs_handyman_id_seq OWNED BY jobs_jobs_handyman.id;
+
+
+--
+-- Name: jobs_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE jobs_jobs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE jobs_jobs_id_seq OWNER TO thm;
+
+--
+-- Name: jobs_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE jobs_jobs_id_seq OWNED BY jobs_jobs.id;
+
+
+--
+-- Name: libs_smslog; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE libs_smslog (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    msg text NOT NULL,
+    "time" timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE libs_smslog OWNER TO thm;
+
+--
+-- Name: libs_smslog_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE libs_smslog_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE libs_smslog_id_seq OWNER TO thm;
+
+--
+-- Name: libs_smslog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE libs_smslog_id_seq OWNED BY libs_smslog.id;
+
+
+--
+-- Name: south_migrationhistory; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE south_migrationhistory (
+    id integer NOT NULL,
+    app_name character varying(255) NOT NULL,
+    migration character varying(255) NOT NULL,
+    applied timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE south_migrationhistory OWNER TO thm;
+
+--
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE south_migrationhistory_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE south_migrationhistory_id_seq OWNER TO thm;
+
+--
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE south_migrationhistory_id_seq OWNED BY south_migrationhistory.id;
+
+
+--
+-- Name: users_earlybirduser; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE users_earlybirduser (
+    id integer NOT NULL,
+    phone character varying(16) NOT NULL,
+    registered_on timestamp with time zone NOT NULL,
+    confirmed boolean NOT NULL
+);
+
+
+ALTER TABLE users_earlybirduser OWNER TO thm;
+
+--
+-- Name: users_earlybirduser_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE users_earlybirduser_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_earlybirduser_id_seq OWNER TO thm;
+
+--
+-- Name: users_earlybirduser_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE users_earlybirduser_id_seq OWNED BY users_earlybirduser.id;
+
+
+--
+-- Name: users_userevents; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE users_userevents (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    event integer NOT NULL,
+    updated_on timestamp with time zone NOT NULL,
+    extrainfo text NOT NULL
+);
+
+
+ALTER TABLE users_userevents OWNER TO thm;
+
+--
+-- Name: users_userevents_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE users_userevents_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_userevents_id_seq OWNER TO thm;
+
+--
+-- Name: users_userevents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE users_userevents_id_seq OWNED BY users_userevents.id;
+
+
+--
+-- Name: users_userprofile; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE users_userprofile (
+    password character varying(128) NOT NULL,
+    last_login timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    phone_status boolean NOT NULL,
+    phone character varying(16) NOT NULL,
+    date_joined timestamp with time zone NOT NULL,
+    profile_image character varying(1024) NOT NULL,
+    account_status integer NOT NULL,
+    user_type integer NOT NULL,
+    is_staff boolean NOT NULL,
+    is_superuser boolean NOT NULL,
+    is_active boolean NOT NULL,
+    address text NOT NULL,
+    extrainfo text NOT NULL,
+    name character varying(30) NOT NULL,
+    current_address geometry(Point,4326),
+    userref character varying(100) NOT NULL,
+    address_coordinates geometry(Point,4326)
+);
+
+
+ALTER TABLE users_userprofile OWNER TO thm;
+
+--
+-- Name: users_userprofile_id_seq; Type: SEQUENCE; Schema: public; Owner: thm
+--
+
+CREATE SEQUENCE users_userprofile_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_userprofile_id_seq OWNER TO thm;
+
+--
+-- Name: users_userprofile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: thm
+--
+
+ALTER SEQUENCE users_userprofile_id_seq OWNED BY users_userprofile.id;
+
+
+--
+-- Name: users_usertoken; Type: TABLE; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE TABLE users_usertoken (
+    user_id integer NOT NULL,
+    token character varying(20) NOT NULL,
+    timeframe timestamp with time zone NOT NULL,
+    status boolean NOT NULL,
+    tokentype integer NOT NULL
+);
+
+
+ALTER TABLE users_usertoken OWNER TO thm;
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_group ALTER COLUMN id SET DEFAULT nextval('auth_group_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_group_permissions ALTER COLUMN id SET DEFAULT nextval('auth_group_permissions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_permission ALTER COLUMN id SET DEFAULT nextval('auth_permission_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY django_content_type ALTER COLUMN id SET DEFAULT nextval('django_content_type_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY faq_faq ALTER COLUMN id SET DEFAULT nextval('faq_faq_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY job_gallery_jobgalleryimages ALTER COLUMN id SET DEFAULT nextval('job_gallery_jobgalleryimages_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobevents ALTER COLUMN id SET DEFAULT nextval('jobs_jobevents_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobs ALTER COLUMN id SET DEFAULT nextval('jobs_jobs_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobs_handyman ALTER COLUMN id SET DEFAULT nextval('jobs_jobs_handyman_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY libs_smslog ALTER COLUMN id SET DEFAULT nextval('libs_smslog_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY south_migrationhistory ALTER COLUMN id SET DEFAULT nextval('south_migrationhistory_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY users_earlybirduser ALTER COLUMN id SET DEFAULT nextval('users_earlybirduser_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY users_userevents ALTER COLUMN id SET DEFAULT nextval('users_userevents_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY users_userprofile ALTER COLUMN id SET DEFAULT nextval('users_userprofile_id_seq'::regclass);
+
+
+--
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY auth_group (id, name) FROM stdin;
+\.
+
+
+--
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('auth_group_id_seq', 1, false);
+
+
+--
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
+\.
+
+
+--
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('auth_group_permissions_id_seq', 1, false);
+
+
+--
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
+1	Can add permission	1	add_permission
+2	Can change permission	1	change_permission
+3	Can delete permission	1	delete_permission
+4	Can add group	2	add_group
+5	Can change group	2	change_group
+6	Can delete group	2	delete_group
+7	Can add content type	3	add_contenttype
+8	Can change content type	3	change_contenttype
+9	Can delete content type	3	delete_contenttype
+10	Can add session	4	add_session
+11	Can change session	4	change_session
+12	Can delete session	4	delete_session
+13	Can add migration history	5	add_migrationhistory
+14	Can change migration history	5	change_migrationhistory
+15	Can delete migration history	5	delete_migrationhistory
+16	Can add user profile	6	add_userprofile
+17	Can change user profile	6	change_userprofile
+18	Can delete user profile	6	delete_userprofile
+19	Can add user events	7	add_userevents
+20	Can change user events	7	change_userevents
+21	Can delete user events	7	delete_userevents
+22	Can add jobs	8	add_jobs
+23	Can change jobs	8	change_jobs
+24	Can delete jobs	8	delete_jobs
+25	Can add token	9	add_token
+26	Can change token	9	change_token
+27	Can delete token	9	delete_token
+28	Can add early bird user	10	add_earlybirduser
+29	Can change early bird user	10	change_earlybirduser
+30	Can delete early bird user	10	delete_earlybirduser
+34	Can add user token	12	add_usertoken
+35	Can change user token	12	change_usertoken
+36	Can delete user token	12	delete_usertoken
+37	Can add job events	13	add_jobevents
+38	Can change job events	13	change_jobevents
+39	Can delete job events	13	delete_jobevents
+40	Can add sms log	14	add_smslog
+41	Can change sms log	14	change_smslog
+42	Can delete sms log	14	delete_smslog
+43	Can add faq	15	add_faq
+44	Can change faq	15	change_faq
+45	Can delete faq	15	delete_faq
+46	Can add job gallery images	16	add_jobgalleryimages
+47	Can change job gallery images	16	change_jobgalleryimages
+48	Can delete job gallery images	16	delete_jobgalleryimages
+\.
+
+
+--
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('auth_permission_id_seq', 48, true);
+
+
+--
+-- Data for Name: authtoken_token; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY authtoken_token (key, user_id, created) FROM stdin;
+ba50da1bb600630063b4657ab27e1ec57b4a6369	1	2015-01-07 06:18:25.133168-05
+d2cc533f32a2e3402c5d0bec8ecb61613b12b2cc	2	2015-02-15 11:17:53.177281-05
+3cb4834056644a43849556804c3a31d109121b64	3	2015-02-24 21:22:35.26077-05
+5a0eab288b17ecd361ed8f5ca07354f325c9c8e0	4	2015-02-24 21:24:31.930659-05
+6c0e8a7e029de00e1bd34a3ecd9dd979f9b1727c	5	2015-02-24 21:30:06.856134-05
+dfad5608306d195f27ba3d01886587bd9b57c2d4	6	2015-02-24 21:31:59.207962-05
+d02fd7385862f79899612ee9840a6986a9056acc	7	2015-02-24 21:33:00.49964-05
+a15a15dc25533323aa293fa9b0f0d62dc36b5d09	8	2015-02-24 21:36:21.065921-05
+e54c621a873e679d319391451b6d2939bb83b847	9	2015-02-26 06:58:33.817164-05
+917e4daf776b1b41c023c83481f3bf2d1888252e	10	2015-03-08 10:19:01.779098-04
+d9e05a61688727b822f0cc1edccb06d141783bbb	11	2015-03-08 10:22:10.619495-04
+9a9e7f02d1171d9bd3bc6f9ebaa04b3dfa1b0569	12	2015-03-16 01:25:33.582845-04
+0d6cf75da9b02cde482ebeb3019ddbc4a78f77a6	13	2015-03-16 01:26:03.56415-04
+2da2af1d95cbefc2ff5d7d1280cb57683c6be5aa	14	2015-03-16 01:32:23.861396-04
+8b6949428f06d67e22eca262b4fffe404e3f8b30	15	2015-03-16 01:37:49.166547-04
+e999ca6d63f012be246d05e7988f6095d6a92bc4	16	2015-03-16 04:12:31.314836-04
+572f95a1cd73036f30217d77fb0e17c4b4109798	17	2015-03-16 04:13:06.507089-04
+b9a1949a5b522446fb922e84269158fe73261340	18	2015-03-16 04:13:58.736209-04
+ea71437e95548669fbaebff1543cf8d12c0bb6ff	19	2015-03-16 04:25:11.33618-04
+298e501cc543562f785ce890f52bbaf5b2a50cd3	20	2015-03-16 04:25:54.958186-04
+24dadb422965408060db7974a5f85b55decf9db7	21	2015-03-16 04:30:18.875459-04
+e2c456fc45253ed21025f11d1b14b3c462c41e2b	22	2015-03-16 04:30:55.929851-04
+e59471fdb7e04207af33e0ddce40165123b7932b	23	2015-03-16 04:32:58.398341-04
+004b93d511515d15988b0e9bff0ce2b10fe630c2	24	2015-03-16 04:33:25.419927-04
+de468df37858ccb371eb8968b29f75641e902156	25	2015-03-22 01:30:08.715804-04
+e0d2bba2dbfcadb411da56376364e5596c44a102	26	2015-03-25 00:08:45.248403-04
+66fde69fca00fb96e230a395923bde3d5be36314	27	2015-03-25 05:07:43.495763-04
+cab5ed5c02fe10827b7b3435921e6aedc09ef813	28	2015-03-25 05:28:51.432112-04
+c583e259c5c6bcb20f8280c7d1ddb7852730301b	29	2015-03-25 08:13:02.090496-04
+ba81b680f862d8b0182e2a857167a72a25d313a3	30	2015-03-26 07:33:15.156042-04
+e19e703b49f55584a7003ece0e39c0398f8fb8ba	31	2015-03-27 04:58:51.78938-04
+61c8411284ba6ce5b162d314db3fd20c7b54f281	32	2015-03-27 05:01:26.588206-04
+5e12099aeca0aaa0c0b91f8300b98beccc69b2f0	33	2015-03-27 05:34:53.917017-04
+7c40738b616118b63611340a67e787b0133201c3	34	2015-03-29 05:46:24.779754-04
+13d4b55dab57c30cfa960b2e7b5c243e7908b2e2	35	2015-03-30 02:41:03.387628-04
+38d15bdaa8874455a4ecbc75d91f4bf985a2011c	36	2015-03-30 04:48:19.164436-04
+ee46990132c759b54a82a15d6773a935c141ed8e	37	2015-03-30 05:57:33.841431-04
+2b23258344b558db6782ea8ac9204b7d23a5a891	38	2015-03-30 06:46:32.340179-04
+fcb526644c294c8ea9e3d6f943e772dcb80c17eb	39	2015-03-31 07:17:22.17993-04
+71f2ef596f5fa60cf7efee0d1b99955c2b434f42	40	2015-04-01 01:26:10.215912-04
+48b66d19e28881d9796ffbe8a1f5d40fb2fccef4	41	2015-04-02 02:21:47.958423-04
+f5d23f5f4ce7be1b9603ab72da440f62eed0cbff	42	2015-04-02 07:50:50.305317-04
+8f6e65e52379fc4afc01693e88fc194e07711790	43	2015-04-04 23:56:04.552753-04
+c02ba6f812655f072fce6d3581c610cd1d481497	44	2015-04-04 23:59:35.71624-04
+ae1f8412a85868ca91c3385cece5f3bf0dadbfc5	45	2015-04-05 05:16:20.220233-04
+b2c78b794198e58898398a1348d42de2e552ae33	46	2015-04-05 05:16:56.195914-04
+cf8a1021f0db676388ce881b064502325df4d6ca	47	2015-04-05 05:17:32.699393-04
+31fe8248b430bf35dd54e83b64fb72b1adbb23d7	48	2015-04-06 00:48:14.370966-04
+d8cd754905a9232f2e5506d05067a35cc1254c36	49	2015-04-07 23:50:24.66868-04
+a4f07831ae1ecdc273eeb08176fdf57029c8a230	50	2015-04-07 23:55:59.560475-04
+2e73103a4e06350a6e76c1821bdcbfa7c28a9e22	51	2015-04-08 00:10:06.517941-04
+ad6daf3c891afa72461bd078710ecd53413175e1	52	2015-04-08 01:10:11.406436-04
+a1e964d626a053ee9f708bc0513cc1aee81a1382	53	2015-04-08 01:28:32.591141-04
+7753197ef9325eec6a387d22afbeca383c01511a	54	2015-04-08 01:44:56.627803-04
+4d3601e1e79e34f6254eeb241b879acf0c0c63ae	55	2015-04-08 08:04:02.075972-04
+e4d89d04c9b00a22366312c19fbd8098ce54547e	56	2015-04-09 00:30:06.925171-04
+a59b77681d804f5a0649a22561e3e7c13d9f7cd2	57	2015-04-09 03:26:34.868353-04
+537d0fd4dbeaa247c08d446a29b3717f4e7be41a	58	2015-04-09 05:37:16.22288-04
+75e5157212de0163dd7c851a30e526817f6926f9	59	2015-04-10 02:43:53.862577-04
+\.
+
+
+--
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY django_content_type (id, name, app_label, model) FROM stdin;
+1	permission	auth	permission
+2	group	auth	group
+3	content type	contenttypes	contenttype
+4	session	sessions	session
+5	migration history	south	migrationhistory
+6	user profile	users	userprofile
+7	user events	users	userevents
+8	jobs	jobs	jobs
+9	token	authtoken	token
+10	early bird user	users	earlybirduser
+12	user token	users	usertoken
+13	job events	jobs	jobevents
+14	sms log	libs	smslog
+15	faq	faq	faq
+16	job gallery images	job_gallery	jobgalleryimages
+\.
+
+
+--
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('django_content_type_id_seq', 16, true);
+
+
+--
+-- Data for Name: django_session; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY django_session (session_key, session_data, expire_date) FROM stdin;
+wum22l4qz3g5rbyubwgylc3pxcq6klik	ZGNhNzAxODUwMjU2MTQwOWI3YjM1ZjQ4Yjk0MmU5MzdiZWMzZDYzNDp7fQ==	2014-12-05 03:37:04.061264-05
+wroz92yaxwcloyk0fkwe18r2vr3znmuu	OGMyMTYyYzU5MmYwOGY4NWMwMmJkZDllN2NiMWYxMzA3ZjkwNDA3ZTp7fQ==	2015-01-21 06:19:04.632223-05
+e0bxgngkmyhre6up9r63who5yptip280	OWVmOTY0MDMxNWI0ZDgzNDkwMTNkYzk2Y2QxZTU4MTliOTllMDNhNjp7Il9hdXRoX3VzZXJfaWQiOjEsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIn0=	2015-01-21 09:54:05.699265-05
+uq7p4obctfpp89iat5f7sxhi6er1j1la	OWVmOTY0MDMxNWI0ZDgzNDkwMTNkYzk2Y2QxZTU4MTliOTllMDNhNjp7Il9hdXRoX3VzZXJfaWQiOjEsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIn0=	2015-01-21 14:08:08.460291-05
+f627whkbxjxvu69o2y01e8nvjbqo30b5	MzhhZjI2MTk4ZTIyNjk1MDE5NTg3ZjliYzBlOTM3MWNkMjFiYzRmMjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-01-26 04:29:24.550444-05
+yhmk92dlk0m0ynf2e07l1rx76012ly6n	MzhhZjI2MTk4ZTIyNjk1MDE5NTg3ZjliYzBlOTM3MWNkMjFiYzRmMjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-02-18 06:17:57.344055-05
+rgi6zw14zgykgtbi976js4b0jhiiifcy	OWVmOTY0MDMxNWI0ZDgzNDkwMTNkYzk2Y2QxZTU4MTliOTllMDNhNjp7Il9hdXRoX3VzZXJfaWQiOjEsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIn0=	2015-03-09 22:15:14.390453-04
+a4nzoosi155qy0wakei6z5akf6yer7oc	MzhhZjI2MTk4ZTIyNjk1MDE5NTg3ZjliYzBlOTM3MWNkMjFiYzRmMjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-11 04:25:56.035727-04
+sq014ze97rqfqxteyrljdt9uedjnuzrt	MzhhZjI2MTk4ZTIyNjk1MDE5NTg3ZjliYzBlOTM3MWNkMjFiYzRmMjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-11 06:15:20.859722-04
+44y1ddnhr0y3pf64bt7vvsndb8r1ad4m	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-12 04:40:06.010409-04
+4pditgzu3z0k7n1c7dbsyfcg176v1t3j	ZGNhNzAxODUwMjU2MTQwOWI3YjM1ZjQ4Yjk0MmU5MzdiZWMzZDYzNDp7fQ==	2015-03-12 10:52:12.209157-04
+w6xlv95dsrpwc7uyv3c72g4av9394acb	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-13 03:51:19.696903-04
+03m6b5pt7m5myytk1trdchwkqq51nins	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-13 05:12:28.434606-04
+aadts8s58wn0njr28r2e2ubk5tshwvc0	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-16 05:54:34.768608-04
+p44oro1qn39vshttkpb3hdrpb0v3bjsf	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-03-30 01:23:26.664998-04
+zd7l6a2nf7qvat6qo4l1dl6eh4yxp3wt	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-04-01 03:00:10.218812-04
+9yuwafij8vhp8us5pgsaewqqqrpq61u4	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-04-12 01:29:28.702593-04
+g7y148xvvrs396q249akkzorh5oyqs9n	M2I5ZTQxODM5MTNhYTkyYjcxMTAxYzBjODllZDc5M2JkOTVkZTk0ZDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6Mn0=	2015-04-13 22:39:34.433135-04
+pt459mgpxodfsheaxsno442fguq62lx8	ZDRiNjBkMWUxMTM2MDk2MjIwZGRjNzlhY2JlZmMzZjE4MmI3MjM1Mzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=	2015-04-22 00:55:59.472772-04
+k7s386ohg7nqmelq1ajib521gfk1dhku	M2I5ZTQxODM5MTNhYTkyYjcxMTAxYzBjODllZDc5M2JkOTVkZTk0ZDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6Mn0=	2015-04-22 01:08:00.912593-04
+ks45jd2n8mbcv8wucmwnn8urg3trx7ct	ZGNhNzAxODUwMjU2MTQwOWI3YjM1ZjQ4Yjk0MmU5MzdiZWMzZDYzNDp7fQ==	2015-04-22 01:42:54.414926-04
+abdy6dt3s20uwcyavc493a0i1xpaqwlj	ZGNhNzAxODUwMjU2MTQwOWI3YjM1ZjQ4Yjk0MmU5MzdiZWMzZDYzNDp7fQ==	2015-04-22 04:01:09.398711-04
+3b5340iwv2eva79mos210xbqfc98wf7u	M2I5ZTQxODM5MTNhYTkyYjcxMTAxYzBjODllZDc5M2JkOTVkZTk0ZDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6Mn0=	2015-04-24 00:55:10.669222-04
+\.
+
+
+--
+-- Data for Name: faq_faq; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY faq_faq (id, faqref, question, answer) FROM stdin;
+2	306e2a23ef00475b8ababc4037423c8f	Do I need to pay to register with the service ?	No, we do not charge any fees for the registration.
+20	7105db1305da4b0d91e5e8f7f4eff491	What if the problem persists ? Am I insured ?	We give out 10 days of free servicing for any jobs that we’ve done for you. It’s like a service warranty for 10 days. However, in such a situation, after analysing the problem and it’s causes, if any additional hardware needs to be installed, it’d be under your expense.
+6	4005988a429043b991547c4a1a6d30cf	Are there any hidden costs ?	No there are no any hidden costs. The service charge estimate would be shared to you prior to starting the work. And we'd proceed only if you agree.
+9	ef28b8aa600c490288baed781e4e4da9	How are your home service professionals selected ?	All of our home service professionals are required to undergo and pass multiple security and behavioral screening tests, including but not limited to written tests and interviews. It is mandatory for all of our home service professionals to submit their police report, citizenship, and other personal details. High quality service along with a sense of security is always our top priority.
+11	c61a114fe2b443caaad169eb3e4a36de	Who are job analysts and how would they calculate the cost for the job ?	Job analysts are experts in the field of repair and maintenance. After understanding your requirement, and discussing it with the home service expert, they would do a cost estimation based on the job complexity and time required to complete the job. The cost may vary depending on the nature and complexity of job.
+12	4a40d045b7cc4d3ea6924b2be2578937	Am I required to pay for the inspection of jobs not listed on the rate sheet ?	As mentioned earlier, any and every inspection from us is free of cost. We would only charge you if we have to utilize our resources and do the job for you.
+14	169073ea6ab24c68aea19e28de60c275	Where is the service currently available ?	The service is currently available in selected locations inside Kathmandu valley only. We are trying to avail our services to as many users as possible.
+16	b30b2a217d7d48359fe8dd6d4f7b7780	Can I choose the same home service professional whom I have used earlier ?	Yes. And it does make sense to do so as they’d have learned of your setup and installations. Please mention about this to our customer care representative while you confirm the job request. Our customer care representative can also help you identify the expert who has served you earlier for a similar job. However, there is a fair chance that there would be a wait time as they could be occupied elsewhere, or you would have to go with another of our home service professional in an unfortunate situation when they are not available at all.
+15	e5ada375025a4a6c89fe8304634447d9	Do I need to purchase the necessary hardware from you for the repair ?	No, it is NOT mandatory that you purchase the hardwares from us. We would install / repair the hardwares, even if you purchase them elsewhere. However, hardwares from us come with certain warranties to protect you. Warranties are only valid if the hardwares are within the warranty period.
+13	c6b0b1c6bef04fe2a666f45a39777367	Is the service available 24/7 ?	No, we are available from 10 in the morning till 5 in the evening. And you’d have to place your service request by 5 PM for our home service professional to arrive. Depending on our availability requests posted after 5 PM would be entertained the following day.
+18	9db1c03ebbb144faa3a5a35560c32686	What if the work is not complete and a dispute arises ?	If we are unable to complete a task as what was agreed upon and a dispute arises. We’d work with you to come to a settlement. If you are totally unsatisfied with the work. You’d not be charged and we’d try our best to put the problem to a better state, or to how it was earlier. However, we'd not be liable for any incidental damage affecting the equipment, facility or the personnel, that might occur during the repair and maintenance.
+4	820940ba02364bd1b8921639e245e2e4	Is there a membership charge for the service ?	Yes. For home / individual users, there isn't any subscription charge for the first three months, then onwards, there is a subscription charge of Rs 2000.00 per year. For offices, please email us at sales@thehomerepairapp.com to get a quote.
+7	e07c5071ce644b11a0b44be53bf53cea	How are the home service professionals different than the ones around ?	Our home service professionals are NOT mere hired contractors but are our employees with years of experience, and are required to pass certain aptitude and screening tests before they join us.
+10	93623912ec984c8e9bbd5970911d1d49	How much would I be charged for any repair ?	Repair charges for petty repairs like changing of lights, replacing of taps, installation of power sockets, etc are included in our rate sheet. Jobs that are complex in nature would require our job analyst to come on-premise and calculate the man hours required. You would have to either brief our customer care representative or the home service expert assigned to you, and after the inspection by our expert you'd be provided with an estimate.
+5	4a747c8d46024c23a223f5ff06f4ac40	What does the yearly subscription fee cover ?	The subscription fee includes a free monthly inspection and repair services worth NPR 3000 for that year. It doesn't include any service charges. Further, you'd only be charged if a job task is created for you. Inspections are always free.
+1	768ff4a496674afba560cab4f9988548	How can I register as a user with the service ?	You can register by typing REPAIR and sending a SMS to 2200 .
+3	42c2db6871f34ee195d4b3133152c0ab	What services do you offer right now ?	We offer sanitation, electrical, furnishing installation and repairs, and handyman services as of now. Further services like computer repairs, electrical appliance repairs would be available very soon.
+8	1b7c8f33a5f54a60af178ac3fd85e9c0	How reliable are your home service professionals?	We promise high quality of repair services, and for the same reason, our home service professionals are hand picked. They are graduates from technical schools in the country and have years of experience in the industries here and abroad. Unlike regular freelance contractor you find around, they are educated, well aware of their line of profession and are well versed in customer service that we highly value.
+17	eab963541bab49428a82b0fc40cc8a50	Do we pay the home service professional after the completion of the job ?	Yes. As of now, all payments below NPR 10,000.00 are paid post completion and on delivery of services. We require a 40% upfront deposit on estimates above NPR 10,000.00. However, you are required to sign an agreement before we commence our work.
+\.
+
+
+--
+-- Name: faq_faq_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('faq_faq_id_seq', 20, true);
+
+
+--
+-- Data for Name: job_gallery_jobgalleryimages; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY job_gallery_jobgalleryimages (id, image, img_type, job_id) FROM stdin;
+\.
+
+
+--
+-- Name: job_gallery_jobgalleryimages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('job_gallery_jobgalleryimages_id_seq', 1, false);
+
+
+--
+-- Data for Name: jobs_jobevents; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY jobs_jobevents (id, job_id, event, updated_on, extrainfo) FROM stdin;
+\.
+
+
+--
+-- Name: jobs_jobevents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('jobs_jobevents_id_seq', 1, false);
+
+
+--
+-- Data for Name: jobs_jobs; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY jobs_jobs (id, customer_id, fee, status, creation_date, ishidden, completion_date, jobtype, remarks, jobref, fee_currency, accepted_date, location, location_landmark) FROM stdin;
+34	58	0.00	3	2015-04-09 05:40:05.112624-04	f	\N	[u'0']	Lots of problem\r\nApril 10, 10:00 am	cbcfb3e00f3246de8b3e03a6a3795c3e	NPR	\N	0101000020E6100000271FDD6344555540AEE1C73D02BE3B40	
+35	52	4800.00	1	2015-04-10 01:57:07.951117-04	f	\N	[u'3']	Kitchen rack repair 	c9af0d58930a4b5a83f14a9b7aa686b0	NPR	2015-04-10 01:57:52.767949-04	0101000020E610000033E60B7DCC5555401FA3ECAF86BC3B40	
+30	49	2000.00	2	2015-04-09 00:24:25.170769-04	f	2015-04-09 08:34:39.813142-04	[u'3']	1. Furniture repairs	8bec8719c4c04195b6cc3f5083a55118	NPR	2015-04-09 04:06:27.954706-04	0101000020E610000011AE47E17A545540A2703D0AD7A33B40	
+25	49	1000.00	2	2015-04-07 23:53:47.320277-04	f	2015-04-09 08:34:48.117026-04	[u'1']	1. Leaking flush\r\n	e5809cece7704216bfdf4c43e1c9abf2	NPR	2015-04-09 04:06:10.666564-04	0101000020E610000011AE47E17A545540A2703D0AD7A33B40	
+29	49	2600.00	2	2015-04-09 00:24:09.552803-04	f	2015-04-09 08:34:29.208513-04	[u'2']	1. Electrical Wiring\r\n	b79b1234fd574c87a45d2ceb9b4632f3	NPR	2015-04-09 04:06:19.554433-04	0101000020E610000011AE47E17A545540A2703D0AD7A33B40	
+36	52	0.00	0	2015-04-10 02:13:02.018586-04	f	\N	[u'2']	Power socket replacement and chandelier fixing	fcddf1c0a6404be68416e28f8a202662	NPR	\N	0101000020E6100000EDF9F59E25555540AEB195E189BC3B40	
+37	59	0.00	3	2015-04-10 02:47:03.513643-04	f	\N	[u'4']	Seepage and Leaking	eae1052bf9034312b3968c70887b5fd5	NPR	\N	0101000020E6100000C2C76EC94C56554045212298D8BC3B40	
+31	52	0.00	3	2015-04-09 00:28:12.856164-04	f	\N	[u'1']	Basin waste pipe and bathroom fixtures replacement	d9e6d16215e447498c64babd60aa18d3	NPR	\N	0101000020E610000086F935FAC5555540FFB73528BEBC3B40	
+28	55	900.00	1	2015-04-08 08:07:00.594008-04	f	\N	[u'1']	1. Plumbing leakages and repairs.\r\n2. Electrical leakages and repairs	857ea8272cd840b58e05dd62082ef6c0	NPR	2015-04-10 01:06:43.776256-04	0101000020E6100000E3146A5355545540CEF596A6D6A63B40	
+8	7	0.00	2	2015-02-22 22:15:57.323385-05	f	2015-02-22 23:30:59.793285-05	2	Check inverter and battery for faults.	19ac5db3c5df45a594d7a5bc17f20103	NPR	2015-02-22 22:18:59.312385-05	0101000020E6100000D06053E751545540EEF4392D2EBA3B40	
+4	4	350.00	2	2015-01-04 01:08:59.331785-05	f	2015-01-04 01:25:59.331785-05	1	Replace kitchen faucet	3392de086bcf418e93210516c206fec0	NPR	2015-01-04 01:12:59.331785-05	0101000020E61000001D27E032025455406300F26FE1AE3B40	
+3	5	400.00	2	2015-01-04 00:45:59.331785-05	f	2015-01-04 01:05:59.331785-05	1	Fixing shower head	d1507e1a4f16415f910f0a26ead9077d	NPR	2015-01-04 00:50:59.331785-05	0101000020E61000001D27E032025455406300F26FE1AE3B40	
+5	4	400.00	2	2015-01-05 02:08:59.331785-05	f	2015-01-05 03:20:59.331785-05	2	Tubelight replacement	9238ce2f75f948b49e6c119d8b3b4836	NPR	2015-01-05 02:15:59.331785-05	0101000020E61000001D27E032025455406300F26FE1AE3B40	
+6	4	500.00	2	2015-01-10 00:15:59.331785-05	f	2015-02-24 21:41:00.320888-05	1	Seal leaking water tank	7f1fb6308eb242bdb8977b233f97a0a0	NPR	2015-01-10 01:29:59.331785-05	0101000020E61000001D27E032025455406300F26FE1AE3B40	
+7	6	600.00	2	2015-02-20 02:15:59.323385-05	f	2015-02-20 03:45:59.893285-05	2	Lightings fluctuating, checking and repair.	3bb54f5e60a349f6a06640a241e703c8	NPR	2015-02-20 02:25:59.392385-05	0101000020E6100000E57D1CCD915555404233993B44B53B40	
+16	37	1100.00	2	2015-03-30 06:17:34.85956-04	f	2015-03-31 01:27:51.371243-04	[u'1']	1. Shower repair\r\n2. Gas Geyser Installation	75e085bf432d45b582b1b760e6c846da	NPR	2015-03-30 06:47:05.812094-04	0101000020E6100000758EA61F795555407BBE66B96CBC3B40	
+9	10	6960.00	2	2015-03-08 10:23:06.487375-04	f	2015-03-11 04:45:53.340866-04	1	Cleaning and installation of water tanks, repairing of few bathroom components.	274de16cd0f5485f9261b75955d9956b	NPR	2015-03-08 10:25:00.941892-04	0101000020E61000000AC270091B5555408330B77BB9B93B40	
+11	25	850.00	2	2015-03-22 01:30:35.258823-04	f	2015-03-22 04:16:20.140338-04	2	Replace CFL lights.	cdbaefd5595642789c16f73857e00927	NPR	2015-03-22 01:31:03.08195-04	0101000020E61000008CDD99643F5655407FA5F3E159B03B40	
+12	28	1600.00	2	2015-03-25 05:29:32.935441-04	f	2015-03-25 05:39:57.571275-04	2	Electrical repairs and maintenance of lightbulbs, sockets and wiring.	220f5ea5895749c0a46fb336b01536ac	NPR	2015-03-25 05:29:51.106802-04	0101000020E61000007F3CAA5093535540A2C2C71638AF3B40	
+24	48	0.00	1	2015-04-06 00:48:32.312122-04	f	\N	[u'2']	Wiring inspection and repairs	207788706c8642d482123d23c3b36627	NPR	2015-04-06 00:48:45.787829-04	0101000020E61000001682C1DABD545540687D25EBCBB33B40	
+13	26	3160.00	2	2015-03-27 05:13:14.828694-04	f	2015-03-28 02:50:53.532956-04	1	Some kitchen door latches and plumbing repairs needed.	90c52c8f3ad0403e89f62bcfdd0bd0bd	NPR	2015-03-27 05:13:42.277301-04	0101000020E61000005F002BD1235655407284B12A67BA3B40	
+18	40	0.00	1	2015-04-01 01:33:03.956442-04	f	\N	[u'1', u'4']	Geyser relocation\r\nReconstructing basin counter	4cd0137ce60640f383160b79e07818a3	NPR	2015-04-01 02:49:25.217494-04	0101000020E6100000DB7A979CA4545540AACF7A9D79B03B40	
+15	30	400.00	2	2015-03-29 00:10:02.255912-04	f	2015-03-29 04:15:37.830743-04	2	Fix some lights and switches.	ae5d13434546493db0b30aed9ce888d3	NPR	2015-03-29 04:15:22.454195-04	0101000020E61000005D6BEF53555555403333333333B33B40	
+21	34	1400.00	2	2015-04-02 02:13:29.511941-04	f	2015-04-03 05:30:06.384211-04	[u'2', u'3']	1. Bulbs installation and wiring.\r\n2. Table modification.	4692d54f73af4d398f43c13876883443	NPR	2015-04-02 05:22:41.419947-04	0101000020E61000009411BCC653535540CB64389ECFAE3B40	
+19	6	700.00	2	2015-04-01 01:44:32.665762-04	f	2015-04-01 04:49:26.495135-04	[u'2']	Probable issue in City line changer box	2fe94f9fa61e4567806cf1ee5739fbec	NPR	2015-04-01 01:44:51.560312-04	0101000020E6100000E57D1CCD915555404233993B44B53B40	Young Innovations Pvt. Ltd., Lalitpur, Central Region, Nepal
+27	53	0.00	0	2015-04-08 01:52:07.66317-04	f	\N	[u'3']	Bed Repair	64602b822aad456fb8cff2a7456a802b	NPR	\N	0101000020E6100000D06053E751545540EEF4392D2EBA3B40	
+14	28	0.00	5	2015-03-28 05:12:45.456684-04	f	\N	[u'1']	Waste pipe is clogged.\r\n\r\n==\r\nDiscarded:\r\nResolved themselves.	7ea27bcafcce4b74a38b256c0ce9d867	NPR	2015-03-28 05:13:54.154952-04	0101000020E61000007F3CAA50935355409FC2C71638AF3B40	
+17	36	0.00	5	2015-04-01 01:32:32.919953-04	f	\N	[u'1', u'4']	Waste drainage overflow\r\n==\r\nDiscarded:\r\nFamily issue with older plumber.	f51dae47af4f4e528a10d4b65e1a78ef	NPR	2015-04-03 03:37:01.533319-04	0101000020E61000004958AF7D5C545540F60F7DD2E4A93B40	
+22	43	0.00	5	2015-04-05 01:12:10.580584-04	f	\N	[u'2']	Inverter is not charging\r\n\r\n==\r\nDiscarded:\r\nIssue is with battery and inverter.	dba3c4712e1b4696a96a1fbc0a613444	NPR	2015-04-05 01:12:41.202185-04	0101000020E61000004958AF7D5C545540F60F7DD2E4A93B40	
+20	39	4000.00	2	2015-04-02 02:12:12.246318-04	f	2015-04-02 06:41:54.362145-04	[u'1', u'2', u'3', u'4']	1. Electrical bulbs installation and repair\r\n2. Faucets installation and leakage repairs\r\n3. Drainage repair\r\n4. Door latches repair\r\n\r\n==Revisit on 8 April==\r\nBasin leakage hasn't been solved.	abc593200df543529e04a5f047ef24ef	NPR	2015-04-02 02:12:55.726299-04	0101000020E610000033F9C1540E57554076D44E8358B03B40	
+26	51	0.00	5	2015-04-08 00:17:36.339234-04	f	\N	[u'1']	Ceiling is leaking, for some drain outlet.\r\n==Discarded==:\r\nFault not found in owner's home but on neighbor's.	650dc0a5ff2e40c2bfec6e27231ace36	NPR	\N	0101000020E6100000D5E049AA6758554028950C997EB33B40	
+32	56	0.00	0	2015-04-09 00:30:34.073219-04	f	\N	[u'1']	Water leaks	aa1e5e920314494e941d0389d4079473	NPR	\N	0101000020E61000004D9F1D70DD535540E98CDE5FF3AA3B40	
+33	57	0.00	3	2015-04-09 04:05:37.48561-04	f	\N	[u'1']	Pipe leak from boring line	13ad924d6cee4ba0ab66defa83bb2b72	NPR	\N	0101000020E61000000BF560F7C25355404ADE944D14B63B40	
+\.
+
+
+--
+-- Data for Name: jobs_jobs_handyman; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY jobs_jobs_handyman (id, jobs_id, userprofile_id) FROM stdin;
+2	3	8
+4	4	8
+6	5	3
+8	6	8
+10	7	3
+12	8	3
+15	9	11
+17	11	3
+19	12	3
+24	13	32
+25	13	33
+26	13	31
+29	15	3
+33	16	33
+40	18	33
+54	21	3
+55	21	31
+57	24	3
+58	19	3
+59	14	33
+60	17	32
+61	17	33
+62	22	3
+63	20	32
+64	20	33
+65	20	3
+66	20	31
+69	26	32
+70	26	33
+71	33	32
+75	34	32
+79	30	31
+80	25	33
+81	29	3
+83	35	31
+84	37	32
+85	31	33
+86	28	33
+\.
+
+
+--
+-- Name: jobs_jobs_handyman_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('jobs_jobs_handyman_id_seq', 86, true);
+
+
+--
+-- Name: jobs_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('jobs_jobs_id_seq', 37, true);
+
+
+--
+-- Data for Name: libs_smslog; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY libs_smslog (id, user_id, msg, "time") FROM stdin;
+1	2	Your account is active now! For any repair requests, please SMS HANDYMAN to 2200! Thankyou - The Homerepair App.	2015-02-15 11:17:54.830807-05
+2	9	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-02-26 06:58:34.953703-05
+3	10	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-08 10:19:02.958624-04
+4	10	Our repair expert Krishna Kumar Luitel (+977 984-3369137) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-08 10:25:01.985461-04
+5	10	Your request ID:9, Type:Plumbing has been completed! Thankyou - The Homerepair App.	2015-03-11 04:45:54.707613-04
+6	12	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 01:25:34.774848-04
+7	13	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 01:26:05.032658-04
+8	14	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 01:32:25.064825-04
+9	16	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:12:32.891539-04
+10	17	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:13:07.700767-04
+11	18	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:14:00.499164-04
+12	19	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:25:12.554186-04
+13	20	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:25:56.003722-04
+14	21	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:30:21.57468-04
+15	22	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:30:56.991971-04
+16	23	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:33:01.05308-04
+17	24	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-16 04:33:26.520904-04
+18	25	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-22 01:30:09.883163-04
+19	25	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-22 01:31:04.143431-04
+20	25	Your request ID:11, Type:Electrical has been completed! Thankyou - The Homerepair App.	2015-03-22 04:16:21.367984-04
+21	26	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-25 00:08:46.62797-04
+22	27	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-25 05:07:45.174447-04
+23	28	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-25 05:28:53.074514-04
+24	28	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-25 05:29:52.397399-04
+25	28	Your request ID:12, Type:Electrical has been completed! Thankyou - The Homerepair App.	2015-03-25 05:39:59.290782-04
+26	29	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-25 08:13:03.372678-04
+27	30	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-26 07:33:17.756702-04
+28	26	Our repair expert Ramesh Thapa (+977 980-1195408) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-27 05:13:43.669459-04
+29	26	Your request ID:13 has been completed! Thankyou - The Homerepair App.	2015-03-28 02:50:54.910437-04
+30	28	Our repair expert Sukulal Waiba (+977 980-1195406) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-28 05:13:55.546084-04
+31	30	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-29 04:15:23.857872-04
+32	30	Your request ID:15 has been completed! Thankyou - The Homerepair App.	2015-03-29 04:15:39.073662-04
+33	34	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-29 05:46:26.370566-04
+34	35	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-30 02:41:34.792775-04
+35	36	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-30 04:48:20.581431-04
+36	37	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-30 05:57:35.19559-04
+37	38	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-30 06:46:33.671235-04
+38	37	Our repair expert Sukulal Waiba (+977 980-1195406) has been assigned for your request! Thankyou - The Homerepair App.	2015-03-30 06:47:07.156088-04
+39	37	Your request ID:16 has been completed! Thankyou - The Homerepair App.	2015-03-31 03:18:31.852141-04
+40	39	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-03-31 07:17:23.521153-04
+41	40	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-01 01:26:11.540734-04
+42	6	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-01 01:44:52.829745-04
+43	40	Our repair expert Sukulal Waiba (+977 980-1195406) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-01 02:49:26.610385-04
+44	6	Your request ID:19 has been completed! Thankyou - The Homerepair App.	2015-04-01 04:49:27.843575-04
+45	39	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-02 02:12:57.113541-04
+46	41	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-02 02:21:49.867938-04
+47	34	Our repair expert Ramesh Thapa (+977 980-1195408) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-02 05:22:43.340833-04
+48	39	Your request ID:20 has been completed! Thankyou - The Homerepair App.	2015-04-02 06:41:55.745853-04
+49	42	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-02 07:50:51.735966-04
+50	36	Our repair expert Gopi Karki (+977 980-1195407) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-03 03:37:03.034941-04
+51	34	Your request ID:21 has been completed! Thankyou - The Homerepair App.	2015-04-03 05:30:07.886752-04
+52	43	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-04 23:56:05.955778-04
+53	44	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-04 23:59:36.996556-04
+54	43	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-05 01:12:42.514869-04
+55	45	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-05 05:16:21.595676-04
+56	46	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-05 05:16:57.506918-04
+57	47	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-05 05:17:34.022226-04
+58	48	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou - The Homerepair App.	2015-04-06 00:48:15.710212-04
+59	48	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou - The Homerepair App.	2015-04-06 00:48:47.127176-04
+60	49	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-07 23:50:25.97754-04
+61	50	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-07 23:56:00.981395-04
+62	51	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-08 00:10:07.825958-04
+63	52	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-08 01:10:12.687826-04
+64	53	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-08 01:28:33.923764-04
+65	54	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-08 01:44:58.108456-04
+66	3	Your password reset code is : 852357 . If you did not request for one, please ignore. Thankyou, The Homerepair App.	2015-04-08 03:48:27.388355-04
+67	55	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-08 08:04:03.399452-04
+68	56	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-09 00:30:08.375542-04
+69	57	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-09 03:26:36.298303-04
+70	49	Our repair expert Sukulal Waiba (+977 980-1195406) has been assigned for your request! Thankyou, The Homerepair App.	2015-04-09 04:06:11.966011-04
+71	49	Our repair expert Kumar Thapa Magar (+977 980-1195409) has been assigned for your request! Thankyou, The Homerepair App.	2015-04-09 04:06:20.878428-04
+72	49	Our repair expert Ramesh Thapa (+977 980-1195408) has been assigned for your request! Thankyou, The Homerepair App.	2015-04-09 04:06:29.242742-04
+73	58	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-09 05:37:17.529921-04
+74	49	Your request ID:29 has been completed! Thankyou, The Homerepair App.	2015-04-09 08:34:30.634281-04
+75	49	Your request ID:30 has been completed! Thankyou, The Homerepair App.	2015-04-09 08:34:41.177524-04
+76	49	Your request ID:25 has been completed! Thankyou, The Homerepair App.	2015-04-09 08:34:49.384942-04
+77	55	Our repair expert Sukulal Waiba (+977 980-1195406) has been assigned for your request! Thankyou, The Homerepair App.	2015-04-10 01:06:45.245869-04
+78	52	Our repair expert Ramesh Thapa (+977 980-1195408) has been assigned for your request! Thankyou, The Homerepair App.	2015-04-10 01:57:54.2576-04
+79	59	Your account is active now! For any repair requests, please SMS REPAIR to 2200! Thankyou, The Homerepair App.	2015-04-10 02:43:55.275364-04
+\.
+
+
+--
+-- Name: libs_smslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('libs_smslog_id_seq', 79, true);
+
+
+--
+-- Data for Name: south_migrationhistory; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY south_migrationhistory (id, app_name, migration, applied) FROM stdin;
+1	users	0001_initial	2014-11-21 03:31:01.449415-05
+2	jobs	0001_initial	2014-11-21 03:31:01.598897-05
+3	authtoken	0001_initial	2014-11-21 03:31:01.698652-05
+4	users	0002_add_model_EarlyBirdUser	2014-11-22 14:21:33.990094-05
+5	users	0003_add_model_EarlyBirdHandymen	2014-11-22 14:21:34.038096-05
+6	users	0004_auto__del_field_userprofile_first_name__del_field_userprofile_last_nam	2015-01-07 06:09:10.630252-05
+7	users	0005_auto__add_field_userprofile_current_address	2015-01-07 06:09:10.696571-05
+8	users	0006_auto__add_usertoken	2015-01-07 06:09:10.766821-05
+9	users	0007_auto__add_field_userprofile_userref	2015-01-07 06:09:10.819197-05
+10	users	0008_auto__add_unique_userprofile_userref	2015-01-07 06:09:10.851633-05
+11	users	0009_auto__del_earlybirdhandymen__add_field_earlybirduser_confirmed	2015-01-07 06:09:10.893639-05
+12	jobs	0002_auto__add_jobevents__del_field_jobs_tracking_number__add_field_jobs_jo	2015-01-07 06:09:23.08299-05
+13	jobs	0003_auto__add_field_jobs_remarks	2015-01-07 06:09:23.144912-05
+14	jobs	0004_auto__add_field_jobs_destination_home	2015-01-07 06:09:23.180361-05
+15	jobs	0005_auto__del_field_jobs_handymen__add_field_jobs_handyman	2015-01-07 06:09:23.226538-05
+16	jobs	0006_auto__chg_field_jobs_handyman	2015-01-07 06:09:23.282737-05
+17	jobs	0007_auto__chg_field_jobs_fee	2015-01-07 06:09:23.321104-05
+18	jobs	0008_auto__add_field_jobs_jobref	2015-01-07 06:09:23.368503-05
+19	jobs	0009_auto__add_unique_jobs_jobref	2015-01-07 06:09:23.398477-05
+20	jobs	0010_auto__chg_field_jobs_status__chg_field_jobs_jobtype	2015-01-07 06:09:23.538809-05
+21	jobs	0011_auto__add_field_jobs_fee_currency__chg_field_jobs_fee	2015-01-07 06:09:23.612671-05
+22	libs	0001_initial	2015-01-07 06:09:23.729057-05
+23	faq	0001_initial	2015-01-07 06:09:23.825287-05
+24	jobs	0012_auto__del_field_jobs_handyman	2015-01-12 01:29:52.644685-05
+25	jobs	0013_auto__del_field_jobs_isnotified__del_field_jobs_isaccepted	2015-02-15 04:11:10.138579-05
+26	jobs	0014_auto__del_field_jobs_is_complete	2015-02-15 04:11:10.155037-05
+27	jobs	0015_auto__add_field_jobs_accepted_date	2015-02-15 04:11:10.17314-05
+28	users	0010_auto__add_field_userprofile_address_coordinates	2015-03-01 02:34:28.936503-05
+29	jobs	0016_auto__chg_field_jobs_jobtype	2015-03-30 06:17:27.3161-04
+30	users	0011_auto__chg_field_userprofile_current_address__chg_field_userprofile_add	2015-04-06 06:14:59.456122-04
+31	users	0012_auto__add_field_usertoken_tokentype	2015-04-06 06:15:01.696928-04
+32	jobs	0016_auto__add_field_jobs_location	2015-04-06 06:15:05.266562-04
+33	jobs	0017_auto__chg_field_jobs_jobtype	2015-04-06 06:15:05.298334-04
+34	jobs	0018_auto__add_field_jobs_location_landmark	2015-04-06 06:15:05.329861-04
+35	jobs	0018_auto__del_field_jobs_destination_home__chg_field_jobs_jobtype	2015-04-06 06:15:05.361367-04
+36	job_gallery	0001_initial	2015-04-06 06:15:05.507418-04
+37	job_gallery	0002_auto__add_field_jobgalleryimages_job	2015-04-06 06:15:05.533994-04
+38	jobs	0019_auto__del_field_jobs_distance	2015-04-08 02:21:27.15509-04
+39	jobs	0020_auto__del_field_jobs_available_handymen	2015-04-08 02:21:27.173507-04
+40	jobs	0021_auto__del_field_jobs_considered_handymen	2015-04-08 02:21:27.185299-04
+\.
+
+
+--
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('south_migrationhistory_id_seq', 40, true);
+
+
+--
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users_earlybirduser; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY users_earlybirduser (id, phone, registered_on, confirmed) FROM stdin;
+1	+9779802036633	2014-11-22 15:29:17.703976-05	f
+2	+9779808481074	2014-11-23 13:03:44.002398-05	f
+5	+9779843302459	2014-11-23 22:38:37.257821-05	f
+6	+9779851127698	2014-11-23 23:41:13.210094-05	f
+15	+9779851106062	2014-11-24 13:50:17.066378-05	f
+16	+9779841241561	2014-11-24 13:50:49.211227-05	f
+18	+9779847023944	2014-11-25 06:41:35.572912-05	f
+22	+9779801029413	2014-11-25 13:15:20.721051-05	f
+24	+9779802098765	2014-12-01 01:27:05.8113-05	f
+25	+9779841165051	2014-12-01 22:08:40.961386-05	f
+26	+9779818772012	2014-12-01 22:51:33.566628-05	f
+27	+9779849193422	2014-12-01 23:00:46.07893-05	f
+28	+9779803052617	2014-12-01 23:16:40.619602-05	f
+29	+9779849958666	2014-12-01 23:51:29.88859-05	f
+30	+9779841509049	2014-12-02 00:17:16.627778-05	f
+31	+9779841652324	2014-12-02 01:57:24.215628-05	f
+32	+9779849505162	2014-12-02 04:19:12.86255-05	f
+33	+9779813053601	2014-12-02 01:58:09.088143-05	f
+34	+9779801051695	2014-12-01 23:35:40.876851-05	f
+35	+9779848421221	2014-12-02 07:03:58.724644-05	f
+37	+9779841333958	2014-12-02 07:18:10.981036-05	f
+38	+9779851178908	2014-12-02 07:18:18.675569-05	f
+39	+9779851146533	2014-12-02 07:56:44.681465-05	f
+40	+9779851149200	2014-12-02 07:57:41.757388-05	f
+41	+9779851087766	2014-12-02 08:58:56.223307-05	f
+42	+9779851009463	2014-12-03 00:41:06.043807-05	f
+43	+9779841388461	2014-12-03 00:42:07.21339-05	f
+44	+9779803506834	2014-12-03 01:13:58.09405-05	f
+45	+9779841457289	2014-12-03 03:53:16.077205-05	f
+46	+9779801197056	2014-12-04 01:45:35.09738-05	f
+47	+9779851047534	2014-12-04 02:07:01.562735-05	f
+48	+9779841742735	2014-12-22 09:26:15.756339-05	f
+49	+9779841378452	2015-01-02 08:55:31.658021-05	f
+52	+9779851125634	2015-01-04 02:38:43.357244-05	f
+53	+9779801158360	2015-01-04 03:41:24.021716-05	f
+54	+9779801158494	2015-01-04 03:42:13.487324-05	f
+55	+9779801158500	2015-01-04 04:19:43.806181-05	f
+56	+9779803162500	2015-01-04 22:23:58.059181-05	f
+57	+9779816456675	2015-01-05 06:02:17.489834-05	f
+59	+9779851002522	2015-01-07 12:52:53.021579-05	f
+60	+9779851158490	2015-01-07 13:20:54.730119-05	f
+61	+9779818244451	2015-01-11 00:26:11.709677-05	f
+62	+9779801026410	2015-01-11 01:52:35.988201-05	f
+63	+9779841708763	2015-01-12 12:40:24.525706-05	f
+64	+9779801165310	2015-01-22 01:07:00.974389-05	f
+65	+9779818280478	2015-01-29 02:22:28.506992-05	f
+66	+9779803673551	2015-02-02 02:01:25.170366-05	f
+68	+9779841419447	2015-02-06 10:26:36.900036-05	f
+69	+9779801019160	2015-02-11 07:03:01.249643-05	f
+70	+9779849033446	2015-02-11 20:37:57.387884-05	f
+71	+9779818864281	2015-02-12 03:55:56.747783-05	f
+72	+9779801212771	2015-02-13 05:31:35.860771-05	f
+73	+9779816190677	2015-02-14 00:31:24.992901-05	f
+67	+9779841809735	2015-02-04 07:26:35.804831-05	t
+75	+9779849035763	2015-02-24 21:21:33.672259-05	t
+51	+9779841429502	2015-01-04 01:23:51.508191-05	t
+23	+9779840063488	2014-11-29 06:47:43.301513-05	t
+50	+9779841223173	2015-01-03 00:55:28.363342-05	t
+74	+9779841405715	2015-02-23 07:44:11.00015-05	t
+76	+9779849848906	2015-02-24 21:35:50.010972-05	t
+77	+9779801158362	2015-02-25 04:55:26.530952-05	f
+11	+9779849259844	2014-11-24 08:09:22.930984-05	t
+78	+9779841515620	2015-02-26 07:37:28.758742-05	f
+79	+9779801025522	2015-02-26 07:45:44.292614-05	f
+80	+9779841709272	2015-03-06 05:15:46.759551-05	f
+81	+9779808309966	2015-03-08 10:13:32.770063-04	t
+82	+9779843369137	2015-03-08 10:20:37.951908-04	t
+3	+9779843627958	2014-11-23 13:36:27.89032-05	t
+4	+9779841806415	2014-11-23 22:07:34.163225-05	t
+8	+9779841278969	2014-11-24 01:41:35.851434-05	t
+7	+9779851023486	2014-11-24 01:39:51.059617-05	t
+9	+9779841592542	2014-11-24 02:27:01.237681-05	t
+10	+9779841346046	2014-11-24 07:06:31.635227-05	t
+12	+9779841452982	2014-11-24 10:57:20.661457-05	t
+13	+9779841404266	2014-11-24 11:01:22.011282-05	t
+14	+9779843140606	2014-11-24 11:03:21.463488-05	t
+17	+9779801158449	2014-11-25 02:55:47.215824-05	t
+19	+9779801158444	2014-11-25 08:01:43.529504-05	t
+20	+9779843692899	2014-11-25 08:20:00.392899-05	t
+21	+9779802003295	2014-11-25 08:20:26.18061-05	t
+58	+9779841727337	2015-01-07 07:41:19.691932-05	t
+83	+9779842064899	2015-03-24 10:32:59.062105-04	t
+84	+9779849366239	2015-03-25 05:03:24.863538-04	t
+85	+9779851123075	2015-03-25 05:27:06.380351-04	t
+87	+9779808154856	2015-03-25 07:24:45.003532-04	f
+86	+9779851116163	2015-03-25 06:49:48.113201-04	t
+88	+9779851015203	2015-03-25 16:26:55.270304-04	f
+89	+9779808662963	2015-03-26 07:23:18.69135-04	t
+91	+9779841426939	2015-03-26 20:52:51.453532-04	f
+92	+9779801195408	2015-03-27 04:57:49.402614-04	t
+93	+9779801195407	2015-03-27 05:00:13.001228-04	t
+94	+9779801195406	2015-03-27 05:33:53.251715-04	t
+95	+9779849321952	2015-03-28 10:40:23.079217-04	f
+96	+9779851175340	2015-03-29 05:43:59.802847-04	t
+97	+9779841937166	2015-03-30 01:40:06.096947-04	t
+98	+9779862155317	2015-03-30 03:58:22.0043-04	f
+99	+9779802056847	2015-03-30 04:41:46.134224-04	t
+100	+9779849056059	2015-03-30 04:57:28.734988-04	f
+102	+9779841046534	2015-03-30 05:28:52.109264-04	f
+103	+9779841793522	2015-03-30 05:39:36.74078-04	f
+101	+9779801079860	2015-03-30 05:20:25.927028-04	t
+104	+9779851009903	2015-03-30 06:00:23.032847-04	f
+105	+9779851151056	2015-03-30 06:35:07.364779-04	t
+106	+9779818289150	2015-03-30 08:04:51.472381-04	f
+107	+9779851105386	2015-03-31 03:38:08.081409-04	f
+108	+9779841744232	2015-03-31 06:26:44.648648-04	t
+109	+9779841286185	2015-03-31 08:33:08.517078-04	f
+110	+9779841209709	2015-04-01 01:11:57.201883-04	t
+111	+9779851027148	2015-04-01 12:04:46.084678-04	t
+112	+9779841468224	2015-04-02 07:45:03.009887-04	t
+114	+9779841271025	2015-04-04 23:55:25.357639-04	t
+113	+9779818911270	2015-04-03 19:50:24.105931-04	t
+115	+9779851069368	2015-04-05 05:15:37.105358-04	t
+36	+9779849096069	2014-12-02 07:04:51.093408-05	t
+90	+9779841376226	2015-03-26 11:36:03.036603-04	t
+116	+9779851191837	2015-04-06 00:47:39.789128-04	t
+117	+9779801191777	2015-04-06 00:48:56.551798-04	f
+120	+9779851025760	2015-04-07 23:07:14.863694-04	f
+118	+9779851118439	2015-04-07 07:21:53.396386-04	t
+119	+9779849668603	2015-04-07 11:33:10.16605-04	t
+121	+9779841365760	2015-04-07 23:14:29.186267-04	t
+123	+9779841254232	2015-04-08 01:09:32.529129-04	t
+122	+9779803216580	2015-04-08 01:03:07.627157-04	t
+124	+9779851180663	2015-04-08 01:44:26.795427-04	t
+125	+9779802111537	2015-04-08 07:51:26.409403-04	t
+126	+9779803479859	2015-04-09 00:29:22.386776-04	t
+127	+9779851177776	2015-04-09 03:15:00.245565-04	t
+128	+9779841601865	2015-04-09 05:31:01.205901-04	t
+129	+9779841490324	2015-04-10 02:42:59.75908-04	t
+\.
+
+
+--
+-- Name: users_earlybirduser_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('users_earlybirduser_id_seq', 129, true);
+
+
+--
+-- Data for Name: users_userevents; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY users_userevents (id, user_id, event, updated_on, extrainfo) FROM stdin;
+1	1	1	2015-01-07 06:18:47.877131-05	{"client_internal_ip":"202.51.87.110","client_public_ip":"202.51.87.110"}
+2	1	0	2015-01-07 06:19:04.606531-05	{}
+3	1	1	2015-01-07 09:54:05.689815-05	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+4	1	1	2015-01-07 14:08:08.449275-05	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+5	1	1	2015-01-09 21:36:43.746034-05	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+6	1	0	2015-01-12 01:31:00.388026-05	{}
+7	1	1	2015-01-12 04:29:24.543236-05	{"client_internal_ip":"202.51.87.110","client_public_ip":"202.51.87.110"}
+8	1	1	2015-02-04 06:17:57.3341-05	{"client_internal_ip":"36.253.202.75","client_public_ip":"36.253.202.75"}
+9	1	1	2015-02-23 21:15:14.374417-05	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+10	1	1	2015-02-25 03:25:56.014098-05	{"client_public_ip":"36.252.141.241","client_internal_ip":"36.252.141.241"}
+11	1	1	2015-02-25 05:15:20.846565-05	{"client_public_ip":"36.252.141.241","client_internal_ip":"36.252.141.241"}
+12	1	1	2015-02-26 03:40:06.007833-05	{"client_public_ip":"36.252.251.164","client_internal_ip":"36.252.251.164"}
+13	1	1	2015-02-26 05:28:59.138881-05	{"client_public_ip":"36.252.251.164","client_internal_ip":"36.252.251.164"}
+14	1	0	2015-02-26 09:52:12.202159-05	{}
+15	1	1	2015-02-27 02:51:19.691447-05	{"client_public_ip":"36.252.126.178","client_internal_ip":"36.252.126.178"}
+16	1	1	2015-02-27 04:12:28.431286-05	{"client_public_ip":"36.252.250.244","client_internal_ip":"36.252.250.244"}
+17	1	1	2015-03-02 04:54:34.762046-05	{"client_public_ip":"36.252.219.171","client_internal_ip":"36.252.219.171"}
+18	1	1	2015-03-16 01:23:26.658513-04	{"client_public_ip":"110.44.117.111","client_internal_ip":"110.44.117.111"}
+19	1	1	2015-03-18 03:00:10.214843-04	{"client_public_ip":"182.93.72.134","client_internal_ip":"182.93.72.134"}
+20	1	1	2015-03-29 01:29:28.685847-04	{"client_public_ip":"113.199.206.146","client_internal_ip":"113.199.206.146"}
+21	2	1	2015-03-30 22:39:34.424175-04	{"client_public_ip":"110.34.10.213","client_internal_ip":"110.34.10.213"}
+22	1	1	2015-03-30 22:57:37.710399-04	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+23	1	0	2015-04-06 05:09:17.692999-04	{}
+24	1	1	2015-04-06 06:15:46.937904-04	{"client_public_ip":"110.44.117.150","client_internal_ip":"110.44.117.150"}
+25	1	0	2015-04-06 12:19:21.728174-04	{}
+26	1	1	2015-04-06 12:20:37.654196-04	{"client_public_ip":"202.51.87.110","client_internal_ip":"202.51.87.110"}
+27	1	0	2015-04-06 23:14:34.886736-04	{}
+28	1	1	2015-04-07 01:45:57.790129-04	{"client_public_ip":"182.93.72.134","client_internal_ip":"182.93.72.134"}
+29	1	0	2015-04-07 07:25:41.261738-04	{}
+30	1	1	2015-04-07 11:40:20.56451-04	{"client_public_ip":"110.34.15.4","client_internal_ip":"110.34.15.4"}
+31	1	0	2015-04-08 00:55:45.4327-04	{}
+32	1	1	2015-04-08 00:55:59.468066-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+33	2	1	2015-04-08 01:04:55.903703-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+34	2	0	2015-04-08 01:07:13.558012-04	{}
+35	2	1	2015-04-08 01:08:00.909617-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+36	1	1	2015-04-08 01:38:47.360615-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+37	1	0	2015-04-08 01:42:54.4073-04	{}
+38	3	3	2015-04-08 03:48:26.0331-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+39	3	1	2015-04-08 03:56:05.51193-04	{"client_public_ip":"110.44.117.165","client_internal_ip":"110.44.117.165"}
+40	3	0	2015-04-08 04:01:09.387256-04	{}
+41	2	1	2015-04-10 00:55:10.663933-04	{"client_public_ip":"110.44.118.187","client_internal_ip":"110.44.118.187"}
+\.
+
+
+--
+-- Name: users_userevents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('users_userevents_id_seq', 41, true);
+
+
+--
+-- Data for Name: users_userprofile; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY users_userprofile (password, last_login, id, phone_status, phone, date_joined, profile_image, account_status, user_type, is_staff, is_superuser, is_active, address, extrainfo, name, current_address, userref, address_coordinates) FROM stdin;
+pbkdf2_sha256$12000$0rGyArNYIyKH$gqlENzpC+NbVHv28iW2hZ29lPtcbKapr41nxvZ8SdUQ=	2015-02-24 21:31:58.929435-05	6	t	+9779841223173	2015-02-24 21:31:58.929669-05		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Rudranagar Marga, Ratopul"}	"{}"	Prawesh Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	cb0c56cd577c451abf8f4fab843523af	0101000020E6100000E57D1CCD915555404233993B44B53B40
+pbkdf2_sha256$12000$uR3VCzT8KEz5$dedOvxLw7ArHg0m9HXG1Y4g7d+jntonzdIfdPYdqbMk=	2015-03-25 05:28:51.105369-04	28	t	+9779851123075	2015-03-25 05:28:51.105962-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Sanepa"}	"{}"	Shashank Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	2690973c909c4fbd85f5127bbc8f64fe	0101000020E61000007F3CAA5093535540A2C2C71638AF3B40
+pbkdf2_sha256$12000$0yYKl1HOLsTw$iAF2E9D5ZQsVMIZXc5tcLAeWUKOOqCVtTqHXd8WLC8I=	2015-04-01 01:26:09.871039-04	40	t	+9779841209709	2015-04-01 01:26:09.87154-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Kshitij Apartments, Thapathali"}	"{}"	Aditya Tibrewala	0101000020E6100000714111E6D15455406728EE7893B53B40	b7293006016d4ea78183a39ae9846da2	0101000020E6100000DB7A979CA4545540AACF7A9D79B03B40
+pbkdf2_sha256$12000$0pLb6Rk9MvR1$1J6T0xVkBZVAR9vcsXpDyHP2VNj8FDt03cfY1yBtU0w=	2015-04-08 03:56:05.50961-04	3	t	+9779801195409	2015-02-24 21:22:34.872252-05		1	1	f	f	t	{"city":"Kathmandu","streetaddress":"Mahankal - 9 , Mandikhatar "}	"{}"	Kumar Thapa Magar	0101000020E6100000714111E6D15455406728EE7893B53B40	b003be32acca46d88bc152c5cb1765b6	0101000020E610000049877468645655402D81EA98DDBC3B40
+pbkdf2_sha256$12000$M7nctDZwftZV$/w+mziqavfYl5SIcQlTqrwkdk0nxIbOZNczWgwujr1A=	2015-02-24 21:24:31.671831-05	4	t	+9779841429502	2015-02-24 21:24:31.672044-05		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Bakhundole"}	"{}"	Rewati Malla	0101000020E6100000714111E6D15455406728EE7893B53B40	759f1a3085ac42e7b998cf927a072dc7	0101000020E61000001D27E032025455406300F26FE1AE3B40
+pbkdf2_sha256$12000$bpzGfeZ5t7aB$etg2mkyZMzjc0DqFbggm7mUfqqSF6dhJj9lWSkIKiGI=	2015-03-08 10:22:10.273885-04	11	t	+9779843369137	2015-03-08 10:22:10.27438-04		1	1	f	f	f	{"city":"Kathmandu","streetaddress":"Tudaldevi, Baluwatar"}	"{}"	Krishna Kumar Luitel	0101000020E6100000714111E6D15455406728EE7893B53B40	47c4146b8db948788ef039396e5891b3	0101000020E61000007E384888725555404048BB760EBA3B40
+pbkdf2_sha256$12000$T9d80BEVpJNW$xQbE1QKmCGesS0+idEFA+4SgfFQ8ReZNGlzo17OttXU=	2015-02-26 06:58:33.511048-05	9	t	+9779849259844	2015-02-26 06:58:33.511298-05		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Tudaldevi"}	"{}"	Bijaya Raj Ghimire	0101000020E6100000714111E6D15455406728EE7893B53B40	b1f3fb1d872448a49b15de2f2ff7a54d	0101000020E61000006BD8EF89755555409F1CAACE0FBA3B40
+pbkdf2_sha256$12000$Kx4155LIb27X$Mbo1Krp/EzRbUHxvSJWWourq9g+TPaRRUG+qfDVvktI=	2015-03-16 01:25:33.179158-04	12	t	+9779843627958	2015-03-16 01:25:33.179797-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Kuleshwore"}	"{}"	Dipesh Gautam	0101000020E6100000714111E6D15455406728EE7893B53B40	fd8c222877874690b25d1f74863e732c	0101000020E61000004D8B55DEE9525540784E69B3A0B03B40
+pbkdf2_sha256$12000$TIu7zIifuiS0$Ui26RimUQfeyzzahIK9GxKJd7y+bXmPi9HTrPpnEoxs=	2015-03-16 01:26:03.259283-04	13	t	+9779841806415	2015-03-16 01:26:03.259668-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Basundhara"}	"{}"	Anish Vaidya	0101000020E6100000714111E6D15455406728EE7893B53B40	d5929326fb724282bf58145e24a17254	0101000020E61000002A1FDD6344555540ACE1C73D02BE3B40
+pbkdf2_sha256$12000$Tk0MMUTKJ0DX$oW1A/L7Pyvtu861EB34q4DolDOt77u6GpHJ+fOq+8z4=	2015-03-16 04:32:58.090215-04	23	t	+9779843692899	2015-03-16 04:32:58.09047-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Koteshwore"}	"{}"	Anjan Adhikari	0101000020E6100000714111E6D15455406728EE7893B53B40	bc5162a55d2a4585a09c84f25f5aca2c	0101000020E61000001DFA939D235655400E277A2AF1AC3B40
+pbkdf2_sha256$12000$6BCHzHzta0iT$ai/gT32mSBw9p9hhYgpjFlXwacJf3ei7/8KChYtIcEw=	2015-03-08 10:19:01.464817-04	10	t	+9779808309966	2015-03-08 10:19:01.465105-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Baluwatar"}	"{}"	Sachin Rai	0101000020E6100000714111E6D15455406728EE7893B53B40	a656a05706b34c6891868346aa5286f7	0101000020E61000000AC270091B5555408330B77BB9B93B40
+pbkdf2_sha256$12000$8ae9e2dMKXQJ$IYKLWfIf6/2J0aXnn0TisCmpuvQvi6uiyk7+9gV8Qq4=	2015-03-16 01:37:48.859956-04	15	t	+9779851023486	2015-03-16 01:37:48.860213-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Chabahil"}	"{}"	Sumiran Acharya	0101000020E6100000714111E6D15455406728EE7893B53B40	2bf7c45fee934aac9aa09ff69ec995f7	0101000020E61000008FFD2C96A2565540F56E87E17EB73B40
+pbkdf2_sha256$12000$2FxxSoX4oNI8$jpIptZ7A0OwQ9dl+Ryawc2j+kHMntxLQDXRVo8PwgfM=	2015-03-16 04:12:31.009163-04	16	t	+9779841592542	2015-03-16 04:12:31.009685-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Ekantakuna"}	"{}"	Abhaya Thapa	0101000020E6100000714111E6D15455406728EE7893B53B40	087ad83849374e8e9b4b6c175c048790	0101000020E61000004D9F1D70DD535540E98CDE5FF3AA3B40
+pbkdf2_sha256$12000$iUjDzuk5gw0i$ZEkj63DcJoXYb+xs62B9HGPM/dXKK/QNSuMS8whSN1M=	2015-03-16 04:13:06.204239-04	17	t	+9779841346046	2015-03-16 04:13:06.204618-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Panchakanya, Chundevi"}	"{}"	Niraj Katuwal	0101000020E6100000714111E6D15455406728EE7893B53B40	699443dddbf7455897e384216433a60e	0101000020E6100000758EA61F795555407BBE66B96CBC3B40
+pbkdf2_sha256$12000$XEJgAeKxkZ4g$febz1Qs8MT015YdjOIgKw7b4FouxYUfDNBKmpoGfOcg=	2015-03-16 04:13:58.451865-04	18	t	+9779841452982	2015-03-16 04:13:58.452104-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Gyaneshwore"}	"{}"	Yudina Poudel	0101000020E6100000714111E6D15455406728EE7893B53B40	5b7758ad313141679ddbd01c0beb5584	0101000020E6100000423976F54F555540A6F8AEF7D1B53B40
+pbkdf2_sha256$12000$OXUi0yv6a8Y3$0eViMHAACde630ZaiQhh9g25x0xbwOBemf8KsSQBdaY=	2015-03-16 04:25:11.024417-04	19	t	+9779841404266	2015-03-16 04:25:11.024881-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Lazimpat"}	"{}"	Alok Aryal	0101000020E6100000714111E6D15455406728EE7893B53B40	260c7682c9ea40a1b6c7ccfd8d27d949	0101000020E6100000E4DE57407C5455406E765A6DB4B83B40
+pbkdf2_sha256$12000$HJbFtBBBEzEt$mjoT/1zU7dJZjpyn0XbmMBnryN+BbDh3alFZkxO+S8c=	2015-03-16 04:25:54.660374-04	20	t	+9779843140606	2015-03-16 04:25:54.660695-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Gairidhara"}	"{}"	Nirvik Poudyal	0101000020E6100000714111E6D15455406728EE7893B53B40	258aebd2d5d2424ebc9532a1de13d514	0101000020E6100000818F66D1E05455401CEBE2361AB83B40
+pbkdf2_sha256$12000$53TuLwqrzRU1$T+WTFFU7NlLYnPztnRkfKNUGKtiJ5QwW/ZiJiaxdzZs=	2015-03-16 04:30:18.55133-04	21	t	+9779801158449	2015-03-16 04:30:18.551764-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Jaisidewal"}	"{}"	Ujjen Lal Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	f9495ec4654a41c084f822f3df76c130	0101000020E61000004BD0BAA184535540E7F80DB853B33B40
+pbkdf2_sha256$12000$YL9pUbq3zKv1$hyFmGp5U8vrCz4oi1noDPWdD2sngugO9+pfeTJs5qf0=	2015-03-16 04:30:55.613312-04	22	t	+9779801158444	2015-03-16 04:30:55.613587-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Chinese Embassy, Bhatbhateni"}	"{}"	Santosh Puri	0101000020E6100000714111E6D15455406728EE7893B53B40	fca2c0ea13ac47f88ea81b2b68236c35	0101000020E61000004AEB14504D55554001E54A98C4B83B40
+pbkdf2_sha256$12000$dnSUtzq2Cco0$ZvARybyUa2NVU6oX59lveJ6JfzZlMtrJAzEd6KXBTuY=	2015-03-16 04:33:25.118014-04	24	t	+9779802003295	2015-03-16 04:33:25.118379-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Lainchaur"}	"{}"	Nabin Adhikari	0101000020E6100000714111E6D15455406728EE7893B53B40	9dae18389a2746c887be742cd6b407c5	0101000020E6100000F282E38D27545540B5A91501A9B83B40
+pbkdf2_sha256$12000$c0jeh50kpLDr$hHSYSoTSHLrcy9ZoEUVUIkpDrpm/wVr33FOeIIKuyZg=	2015-02-24 21:36:20.827406-05	8	t	+9779849848906	2015-02-24 21:36:20.827608-05		1	1	f	f	f	{"city":"Bhaktapur","streetaddress":"Balkot"}	"{}"	Anil Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	b2442cda3f4b4381bc56c17d0220b741	0101000020E61000007061DD78775755408B5242B0AAAA3B40
+pbkdf2_sha256$12000$qgJ0ix7gxbkU$IYVe0kJgfJXdUnkMPUyKr8+kchwaKwWUQbMUpvhl30c=	2015-03-22 01:30:08.273475-04	25	t	+9779841727337	2015-03-22 01:30:08.274125-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Baneshwore"}	"{}"	Grishma Raj Aryal	0101000020E6100000714111E6D15455406728EE7893B53B40	8770e9360f8245d7889d49b7e1129fe6	0101000020E61000008CDD99643F5655407FA5F3E159B03B40
+pbkdf2_sha256$12000$7gvMXNDr4kv4$KqGea0sv3BuXoHb9JME7lu1/GOCQUaeui2aJkuxxxjM=	2015-03-25 00:08:44.909497-04	26	t	+9779842064899	2015-03-25 00:08:44.910096-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Sukedhara"}	"{}"	Brijesh Maskey	0101000020E6100000714111E6D15455406728EE7893B53B40	b31dedce7ea743bdb1de295f99f710d3	0101000020E61000005F002BD1235655407284B12A67BA3B40
+pbkdf2_sha256$12000$Rrk07WmIhIJs$7zWy55W0jQ9wblAd0/J0XDrLEwzFZFB4dOPlbmwJSaU=	2015-03-16 01:32:23.49341-04	14	t	+9779841278969	2015-03-16 01:32:23.493789-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Bekh Marga, Saraswatinagar, Bouddha"}	"{}"	Hira Babu Pradhan	0101000020E6100000714111E6D15455406728EE7893B53B40	c3719aba203948c79bec7495ff440aae	0101000020E61000005D6BEF53555555403333333333B33B40
+pbkdf2_sha256$12000$gR48FTIftc67$qqheGqvZC9vRhVT0rwDQ1qJ3M6Bnn1YH9cRvAUJ7pTc=	2015-03-26 07:33:14.8127-04	30	t	+9779808662963	2015-03-26 07:33:14.813175-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Thado Dhunga, Dhobighat"}	"{}"	Rajan Chitrakar	0101000020E6100000714111E6D15455406728EE7893B53B40	f95f6c45be7e429d84c03f00768844fe	0101000020E61000005D6BEF53555555403333333333B33B40
+pbkdf2_sha256$12000$0C9Y7sezd2RX$lq3cc9YIXUqmFJ5GRgvgDzK4qFuaz5092hLKz0rlDDQ=	2015-03-27 04:58:51.471348-04	31	t	+9779801195408	2015-03-27 04:58:51.471782-04		1	1	f	f	t	{"city":"Kathmandu","streetaddress":"Mandikhatar"}	"{}"	Ramesh Thapa	0101000020E6100000714111E6D15455406728EE7893B53B40	94a0a8d6ca054553b9fc4adcd668f2f5	0101000020E61000002687F4809E565540A096D52AB0BC3B40
+pbkdf2_sha256$12000$Ck1mfYsx2OyP$I9padGTkHxU/nd5csiWKOrSjB08s7ugRW+VkDZxy3Dk=	2015-03-27 05:01:26.323305-04	32	t	+9779801195407	2015-03-27 05:01:26.323592-04		1	1	f	f	t	{"city":"Kathmandu","streetaddress":"Mandikhatar"}	"{}"	Gopi Karki	0101000020E6100000714111E6D15455406728EE7893B53B40	4e3a2c25dc8a406da712a7b85cee8bf3	0101000020E61000002687F4809E565540A096D52AB0BC3B40
+pbkdf2_sha256$12000$XklavLdfhwu0$xUHD/2HmgjN4+kmf8iEcUwIFAKOeqX6DOr0YWGodkys=	2015-03-27 05:34:53.609558-04	33	t	+9779801195406	2015-03-27 05:34:53.610207-04		1	1	f	f	t	{"city":"Kathmandu","streetaddress":"Balaju"}	"{}"	Sukulal Waiba	0101000020E6100000714111E6D15455406728EE7893B53B40	dab7e955fc294889b86ab876d3b30053	0101000020E61000004D8B55DEE952554080BE88111DBB3B40
+pbkdf2_sha256$12000$t5ysYrT7Tdk6$bI3CvAxPZV+t15wguNliiGjPkRIysBa9KLwW0BRdO8k=	2015-03-29 05:46:24.45452-04	34	t	+9779851175340	2015-03-29 05:46:24.455029-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Jhamsikhel"}	"{}"	Ashish Acharya	0101000020E6100000714111E6D15455406728EE7893B53B40	1e4070e35cd84726adcfa008c767041a	0101000020E61000009411BCC653535540CB64389ECFAE3B40
+pbkdf2_sha256$12000$KHepQO6FYz7h$/gfHjh18rjUA30ia8kDFCb0J0JnPKJtIK8gTANi4P94=	2015-03-30 02:41:03.057912-04	35	t	+9779841937166	2015-03-30 02:41:03.058551-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Naxal"}	"{}"	Sumiran Satyal	0101000020E6100000714111E6D15455406728EE7893B53B40	cb2993c89d164729b872432f507205a2	0101000020E6100000CD5A0A48FB545540D6485C1146B73B40
+pbkdf2_sha256$12000$3EpeluawYda0$SDLpKm7Q3q1ZmRkHKj5rTYhn8wEvyZhQeqKFXdSLFNs=	2015-03-30 04:48:18.84289-04	36	t	+9779802056847	2015-03-30 04:48:18.843267-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Mahalaxmisthan, Lalitpur"}	"{}"	Bibhusan Bista	0101000020E6100000714111E6D15455406728EE7893B53B40	380f5e4842834fadb3fe96e432931240	0101000020E61000004858AF7D5C545540F60F7DD2E4A93B40
+pbkdf2_sha256$12000$Q4DoDRZZiqwm$Zd7jUVcRlnFG9QjVbiulFTr9i8PsPXoPCCm2Or/ezx0=	2015-03-30 05:57:33.511661-04	37	t	+9779801079860	2015-03-30 05:57:33.511994-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Panchakanya, Chundevi"}	"{}"	Subash Sharma	0101000020E6100000714111E6D15455406728EE7893B53B40	f44b55c79fad43818fce07c5cb4c535c	0101000020E6100000758EA61F795555407BBE66B96CBC3B40
+pbkdf2_sha256$12000$m0S0bCMuvWOA$p5beMAnSQfND6bZNcMMKtToooF/XeYZ9Hdg2MHJ24bk=	2015-03-31 07:17:21.787297-04	39	t	+9779841744232	2015-03-31 07:17:21.787874-04		1	2	f	f	t	{"city":"Bhaktapur","streetaddress":"Pepsicola"}	"{}"	Samundra Poudel	0101000020E6100000714111E6D15455406728EE7893B53B40	d9e9eb5c9cb0435089abb967523ce414	0101000020E610000034F9C1540E57554079D44E8358B03B40
+pbkdf2_sha256$12000$9FX11keM2kTc$WUrph6nn2SrRG/GtTWZVm6Ffy8zHd7v7vjlt0G2Jv1g=	2015-04-02 02:21:47.610731-04	41	t	+9779851027148	2015-04-02 02:21:47.611184-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Chhetrapati"}	"{}"	Mukesh Agrawal	0101000020E6100000714111E6D15455406728EE7893B53B40	0a29d05988864f6ea715e655b3b3bd04	0101000020E61000000DF560F7C253554049DE944D14B63B40
+pbkdf2_sha256$12000$byUx5gq9Yqwv$6lDQ2q7w6C+7pGnGnwt+2NvxqY61QPH82YEclV/v6Lg=	2015-04-04 23:56:04.225078-04	43	t	+9779841271025	2015-04-04 23:56:04.231002-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Mahalaxminsthan"}	"{}"	Namrata Tamang	0101000020E6100000714111E6D15455406728EE7893B53B40	283d244d3f3a498db41ad1ba97bb6859	0101000020E61000004858AF7D5C545540F60F7DD2E4A93B40
+pbkdf2_sha256$12000$TqOZKcnqbs5J$wMROQZjn1ZLFOfkPXxsTZILhGiyMgBEyPaqBe6ndU1U=	2015-04-04 23:59:35.403144-04	44	t	+9779818911270	2015-04-04 23:59:35.403602-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Tahachal"}	"{}"	Suraj Shakya	0101000020E6100000714111E6D15455406728EE7893B53B40	e2daf0bd8f3448688cc8558b58ff0d11	0101000020E610000002ABD9B99F525540EDCBE37A25B43B40
+pbkdf2_sha256$12000$7TL1Blz9JPpo$d020g3y3VtkPvsN+4AdXfOREdxXopgTwkWMYzq6kNkA=	2015-04-05 05:16:19.901231-04	45	t	+9779851069368	2015-04-05 05:16:19.901632-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Kupondole "}	"{}"	Ruchin Singh	0101000020E6100000714111E6D15455406728EE7893B53B40	c67a3f3d7afb466297a8e90240b93c1c	0101000020E6100000F282E38D275455405B6C49FDABAF3B40
+pbkdf2_sha256$12000$9VWdg399ScoL$wrwZqo1F9rCdBAX3OagO7LlzDcD+/7kFXH4GhGfcxP4=	2015-04-05 05:16:55.874619-04	46	t	+9779849096069	2015-04-05 05:16:55.874905-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Kalimati"}	"{}"	Samundra Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	420a8785a1c143b1ac2def75b7b7f5e2	0101000020E61000007D66FFF27F5255408D0EA37B31B33B40
+pbkdf2_sha256$12000$eCWK7QLmjy65$mSBvo9Fv5ZSCt4HmR9Q1W1YbNg9UCQVOr+sK4xxbdCM=	2015-04-05 05:17:32.397652-04	47	t	+9779841376226	2015-04-05 05:17:32.398123-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Putalisadak"}	"{}"	Sudip Kafle	0101000020E6100000714111E6D15455406728EE7893B53B40	a7dc4eedae8449cd8ee2018c8ee1dda8	0101000020E61000007201C34DA154554084F57F0EF3B33B40
+pbkdf2_sha256$12000$lPepGABSl83C$Td/pG8NEMZP9Ndy/IVLoT6hQrqgE/bINoAmmbV/hLZU=	2015-04-06 00:48:14.047891-04	48	t	+9779851191837	2015-04-06 00:48:14.048335-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"New Plaza"}	"{}"	Jeevan Ghimire	0101000020E6100000714111E6D15455406728EE7893B53B40	bcb7d5e95dc24ff68f6775cc0f5b1891	0101000020E61000001682C1DABD545540687D25EBCBB33B40
+pbkdf2_sha256$12000$4qbZDfcg2Qb9$G72nLpHFEyU6OIDyWZOsRW9UbFa76/nN5Tc46w9PozE=	2015-02-24 21:30:06.605072-05	5	t	+9779840063488	2015-02-24 21:30:06.605279-05		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Bakhundole"}	"{}"	Chandan Goopta	0101000020E6100000714111E6D15455406728EE7893B53B40	41d6bbb5fed34935a280abc87768155d	0101000020E61000001D27E032025455406300F26FE1AE3B40
+pbkdf2_sha256$12000$QBDggc6KTj8F$rdESrATMZTooRqsKXgxOE8Im7bXRG0Up0I7WwJexDbE=	2015-02-24 21:33:00.239163-05	7	t	+9779841405715	2015-02-24 21:33:00.239388-05		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Samakhusi"}	"{}"	Trisha Thapa	0101000020E6100000714111E6D15455406728EE7893B53B40	eed981e0036c4eafaee83b1673ce22b1	0101000020E6100000D06053E751545540EEF4392D2EBA3B40
+pbkdf2_sha256$12000$GLXKZMg1okF8$IUMFvf/V1SyVSNZjU7ERjubMy5X1RooqosdZ/Qb7Afc=	2015-03-25 08:13:01.776323-04	29	t	+9779851116163	2015-03-25 08:13:01.776771-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Lazimpat"}	"{}"	Rabindra Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	19274eaba0aa4642b82e09f59bfb952a	0101000020E6100000E4DE57407C5455406E765A6DB4B83B40
+pbkdf2_sha256$12000$TJe6A2IxP95t$QEZjhF1OptKEbGsOfN1NEbTmGBjXqRDTOri9e1/vIH8=	2015-03-30 06:46:32.015994-04	38	t	+9779851151056	2015-03-30 06:46:32.016474-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Jwagal"}	"{}"	Sudeep K.C.	0101000020E6100000714111E6D15455406728EE7893B53B40	7330cd5ce37b452f8991546d9e2c75ea	0101000020E6100000DB94E12EB1545540221807978EAF3B40
+pbkdf2_sha256$12000$oxNBhvlTXuCf$gv96pTKA0RQpo6GGN6i5es7UVOD3feM+KQktD+SuK0M=	2015-04-10 00:55:10.659104-04	2	t	+9779841809735	2015-02-15 11:17:52.810198-05		1	0	t	t	t	{"city":"Kathmandu","streetaddress":"Dhobidhara, Kamaladi"}	"{}"	Ajan Lal Shrestha	0101000020E6100000714111E6D15455406728EE7893B53B40	2ba81130f6974983b9b804730a0c2ec5	0101000020E6100000714111E6D15455406728EE7893B53B40
+pbkdf2_sha256$12000$Zs4Tngaih39W$zDmDrk0BBfIgM0UXv2vHCFJPeZvtZ7uIHP78l4KZY04=	2015-04-08 01:38:47.355287-04	1	t	+9779802036633	2015-01-07 06:18:24.832419-05		1	0	t	t	t	{"city":"Kathmandu","streetaddress":"House No 715, Tudaldevi"}	"{}"	Gaurav Ghimire	0101000020E6100000714111E6D15455406728EE7893B53B40	1db505ae4ea949568f71bdaf4e1e6c05	0101000020E61000002E3888777055554020AAA7AB27BA3B40
+pbkdf2_sha256$12000$sXpmF615VNLv$/X0VdduAdUtbDU3+87TrZHsZ+TteNOA7tCq1hwQ9Qak=	2015-03-25 05:07:43.164651-04	27	t	+9779849366239	2015-03-25 05:07:43.165192-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Basundhara"}	"{}"	Kavi Raj Joshi	0101000020E6100000714111E6D15455406728EE7893B53B40	497f5421e1b84a9d93e3cac47b3167e0	0101000020E61000002A1FDD6344555540ACE1C73D02BE3B40
+pbkdf2_sha256$12000$84xb70gObJIB$FrWKV25xFY9BW3S3F6lYIXS2X4PQWa9ipDF9PBgv67Y=	2015-04-02 07:50:49.939944-04	42	t	+9779841468224	2015-04-02 07:50:49.940405-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Narayangopal Chowk, Chakrapath"}	"{}"	Sagar Chalise	0101000020E6100000714111E6D15455406728EE7893B53B40	cf7cda8ef4cb426a8af0cdaf76fe7c6d	0101000020E6100000B0B8EE9C9C555540CB59E9FF66BD3B40
+pbkdf2_sha256$12000$U80QQzPw47F6$jVZpGkmvLERoIDhrnDbOuKhTk+o4gp4Kreurt5OrPcA=	2015-04-07 23:50:24.340388-04	49	t	+9779851118439	2015-04-07 23:50:24.340911-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Sunakoti"}	"{}"	Michael	\N	bec7edf470e54e27ac6023a01b1eef9c	0101000020E610000014AE47E17A545540A4703D0AD7A33B40
+pbkdf2_sha256$12000$n5RozpDJs1eM$Gr2S5Gy6wL7t5aIj0k3K1LaP7K62eeW9nrzoiO6O7es=	2015-04-07 23:55:59.245959-04	50	t	+9779849668603	2015-04-07 23:55:59.246306-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Satdobato"}	"{}"	Anupa Ghimire	\N	40ec229d41904145b2f4abc4bc880903	0101000020E6100000CD5A0A48FB545540032E7E09CBA63B40
+pbkdf2_sha256$12000$7CARmMXJyxXS$n9bJehlwnyLcSdnqVXOcFfJfvC07tALx4z4ySfiDJYI=	2015-04-08 00:10:06.188091-04	51	t	+9779841365760	2015-04-08 00:10:06.188512-04		1	2	f	f	t	{"city":"Bhaktapur","streetaddress":"Gothatar"}	"{}"	Ishwor Bhattarai	\N	aa3ac3f10518418f9b1dad1ecde59fec	0101000020E6100000B81E85EB515855403333333333B33B40
+pbkdf2_sha256$12000$AtkmozZnVo42$kta7cCDHp6j56JXGMCEHWxEc6XNJ1zR214EsYa/y6m8=	2015-04-08 01:10:11.095111-04	52	t	+9779841254232	2015-04-08 01:10:11.095547-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Maharajgunj"}	"{}"	Basu Badu	\N	e5a8fea1242b4eb48aa089f483918c1f	0101000020E6100000EDF9F59E25555540AEB195E189BC3B40
+pbkdf2_sha256$12000$O3aHNUIxMtBq$Xt6r0A2st2+caHxiRMq9Qx7PQAQSTqrms+9dg7vs8A4=	2015-04-08 01:28:32.282399-04	53	t	+9779803216580	2015-04-08 01:28:32.282946-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Samakhusi"}	"{}"	Niraj Shrestha	\N	4ab7fc62a0c647efb99cc9b975dd7c43	0101000020E6100000D06053E751545540EEF4392D2EBA3B40
+pbkdf2_sha256$12000$9QVDX0mUqCJE$qcpQZYmTwWnxW6RuUjTe7HhovYeprs+wrwxz8wvziwg=	2015-04-08 01:44:56.292442-04	54	t	+9779851180663	2015-04-08 01:44:56.29286-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Kupondole"}	"{}"	Kabindra Dhakal	\N	3e70ecca5eaf43808bb1f37a3f60583f	0101000020E6100000F282E38D275455405B6C49FDABAF3B40
+pbkdf2_sha256$12000$hfw9yK2t7hgu$e7dg3KBfSKHznN9xNwoe0JuY94+oqmx2FktVAO/7HVk=	2015-04-08 08:04:01.75049-04	55	t	+9779802111537	2015-04-08 08:04:01.750967-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Nakhipot"}	"{}"	Brajesh Khanal	\N	01ab374cd07744519319fe234f8b6914	0101000020E61000001465259C4C545540BCF14982CBA63B40
+pbkdf2_sha256$12000$WFzyPcwF6ZaF$b/Bmv9CNHmxztA2qVZ0B6dHQGYSSnkHWohFxcVNvqjQ=	2015-04-09 00:30:06.570882-04	56	t	+9779803479859	2015-04-09 00:30:06.571325-04		1	2	f	f	t	{"city":"Lalitpur","streetaddress":"Ekantakuna"}	"{}"	Sohnish Dali	\N	a7ba5b5ea8d6459398a0817f12302503	0101000020E61000004D9F1D70DD535540E98CDE5FF3AA3B40
+pbkdf2_sha256$12000$zbCReiJ0vDcI$f9xi+OTWP7qAXFEfNZwCZb+/UB9OrvK3Gy3oNG0f2HM=	2015-04-09 03:26:34.533954-04	57	t	+9779851177776	2015-04-09 03:26:34.534454-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Chetrapati"}	"{}"	Umesh Adhikari	\N	efd4a701aab44677a0282834fd9b0de9	0101000020E61000000DF560F7C253554049DE944D14B63B40
+pbkdf2_sha256$12000$ct9uBJsqAVLr$rvzUmi1/Vkrxbx+6+gahXT/EA5pc32LAljbZzXgWO5A=	2015-04-09 05:37:15.829887-04	58	t	+9779841601865	2015-04-09 05:37:15.830258-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Basundhara"}	"{}"	Rekha Adhikari	\N	8fc29dc0f70d4462b5690a2f771f0d1e	0101000020E61000002A1FDD6344555540ACE1C73D02BE3B40
+pbkdf2_sha256$12000$PXNxuKQx3c98$MQKNc4oYnuxaoOGSXDj/Mt0AIckpGV9n+qK+qOiHFhI=	2015-04-10 02:43:53.553719-04	59	t	+9779841490324	2015-04-10 02:43:53.554044-04		1	2	f	f	t	{"city":"Kathmandu","streetaddress":"Mandikhatar"}	"{}"	Shailendra Sharma	\N	7d7f89d30846450386cddfe475c16af8	0101000020E61000002687F4809E565540A096D52AB0BC3B40
+\.
+
+
+--
+-- Name: users_userprofile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: thm
+--
+
+SELECT pg_catalog.setval('users_userprofile_id_seq', 59, true);
+
+
+--
+-- Data for Name: users_usertoken; Type: TABLE DATA; Schema: public; Owner: thm
+--
+
+COPY users_usertoken (user_id, token, timeframe, status, tokentype) FROM stdin;
+3	713aae21d4b591852357	2015-04-08 03:48:26.010351-04	t	1
+3	b8b1d63671c03c564615	2015-04-08 03:48:26.010351-04	t	1
+\.
+
+
+--
+-- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_name_key UNIQUE (name);
+
+
+--
+-- Name: auth_group_permissions_group_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_permission_id_key UNIQUE (group_id, permission_id);
+
+
+--
+-- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_permission_content_type_id_codename_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_codename_key UNIQUE (content_type_id, codename);
+
+
+--
+-- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: authtoken_token_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT authtoken_token_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: authtoken_token_user_id_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT authtoken_token_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: django_content_type_app_label_model_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_app_label_model_key UNIQUE (app_label, model);
+
+
+--
+-- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY django_session
+    ADD CONSTRAINT django_session_pkey PRIMARY KEY (session_key);
+
+
+--
+-- Name: faq_faq_faqref_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY faq_faq
+    ADD CONSTRAINT faq_faq_faqref_key UNIQUE (faqref);
+
+
+--
+-- Name: faq_faq_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY faq_faq
+    ADD CONSTRAINT faq_faq_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: job_gallery_jobgalleryimages_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY job_gallery_jobgalleryimages
+    ADD CONSTRAINT job_gallery_jobgalleryimages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs_jobevents_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY jobs_jobevents
+    ADD CONSTRAINT jobs_jobevents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs_jobs_handyman_jobs_id_7613fb35210e7fc3_uniq; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY jobs_jobs_handyman
+    ADD CONSTRAINT jobs_jobs_handyman_jobs_id_7613fb35210e7fc3_uniq UNIQUE (jobs_id, userprofile_id);
+
+
+--
+-- Name: jobs_jobs_handyman_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY jobs_jobs_handyman
+    ADD CONSTRAINT jobs_jobs_handyman_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs_jobs_jobref_uniq; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY jobs_jobs
+    ADD CONSTRAINT jobs_jobs_jobref_uniq UNIQUE (jobref);
+
+
+--
+-- Name: jobs_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY jobs_jobs
+    ADD CONSTRAINT jobs_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: libs_smslog_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY libs_smslog
+    ADD CONSTRAINT libs_smslog_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: south_migrationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY south_migrationhistory
+    ADD CONSTRAINT south_migrationhistory_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_earlybirduser_phone_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_earlybirduser
+    ADD CONSTRAINT users_earlybirduser_phone_key UNIQUE (phone);
+
+
+--
+-- Name: users_earlybirduser_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_earlybirduser
+    ADD CONSTRAINT users_earlybirduser_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_userevents_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_userevents
+    ADD CONSTRAINT users_userevents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_userprofile_phone_key; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_userprofile
+    ADD CONSTRAINT users_userprofile_phone_key UNIQUE (phone);
+
+
+--
+-- Name: users_userprofile_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_userprofile
+    ADD CONSTRAINT users_userprofile_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_userprofile_userref_uniq; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_userprofile
+    ADD CONSTRAINT users_userprofile_userref_uniq UNIQUE (userref);
+
+
+--
+-- Name: users_usertoken_pkey; Type: CONSTRAINT; Schema: public; Owner: thm; Tablespace: 
+--
+
+ALTER TABLE ONLY users_usertoken
+    ADD CONSTRAINT users_usertoken_pkey PRIMARY KEY (token);
+
+
+--
+-- Name: auth_group_name_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX auth_group_name_like ON auth_group USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: auth_group_permissions_group_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX auth_group_permissions_group_id ON auth_group_permissions USING btree (group_id);
+
+
+--
+-- Name: auth_group_permissions_permission_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX auth_group_permissions_permission_id ON auth_group_permissions USING btree (permission_id);
+
+
+--
+-- Name: auth_permission_content_type_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX auth_permission_content_type_id ON auth_permission USING btree (content_type_id);
+
+
+--
+-- Name: authtoken_token_key_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX authtoken_token_key_like ON authtoken_token USING btree (key varchar_pattern_ops);
+
+
+--
+-- Name: django_session_expire_date; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX django_session_expire_date ON django_session USING btree (expire_date);
+
+
+--
+-- Name: django_session_session_key_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX django_session_session_key_like ON django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- Name: faq_faq_faqref_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX faq_faq_faqref_like ON faq_faq USING btree (faqref varchar_pattern_ops);
+
+
+--
+-- Name: job_gallery_jobgalleryimages_job_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX job_gallery_jobgalleryimages_job_id ON job_gallery_jobgalleryimages USING btree (job_id);
+
+
+--
+-- Name: jobs_jobevents_job_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX jobs_jobevents_job_id ON jobs_jobevents USING btree (job_id);
+
+
+--
+-- Name: jobs_jobs_customer_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX jobs_jobs_customer_id ON jobs_jobs USING btree (customer_id);
+
+
+--
+-- Name: jobs_jobs_handyman_jobs_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX jobs_jobs_handyman_jobs_id ON jobs_jobs_handyman USING btree (jobs_id);
+
+
+--
+-- Name: jobs_jobs_handyman_userprofile_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX jobs_jobs_handyman_userprofile_id ON jobs_jobs_handyman USING btree (userprofile_id);
+
+
+--
+-- Name: jobs_jobs_location_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX jobs_jobs_location_id ON jobs_jobs USING gist (location);
+
+
+--
+-- Name: libs_smslog_user_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX libs_smslog_user_id ON libs_smslog USING btree (user_id);
+
+
+--
+-- Name: users_earlybirduser_phone_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX users_earlybirduser_phone_like ON users_earlybirduser USING btree (phone varchar_pattern_ops);
+
+
+--
+-- Name: users_userevents_user_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX users_userevents_user_id ON users_userevents USING btree (user_id);
+
+
+--
+-- Name: users_userprofile_phone_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX users_userprofile_phone_like ON users_userprofile USING btree (phone varchar_pattern_ops);
+
+
+--
+-- Name: users_usertoken_token_like; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX users_usertoken_token_like ON users_usertoken USING btree (token varchar_pattern_ops);
+
+
+--
+-- Name: users_usertoken_user_id; Type: INDEX; Schema: public; Owner: thm; Tablespace: 
+--
+
+CREATE INDEX users_usertoken_user_id ON users_usertoken USING btree (user_id);
+
+
+--
+-- Name: auth_group_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: content_type_id_refs_id_d043b34a; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT content_type_id_refs_id_d043b34a FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: customer_id_refs_id_82bf35d4; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobs
+    ADD CONSTRAINT customer_id_refs_id_82bf35d4 FOREIGN KEY (customer_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: group_id_refs_id_f4b32aac; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT group_id_refs_id_f4b32aac FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: job_id_refs_id_6e02b1a6; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY job_gallery_jobgalleryimages
+    ADD CONSTRAINT job_id_refs_id_6e02b1a6 FOREIGN KEY (job_id) REFERENCES jobs_jobs(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: job_id_refs_id_a95218c4; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobevents
+    ADD CONSTRAINT job_id_refs_id_a95218c4 FOREIGN KEY (job_id) REFERENCES jobs_jobs(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: jobs_id_refs_id_bfb5ddfb; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobs_handyman
+    ADD CONSTRAINT jobs_id_refs_id_bfb5ddfb FOREIGN KEY (jobs_id) REFERENCES jobs_jobs(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_71bbaa5e; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY authtoken_token
+    ADD CONSTRAINT user_id_refs_id_71bbaa5e FOREIGN KEY (user_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_83d9696e; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY users_usertoken
+    ADD CONSTRAINT user_id_refs_id_83d9696e FOREIGN KEY (user_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_89c4bf61; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY libs_smslog
+    ADD CONSTRAINT user_id_refs_id_89c4bf61 FOREIGN KEY (user_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_ed03305a; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY users_userevents
+    ADD CONSTRAINT user_id_refs_id_ed03305a FOREIGN KEY (user_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: userprofile_id_refs_id_c1eaa8d8; Type: FK CONSTRAINT; Schema: public; Owner: thm
+--
+
+ALTER TABLE ONLY jobs_jobs_handyman
+    ADD CONSTRAINT userprofile_id_refs_id_c1eaa8d8 FOREIGN KEY (userprofile_id) REFERENCES users_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
