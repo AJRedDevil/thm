@@ -77,13 +77,12 @@ class JobEditFormAdmin(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['customer', 'jobtype', 'remarks', 'fee', 'status', 'handyman',
+        fields = ['jobtype', 'remarks', 'fee', 'status', 'handyman',
         'location', 'location_landmark']
 
 
     def __init__(self, *args, **kwargs):
         super(JobEditFormAdmin, self).__init__(*args, **kwargs)
-        self.fields['customer'].widget.attrs.update({'class' : 'form-control'})
         self.fields['jobtype'] = forms.MultipleChoiceField(
             choices=JOBS_SELECTION,
             widget=forms.SelectMultiple(

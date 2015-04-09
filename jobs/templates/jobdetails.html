@@ -15,9 +15,9 @@
 <div class='page-container container list-table'>
     <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-    <h1>Job <span class='jobId'>#{{job.id}}</span>
+    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.name}} ({{job.customer.phone}})
+ </span>
     </h1>
-
     <div class="hora-job-form">
         <div class='row'>
         {% if not job_before and not job_after %}
@@ -28,7 +28,6 @@
             </button>
         </a>
          <form action="" method="post" id="jobEditForm">{% csrf_token %}
-             {{job_form.customer.label_tag}} {{job_form.customer}}
              {{job_form.jobtype.label_tag}} {{job_form.jobtype}}
              {{job_form.remarks.label_tag}} {{job_form.remarks}}
              {{job_form.fee.label_tag}} {{job_form.fee}}
