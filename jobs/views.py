@@ -62,7 +62,7 @@ def viewJob(request, job_id):
             job = jm.getJobDetails(job_id)
             # if a job is set as accepted , update the accepted time
             # only update the accepted time once
-            if job.status=='1' and job.accepted_date == None:
+            if job.status=='2' and job.accepted_date == None:
                 job.accepted_date= timezone.now()
                 job.save()
                 vas = Sparrow()
@@ -81,7 +81,7 @@ def viewJob(request, job_id):
                 # return render(request, 'jobdetails.html',locals())
             # if a job is set as complete , update the completion time
             # only update the completion time once
-            if job.status=='2' and job.completion_date == None:
+            if job.status=='3' and job.completion_date == None:
                 job.completion_date= timezone.now()
                 job.save()
                 vas = Sparrow()
