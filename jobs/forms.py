@@ -63,7 +63,7 @@ class JobEditFormAdmin(forms.ModelForm):
     class Meta:
         model = Jobs
         fields = ['jobtype', 'remarks', 'fee', 'status', 'handyman',
-        'location', 'location_landmark']
+        'location', 'location_landmark', 'inspection_date']
 
 
     def __init__(self, *args, **kwargs):
@@ -75,6 +75,7 @@ class JobEditFormAdmin(forms.ModelForm):
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
         self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 750, 'map_height': 500})
         self.fields['location_landmark'].widget = forms.HiddenInput()
+        self.fields['inspection_date'].widget.attrs.update({'class' : 'form-control', 'id' : 'inspection_date'})
 
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')

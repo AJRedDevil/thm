@@ -84,13 +84,13 @@ class Jobs(models.Model):
     #     max_digits=1000, default=0)
     accepted_date = models.DateTimeField(
         _('accepted_date'),
-        blank=True, null=True, editable=False)
+        blank=True, null=True)
+    inspection_date = models.DateField(
+        _('inspection_date'),
+        blank=True, null=True)
     completion_date = models.DateTimeField(
         _('completion_date'),
-        blank=True, null=True, editable=False)
-    # available_handymen = jsonfield.JSONField(
-    #     _('available_handymen'), default={})
-    # considered_handymen = models.TextField(_('considered_handymen'), default=[])
+        blank=True, null=True)
     remarks = models.TextField(_('remarks'), blank=False)
     # location / coordinates of the exact jobsite
     location = models.PointField(srid=4326, blank=True, null=True)
