@@ -8,9 +8,7 @@
     <table id="example" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    <th>JobId</th>
                     <th>Date</th>
-                    <th>Requestor</th>
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
@@ -20,9 +18,7 @@
      
             <tfoot>
                 <tr>
-                    <th>JobId</th>
                     <th>Date</th>
-                    <th>Requestor</th>
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
@@ -34,9 +30,7 @@
 
             {% for job in jobs %}
                 <tr>
-                    <td>{{job.id}}</td>
                     <td>{{job.creation_date}}</td>
-                    <td>{{job.customer.name}} ({{job.customer.phone.as_e164}})</td>
                     <td>{{job.get_jobtype_display}}</td>
                     <td>{{job.get_status_display}}</td>
                     <td>{{job.remarks}}</td>

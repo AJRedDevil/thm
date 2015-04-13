@@ -160,3 +160,8 @@ table.dataTable.dtr-inline.collapsed tbody tr.parent td:first-child:before, tabl
   font-weight: bold;
   font-size: 20PX;
 }
+
+.map  {
+  width: 750px;
+  height: 500px;
+}

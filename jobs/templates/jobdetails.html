@@ -5,6 +5,7 @@
 <link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/dark-hive/jquery-ui.css" id="theme">
 <link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href={% static "css/jquery.fileupload.css" %}>
 <link rel="stylesheet" href={% static "css/jquery.fileupload-ui.css" %}>
 <!-- CSS adjustments for browsers with JavaScript disabled -->
@@ -15,9 +16,9 @@
 <div class='page-container container list-table'>
     <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-    <h1>Job <span class='jobId'>#{{job.id}}</span>
+    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.name}} ({{job.customer.phone}})
+ </span>
     </h1>
-
     <div class="hora-job-form">
         <div class='row'>
         {% if not job_before and not job_after %}
@@ -28,11 +29,17 @@
             </button>
         </a>
          <form action="" method="post" id="jobEditForm">{% csrf_token %}
-             {{job_form.customer.label_tag}} {{job_form.customer}}
              {{job_form.jobtype.label_tag}} {{job_form.jobtype}}
              {{job_form.remarks.label_tag}} {{job_form.remarks}}
              {{job_form.fee.label_tag}} {{job_form.fee}}
              {{job_form.status.label_tag}} {{job_form.status}}
+             <label>Inspection Date</label> {{job_form.inspection_date}}             
+             {% if job.accepted_date %}
+                <label>Accepted On:</label><p class="form-control">{{job.accepted_date}}</p>
+             {% endif %}
+             {% if job.completion_date %}
+                <label>Completed On:</label><p class="form-control">{{job.completion_date}}</p>
+             {% endif %}
              {{job_form.handyman.label_tag}} {{job_form.handyman}}
              {{job_form.location_landmark}}
              <br><button type="submit" class="btn btn-block btn-default submit">Update</button><br>
@@ -345,6 +352,11 @@
        $('input#id_location_landmark').val($('input#id_location_map_search').val());
        return true;
     });
+</script>
+<script type="text/javascript">
+$(function() {
+  $( "#inspection_date" ).datepicker();
+});
 </script>
 {% comment %}
     <script>

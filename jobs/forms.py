@@ -21,15 +21,8 @@ class JobCreationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(JobCreationForm, self).__init__(*args, **kwargs)
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
+        self.fields['remarks'].widget.attrs={'class' : 'form-control'}
 
 
 class JobCreationFormAdmin(forms.ModelForm):
@@ -45,15 +38,7 @@ class JobCreationFormAdmin(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(JobCreationFormAdmin, self).__init__(*args, **kwargs)
         self.fields['customer'].widget.attrs={'class' : 'form-control'}
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs={'class' : 'form-control'}
         self.fields['remarks'].widget.attrs={'class' : 'form-control','placeholder':'The flush is leaking!'}
         # gcoord = SpatialReference(4326)
         # mycoord = SpatialReference(900913)
@@ -77,28 +62,20 @@ class JobEditFormAdmin(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['customer', 'jobtype', 'remarks', 'fee', 'status', 'handyman',
-        'location', 'location_landmark']
+        fields = ['jobtype', 'remarks', 'fee', 'status', 'handyman',
+        'location', 'location_landmark', 'inspection_date']
 
 
     def __init__(self, *args, **kwargs):
         super(JobEditFormAdmin, self).__init__(*args, **kwargs)
-        self.fields['customer'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['jobtype'] = forms.MultipleChoiceField(
-            choices=JOBS_SELECTION,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-control',
-                    'size': '5'
-                }
-            ),
-        )
+        self.fields['jobtype'].widget.attrs.update({'class' : 'form-control'})
         self.fields['remarks'].widget.attrs.update({'class' : 'form-control'})
         self.fields['fee'].widget.attrs.update({'class' : 'form-control'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
         self.fields['handyman'].widget.attrs.update({'class' : 'form-control ip-form'})
         self.fields['location'].widget = GMapPointWidget(attrs={'map_width': 750, 'map_height': 500})
         self.fields['location_landmark'].widget = forms.HiddenInput()
+        self.fields['inspection_date'].widget.attrs.update({'class' : 'form-control', 'id' : 'inspection_date'})
 
     def clean_fee(self):
         fee = self.cleaned_data.get('fee')

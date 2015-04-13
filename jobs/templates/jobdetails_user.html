@@ -1,0 +1,159 @@
+{% extends "admin/base.html" %}
+{% load staticfiles floppyforms %}
+{% block localhead %}
+<link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/dark-hive/jquery-ui.css" id="theme">
+<link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+<!-- CSS adjustments for browsers with JavaScript disabled -->
+{% endblock localhead %}
+{% block content %}
+<div class='page-container container list-table'>
+    <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
+
+    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.name}} ({{job.customer.phone}})
+ </span>
+    </h1>
+    <div class="hora-job-form">
+        <div class='row'>
+        <div class="col-md-4">
+        {% if job_before or job_after %}
+        <a data-toggle="modal" id ="image-modalBefore" href="#myModalJobPhotos">
+            <button type="submit" class="btn btn-block btn-default">
+                <span>Photos</span>
+            </button>
+        </a>
+        {% endif %}
+             <label>Jobtype:</label> <p class="form-control">{{job.get_jobtype_display}}</p>
+             <label>Remarks:</label> <p class="form-control">{{job.remarks}}</p>
+             <label>Status:</label> <p class="form-control">{{job.get_status_display}}</p>
+             {% if not job.completion_date %}
+               <label>Experts:</label><p class="form-group">{{job.handyman.all|join:"<br>"|default:"Yet to be assigned."}}</p>
+             {% endif %}
+             {% if job.inspection_date %}
+                <label>Inspection Date:</label> <p class="form-control">{{job.inspection_date}}</p>
+             {% endif %}
+             {% if job.accepted_date %}
+                <label>Accepted On:</label><p class="form-control">{{job.accepted_date}}</p>
+             {% endif %}
+             {% if job.completion_date %}
+                <label>Completed On:</label><p class="form-control">{{job.completion_date}}</p>
+             {% endif %}
+         </div>
+
+         <div class="col-md-8">
+             <label>Location Map:</label>
+            <div id="map" class="map"></div>
+         </div>
+        </div>       
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+{% if job_before or job_after %}
+<div class="modal" id="myModalJobPhotos" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal">×</button>
+          <h3 class="modal-title"></h3>
+      </div>
+      <div class="modal-body">
+        {% if job_before %}
+            <div class="carousel slide" id="myCarouselBefore">
+                <div class="carousel-inner">
+                    {% for img in job_before  %}
+                    {% if forloop.first %}
+                        <div class="item active">
+                    {% else %}
+                        <div class="item">                      
+                    {% endif %}
+                        <div class="bannerImage">
+                            <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+                        </div>
+                        <div class="caption row-fluid">
+                            <div class="span4"><h3>Before</h3>
+                            </div>                  
+                        </div>
+
+                    </div><!-- /Slide1 --> 
+                    {% endfor %}
+
+                </div>
+
+                <div class="control-box">                            
+                    <a data-slide="prev" href="#myCarouselBefore" class="jcarousel-control-prev">‹</a>
+                    <a data-slide="next" href="#myCarouselBefore" class="jcarousel-control-next">›</a>
+                </div><!-- /.control-box -->   
+
+            </div><!-- /#myCarousel -->
+        {% endif %}
+        
+        {% if job_after %}
+            
+        <div class="carousel slide" id="myCarouselAfter">
+            <div class="carousel-inner">
+                {% for img in job_after  %}
+                {% if forloop.first %}
+                    <div class="item active">
+                {% else %}
+                    <div class="item">                      
+                {% endif %}
+                    <div class="bannerImage">
+                        <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
+                    </div>
+                    <div class="caption row-fluid">
+                        <div class="span4"><h3>After</h3>
+                        </div>                  
+                    </div>
+
+                </div><!-- /Slide1 --> 
+                {% endfor %}
+
+            </div>
+
+            <div class="control-box">                            
+                <a data-slide="prev" href="#myCarouselAfter" class="jcarousel-control-prev">‹</a>
+                <a data-slide="next" href="#myCarouselAfter" class="jcarousel-control-next">›</a>
+            </div><!-- /.control-box -->   
+
+        </div><!-- /#myCarousel -->            
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+{% endif %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+<script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+<script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+<!-- The main application script -->
+<script src={% static 'js/OpenLayers.js'%}></script>
+<script src="https://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+<script type="text/javascript">    
+    var map;
+    map = new OpenLayers.Map({
+        div: "map",
+        allOverlays: true
+    });
+    // customer coordinates
+    var lonLat = new OpenLayers.LonLat({{job.location.get_coords.0}}, {{job.location.get_coords.1}}).transform('EPSG:4326', 'EPSG:3857');
+    // google map layer
+    var gmap = new OpenLayers.Layer.Google("ROADMAP", { type: google.maps.MapTypeId.ROADMAP });
+    map.addLayer(gmap);
+    // marker layer
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+    // set marker and center map on  marker
+    markers.addMarker(new OpenLayers.Marker(lonLat));
+    map.setCenter(lonLat, 14);
+</script>
+{% endblock scripts %}

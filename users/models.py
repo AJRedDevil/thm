@@ -103,7 +103,7 @@ class UserProfile(AbstractBaseUser):
         unique=True,
         default=getUniqueUUID
     )
-    name = models.CharField(_('name'), max_length=30)
+    name = models.CharField(_('name'), max_length=30, blank=True)
     phone_status = models.BooleanField(_('phone_status'), default=False)
     phone = PhoneNumberField(_('phone'), max_length=16, unique=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
@@ -130,7 +130,12 @@ class UserProfile(AbstractBaseUser):
     is_staff = models.BooleanField(_('is_staff'), default=False)
     is_superuser = models.BooleanField(_('is_superuser'), default=False)
     is_active = models.BooleanField(default=True)
-    address = jsonfield.JSONField(_('address'), default='{}', max_length=9999)
+    address = jsonfield.JSONField(
+        _('address'),
+        default=dict(streetaddress='Tripureshwore', city='Kathmandu'),
+        max_length=9999,
+        blank=True
+    )
     address_coordinates = models.PointField(
         _('address_coordinates'),
         srid=4326,
@@ -152,7 +157,7 @@ class UserProfile(AbstractBaseUser):
     )
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['name']
+    # REQUIRED_FIELDS = ['name']
 
     objects = UserManager()
 
