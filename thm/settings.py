@@ -117,6 +117,7 @@ AUTH_USER_MODEL = 'users.UserProfile'
 # LOGIN URL DEFINITIONS
 LOGIN_URL = '/signin/'
 LOGIN_REDIRECT_URL = '/home/'
+URL='https://www.thehomerepairapp.com'
 ## LOGGING DEFINITION AND CONFIGURATION
 
 LOGGING = {
