@@ -71,7 +71,7 @@ class Jobs(models.Model):
         default=timezone.now)
     jobtype = models.CharField(
         _('jobtype'),
-        max_length=250,
+        max_length=1,
         choices=JOBS_SELECTION,
         default='0',)
     handyman = models.ManyToManyField(UserProfile, related_name='orders')
