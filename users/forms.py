@@ -672,6 +672,7 @@ class ResetPasswordForm(forms.Form):
             self.user.save()
         return self.user
 
+
 class PasswordChangeForm(SetPasswordForm):
     """
     A form that lets a user change his/her password by entering
@@ -748,3 +749,50 @@ class ForgetPasswordForm(forms.Form):
             )
 
         return phone
+
+
+class SMSUserSignupForm(forms.ModelForm):
+    """
+    A form for user signups
+    """
+    phone = PhoneNumberField()
+
+    error_messages = {
+        'country_notsupported': _("Your country is not supported as of now!"),
+        'doesnt_exist': _("Couldn't find a user with that phone, \
+            please enter a correct mobile number!"),
+        'mobile_phone': _("Please provide with a valid mobile number!"),
+    }
+
+    class Meta:
+        model = UserProfile
+        fields = ['phone']
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get("phone")
+        if str(phone.country_code) != '977':
+            raise forms.ValidationError(
+                self.error_messages['country_notsupported'],
+                code='country_notsupported',
+            )
+
+        # GSM system code for nepal is 98 as per national number plan from NTA
+        # That means all the mobile number in nepal must start from 98
+        GSM_Code = int(str(phone.national_number)[:2])
+        valid_GSM_Code = (96, 97, 98)
+
+        if GSM_Code not in valid_GSM_Code:
+            raise forms.ValidationError(
+                self.error_messages['mobile_phone'],
+                code='mobile_phone',
+            )
+
+        return phone
+
+    def save(self, commit=True):
+        user = super(SMSUserSignupForm, self).save(commit=False)
+        # user.avatar_file_name=settings.STATIC_URL+'img/default.png'
+        if commit:
+            user.save()
+        return user

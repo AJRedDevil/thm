@@ -102,7 +102,7 @@ DATABASES = {
 
 # Static asset configuration
 # STATIC_URL = 'http://s3.amazonaws.com/%s/' % AWS_STATIC_BUCKET
-STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (

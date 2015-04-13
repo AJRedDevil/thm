@@ -418,19 +418,32 @@ def smsEndpoint(request):
             phone = urllib.unquote(request.GET['from'])
             userphone = dict(phone=phone)
             text = urllib.unquote(request.GET['text'])
-            user_form = userforms.EBUserPhoneNumberForm(userphone)
+            user_form = userforms.SMSUserSignupForm(userphone)
             # If no keyword on the message
             if len(text.lower().split()) == 1 and text.lower().split()[0] in os.environ['SMS_KEYWORD'].split(','):
                 if user_form.is_valid():
                     phone = user_form.cleaned_data['phone']
                     userdata = user_form.save(commit=False)
+                    userdata.phone_status = True
+                    # for password generate a random 6 digit number
+                    from random import randint
+                    password = randint(109231, 998021)
+                    userdata.set_password(password)
+                    userdata.user_type = 2
                     userdata.save()
-                    logger.warn("{0} just registered their number as a user. \
+                    logger.warn("{0} just created their account as a user. \
                         [valid entry]".format(phone))
-                    msg = messages.NEW_USER_REG_MSG
+                    msg = messages.USER_WELCOME_MSG
+                    # send the password to the user explicitly
+                    vas = Sparrow()
+                    directmsg = messages.NEW_USER_REG_MSG.format(password)
+                    vas.sendDirectMessage(
+                        directmsg,
+                        phone
+                    )
                     # send email to admin
                     email_handler.send_newregistration_notif(
-                        phone.as_international
+                        phone.as_e164
                     )
                     requests.get(
                         request.build_absolute_uri(reverse('gaTracker'))
@@ -438,31 +451,86 @@ def smsEndpoint(request):
                     return HttpResponse(msg, content_type="text/html")
                 # As of now, error only seems to be in duplicate or wrong phone
                 elif user_form.errors:
-                    # Check if the account is created for this user
+                    # Check if an account with this number exists
                     try:
                         userdetails = UserProfile.objects.get(phone=phone)
                     except UserProfile.DoesNotExist:
-                        try:
-                            EarlyBirdUser.objects.get(
-                                phone=phone
-                            )
-                            msg = messages.DUP_USER_REG_MSG
-                            logger.warn("{0} duplicate user creation request. \
-                            [account being processed]".format(phone))
-                            requests.get(
-                                request.build_absolute_uri(reverse('gaTracker'))
-                            )
-                            return HttpResponse(msg, content_type="text/html")
-                        except EarlyBirdUser.DoesNotExist:
-                            msg = "Invalid Input!"
-                            logger.warn("{0} sent an invalid request, [Invalid Input]".format(request.META['REMOTE_ADDR']))
-                            requests.get(
-                                request.build_absolute_uri(reverse('gaTracker'))
-                            )
-                            return HttpResponse(msg, content_type="text/html")
-
-                    # if account exists consider this as a new job request, the
-                    # the call center calls
+                        msg = "Invalid Input!"
+                        logger.warn(
+                            "{0} sent an invalid request, \
+                            [Invalid Input]".format(
+                            request.META['REMOTE_ADDR']))
+                        requests.get(
+                            request.build_absolute_uri(reverse('gaTracker'))
+                        )
+                        return HttpResponse(msg, content_type="text/html")
+                    # if account exists consider this as a new job request
+                    jm = jobs_handler.JobManager()
+                    jm.createJob(userdetails)
+                    msg = messages.JOB_REQ_MSG
+                    logger.warn("{0} just requested for a service. \
+                    [valid user]".format(phone))
+                    # send email and SMS to admin
+                    vas = Sparrow()
+                    adminmsg = "Request for service received from {0}".format(
+                        userdetails.phone.as_e164
+                    )
+                    vas.sendDirectMessage(
+                        adminmsg, intlphone.from_string('+9779802036633')
+                    )
+                    email_details = email_handler.prepNewJobRegistrationNotification(
+                        userdetails.phone.as_e164, userdetails.name
+                    )
+                    email_handler.send_email_admin(email_details)
+                    requests.get(
+                        request.build_absolute_uri(reverse('gaTracker'))
+                    )
+                    return HttpResponse(msg, content_type="text/html")
+            elif len(text.lower().split()) > 1:
+                if user_form.is_valid():
+                    phone = user_form.cleaned_data['phone']
+                    userdata = user_form.save(commit=False)
+                    userdata.phone_status = True
+                    # for password generate a random 6 digit number
+                    from random import randint
+                    password = randint(109231, 998021)
+                    userdata.set_password(password)
+                    userdata.user_type = 2
+                    userdata.save()
+                    logger.warn("{0} just created their account as a user. \
+                        [valid entry]".format(phone))
+                    msg = messages.USER_WELCOME_MSG
+                    # send the password to the user explicitly
+                    vas = Sparrow()
+                    directmsg = messages.NEW_USER_REG_MSG.format(password)
+                    vas.sendDirectMessage(
+                        directmsg,
+                        phone
+                    )
+                    # send email to admin
+                    email_handler.send_newregistration_notif(
+                        phone.as_e164
+                    )
+                    requests.get(
+                        request.build_absolute_uri(reverse('gaTracker'))
+                    )
+                    return HttpResponse(msg, content_type="text/html")
+                # As of now, error only seems to be in duplicate or wrong phone
+                elif user_form.errors:
+                    # Check if an account with this number exists
+                    try:
+                        userdetails = UserProfile.objects.get(phone=phone)
+                    except UserProfile.DoesNotExist:
+                        msg = "Invalid Input!"
+                        logger.warn(
+                            "{0} sent an invalid request, \
+                            [Invalid Input]".format(
+                            request.META['REMOTE_ADDR']))
+                        requests.get(
+                            request.build_absolute_uri(reverse('gaTracker'))
+                        )
+                        return HttpResponse(msg, content_type="text/html")
+                    # if account exists consider this as a new job request
                     jm = jobs_handler.JobManager()
                     jm.createJob(userdetails)
                     msg = messages.JOB_REQ_MSG
@@ -478,71 +546,6 @@ def smsEndpoint(request):
                     )
                     email_details = email_handler.prepNewJobRegistrationNotification(
                         userdetails.phone.as_international, userdetails.name
-                    )
-                    email_handler.send_email_admin(email_details)
-                    requests.get(
-                        request.build_absolute_uri(reverse('gaTracker'))
-                    )
-                    return HttpResponse(msg, content_type="text/html")
-            elif len(text.lower().split()) > 1:
-                if user_form.is_valid():
-                    phone = user_form.cleaned_data['phone']
-                    userdata = user_form.save(commit=False)
-                    userdata.save()
-                    logger.warn("{0} just registered their number as a user. \
-                        [valid entry]".format(phone))
-                    msg = messages.NEW_USER_REG_MSG
-                    # send email to admin
-                    email_handler.send_newregistration_notif(
-                        phone.as_international
-                    )
-                    requests.get(
-                        request.build_absolute_uri(reverse('gaTracker'))
-                    )
-                    return HttpResponse(msg, content_type="text/html")
-                # As of now, error only seem to be in duplicate phone number
-                elif user_form.errors:
-                    # Check if the account is created for this user
-                    try:
-                        userdetails = UserProfile.objects.get(phone=phone)
-                    except UserProfile.DoesNotExist:
-                        try:
-                            EarlyBirdUser.objects.get(
-                                phone=phone
-                            )
-                            msg = messages.DUP_USER_REG_MSG
-                            logger.warn("{0} duplicate user creation request. \
-                            [account being processed]".format(phone))
-                            requests.get(
-                                request.build_absolute_uri(reverse('gaTracker'))
-                            )
-                            return HttpResponse(msg, content_type="text/html")
-                        except EarlyBirdUser.DoesNotExist:
-                            msg = "Invalid Input!"
-                            logger.warn("{0} sent an invalid request, [Invalid Input]".format(request.META['REMOTE_ADDR']))
-                            requests.get(
-                                request.build_absolute_uri(reverse('gaTracker'))
-                            )
-                            return HttpResponse(msg, content_type="text/html")
-                    # if account exists consider this as a new job request, the
-                    # the call center calls
-                    jm = jobs_handler.JobManager()
-                    jm.createJob(userdetails)
-                    msg = messages.JOB_REQ_MSG
-                    logger.warn("{0} just requested for a service. \
-                    [valid user]".format(phone))
-                    # send email and SMS to admin
-                    vas = Sparrow()
-                    adminmsg = "Request for service received from {0}".format(
-                        userdetails.phone.as_national
-                    )
-                    vas.sendDirectMessage(
-                        adminmsg,
-                        intlphone.from_string('+9779802036633')
-                    )
-                    email_details = email_handler.prepNewJobRegistrationNotification(
-                        userdetails.phone.as_international,
-                        userdetails.name
                     )
                     email_handler.send_email_admin(email_details)
                     requests.get(
