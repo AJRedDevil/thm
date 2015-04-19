@@ -1,0 +1,69 @@
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class='page-container container list-table'>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+      Calculate Price
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close closeButton" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Pricing</h4>
+                </div>
+                <form id="myForm" action="{% url 'viewPricing' %}" method="post">
+                    <div class="modal-body">
+                        <div class="hora-job-form">
+                            <div class='row'>
+                                <div class="col-md-6">
+                                    {% csrf_token %}
+                                    {{pf.as_p}}
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- eo hora-job-form -->
+                        <div>
+                            <h3>
+                                <div id="estimatedPrice" class='jobId'>{{estimated_price}}</div>
+                            </h3>
+                        </div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default closeButton" data-dismiss="modal">Close</button>
+                        <button id="myFormSubmit" type="submit" class="btn btn-default">Calculate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script type="text/javascript">
+    $(function(){
+        $('#myFormSubmit').click(function(e){
+            e.preventDefault();
+            $.post('', 
+                $('#myForm').serialize(), 
+                function(data, status, xhr){
+                    document.getElementById("estimatedPrice").innerHTML = data.estimated_price;
+                }, "json");
+        });
+            $('button.closeButton').click(function(e){
+                document.getElementById("estimatedPrice").innerHTML = "";
+        });
+            $('.modal').on("hidden.bs.modal", function() {
+                document.getElementById("estimatedPrice").innerHTML = "";
+        });
+
+    });
+
+    
+    </script>
+{% endblock scripts %}

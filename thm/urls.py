@@ -8,6 +8,7 @@ from jobs import views as jobviews
 from .views import index
 import logging
 
+
 urlpatterns = patterns(
     '',
     url(r'^signin/$', userviews.signin, name='signin'),
@@ -30,6 +31,7 @@ urlpatterns = patterns(
     url(r'^faq/', include('faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     url(r'^work/', include('job_gallery.urls')),
+    url(r'^pricing/', include('pricing.urls')),
     url(r'^$', index, name='index'),
 )
 

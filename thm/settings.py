@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'floppyforms',
     'job_gallery',
     'search',
+    'pricing',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -182,6 +183,11 @@ LOGGING = {
         },
         'libs': {
             'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'pricing': {
+            'handlers': ['console'],
             'propagate': True,
             'level': 'WARN',
         },
