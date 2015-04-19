@@ -42,6 +42,7 @@ def viewJob(request, job_id):
     user = request.user
     jm = JobManager()
     job = jm.getJobDetails(job_id)
+    jobstatus = int(job.status)
     job_before = job.gallery.filter(img_type=0)
     job_after = job.gallery.filter(img_type=1)
     if request.method == "POST" and user.is_superuser:
@@ -68,7 +69,7 @@ def viewJob(request, job_id):
                 if len(job.handyman.all()) > 0:
                     msg = messages.JOB_ACCEPTED_MSG.format(
                         job.handyman.all()[0].name,
-                        job.handyman.all()[0].phone.as_international
+                        job.handyman.all()[0].phone.as_national
                     )
                     logger.warn(msg)
                     status = vas.sendMessage(msg, job.customer)

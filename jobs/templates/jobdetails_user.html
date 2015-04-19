@@ -26,7 +26,7 @@
              <label>Jobtype:</label> <p class="form-control">{{job.get_jobtype_display}}</p>
              <label>Remarks:</label> <p class="form-control">{{job.remarks}}</p>
              <label>Status:</label> <p class="form-control">{{job.get_status_display}}</p>
-             {% if not job.completion_date %}
+             {% if jobstatus < 3 %}
                <label>Experts:</label><p class="form-group">{{job.handyman.all|join:"<br>"|default:"Yet to be assigned."}}</p>
              {% endif %}
              {% if job.inspection_date %}

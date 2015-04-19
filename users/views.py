@@ -228,139 +228,139 @@ def home(request):
     return render(request, 'admin/joblist_user.html', locals())
 
 
-@login_required
-@is_superuser
-def createhandymen(request):
-    """
-    Allows the staff create a handymen
-    """
-    ## if authenticated redirect to user's homepage directly ##
-    if request.user.is_authenticated():
-        user = request.user
+# @login_required
+# @is_superuser
+# def createhandymen(request):
+#     """
+#     Allows the staff create a handymen
+#     """
+#     ## if authenticated redirect to user's homepage directly ##
+#     if request.user.is_authenticated():
+#         user = request.user
 
-    if request.method == "GET":
-        if 'ebuser' in request.GET:
-            ebuser = request.GET['ebuser']
-            try:
-                EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
-            except Exception, e:
-                return redirect('home')
-            user_form = userforms.UserCreationForm(ebuser=ebuser)
-            pagetitle = "Create a Handymen"
-            return render(request, 'admin/createuser.html', locals())
+#     if request.method == "GET":
+#         if 'ebuser' in request.GET:
+#             ebuser = request.GET['ebuser']
+#             try:
+#                 EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
+#             except Exception, e:
+#                 return redirect('home')
+#             user_form = userforms.UserCreationForm(ebuser=ebuser)
+#             pagetitle = "Create a Handymen"
+#             return render(request, 'admin/createuser.html', locals())
 
-    if request.method == "POST":
-        user_form = userforms.UserCreationForm(request.POST, ebuser=None)
-        if user_form.is_valid():
-            userdata = user_form.save(commit=False)
-            useraddress = dict(
-                city=user_form.cleaned_data['city'],
-                streetaddress=user_form.cleaned_data['streetaddress']
-            )
-            userdata.address = json.dumps(useraddress)
-            userdata.phone_status = True
-            userdata.user_type = 1
-            userdata.phone = user_form.cleaned_data['phone']
-            import hashlib
-            import uuid
-            hashstring = hashlib.sha256(
-                str(timezone.now()) + str(timezone.now()) + str(uuid.uuid4())
-            ).hexdigest()
-            password = hashstring[:4]+hashstring[-2:]
-            # password = user_form.cleaned_data['password1']
-            userdata.set_password(password)
-            userdata.save()
-            logger.warn("New handyman {0} has been created.".format(
-                userdata.phone.as_international)
-            )
-            try:
-                ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
-                ebuser.confirmed = True
-                ebuser.save()
-            except Exception as e:
-                pass
-            return redirect('home')
+#     if request.method == "POST":
+#         user_form = userforms.UserCreationForm(request.POST, ebuser=None)
+#         if user_form.is_valid():
+#             userdata = user_form.save(commit=False)
+#             useraddress = dict(
+#                 city=user_form.cleaned_data['city'],
+#                 streetaddress=user_form.cleaned_data['streetaddress']
+#             )
+#             userdata.address = json.dumps(useraddress)
+#             userdata.phone_status = True
+#             userdata.user_type = 1
+#             userdata.phone = user_form.cleaned_data['phone']
+#             import hashlib
+#             import uuid
+#             hashstring = hashlib.sha256(
+#                 str(timezone.now()) + str(timezone.now()) + str(uuid.uuid4())
+#             ).hexdigest()
+#             password = hashstring[:4]+hashstring[-2:]
+#             # password = user_form.cleaned_data['password1']
+#             userdata.set_password(password)
+#             userdata.save()
+#             logger.warn("New handyman {0} has been created.".format(
+#                 userdata.phone.as_international)
+#             )
+#             try:
+#                 ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
+#                 ebuser.confirmed = True
+#                 ebuser.save()
+#             except Exception as e:
+#                 pass
+#             return redirect('home')
 
-        if user_form.errors:
-            logger.debug("Login Form has errors, %s ", user_form.errors)
-        pagetitle = "Create a Handyman"
-        return render(request, 'admin/createhm.html', locals())
-    else:
-        user_form = userforms.UserCreationForm(ebuser=None)
-        pagetitle = "Create a Handymen"
-        return render(request, 'admin/createhm.html', locals())
+#         if user_form.errors:
+#             logger.debug("Login Form has errors, %s ", user_form.errors)
+#         pagetitle = "Create a Handyman"
+#         return render(request, 'admin/createhm.html', locals())
+#     else:
+#         user_form = userforms.UserCreationForm(ebuser=None)
+#         pagetitle = "Create a Handymen"
+#         return render(request, 'admin/createhm.html', locals())
 
 
-@login_required
-@is_superuser
-def createUser(request):
-    """
-    Allows the staffs create a user
-    """
-    ## if authenticated redirect to user's homepage directly ##
-    if request.user.is_authenticated():
-        user = request.user
+# @login_required
+# @is_superuser
+# def createUser(request):
+#     """
+#     Allows the staffs create a user
+#     """
+#     ## if authenticated redirect to user's homepage directly ##
+#     if request.user.is_authenticated():
+#         user = request.user
 
-    if request.method == "GET":
-        if 'ebuser' in request.GET:
-            ebuser = request.GET['ebuser']
-            try:
-                EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
-            except Exception, e:
-                return redirect('home')
-            user_form = userforms.UserCreationForm(ebuser=ebuser)
-            pagetitle = "Create a User"
-            return render(request, 'admin/createuser.html', locals())
+#     if request.method == "GET":
+#         if 'ebuser' in request.GET:
+#             ebuser = request.GET['ebuser']
+#             try:
+#                 EarlyBirdUser.objects.get(confirmed=False, phone=ebuser)
+#             except Exception, e:
+#                 return redirect('home')
+#             user_form = userforms.UserCreationForm(ebuser=ebuser)
+#             pagetitle = "Create a User"
+#             return render(request, 'admin/createuser.html', locals())
 
-    if request.method == "POST":
-        user_form = userforms.UserCreationForm(request.POST, ebuser=None)
-        if user_form.is_valid():
-            userdata = user_form.save(commit=False)
-            useraddress = dict(
-                city=user_form.cleaned_data['city'],
-                streetaddress=user_form.cleaned_data['streetaddress']
-            )
-            userdata.address = json.dumps(useraddress)
-            userdata.phone_status = True
-            userdata.user_type = 2
-            userdata.phone = user_form.cleaned_data['phone']
-            import hashlib
-            import uuid
-            hashstring = hashlib.sha256(
-                str(timezone.now()) + str(timezone.now()) + str(uuid.uuid4())
-            ).hexdigest()
-            password = hashstring[:4]+hashstring[-2:]
-            # password = user_form.cleaned_data['password1']
-            userdata.set_password(password)
-            try:
-                ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
-                ebuser.confirmed = True
-                ebuser.save()
-            except Exception as e:
-                logger.warn("EB user {0} not found".format(userdata.phone))
-                return redirect('index')
-            userdata.save()
-            um = user_handler.UserManager()
-            # Commenting the below for now, user would be notified of
-            # their password only after our internal portal is ready
-            # um.sendPasswordText(userdata.id, password)
-            msg = messages.USER_WELCOME_MSG
-            vas = Sparrow()
-            status = vas.sendMessage(msg, userdata)
-            logger.warn("Message status \n {0}".format(status))
-            logger.warn("New user {0} has been created.".format(
-                userdata.phone.as_international)
-            )
-            return redirect('home')
+#     if request.method == "POST":
+#         user_form = userforms.UserCreationForm(request.POST, ebuser=None)
+#         if user_form.is_valid():
+#             userdata = user_form.save(commit=False)
+#             useraddress = dict(
+#                 city=user_form.cleaned_data['city'],
+#                 streetaddress=user_form.cleaned_data['streetaddress']
+#             )
+#             userdata.address = json.dumps(useraddress)
+#             userdata.phone_status = True
+#             userdata.user_type = 2
+#             userdata.phone = user_form.cleaned_data['phone']
+#             import hashlib
+#             import uuid
+#             hashstring = hashlib.sha256(
+#                 str(timezone.now()) + str(timezone.now()) + str(uuid.uuid4())
+#             ).hexdigest()
+#             password = hashstring[:4]+hashstring[-2:]
+#             # password = user_form.cleaned_data['password1']
+#             userdata.set_password(password)
+#             try:
+#                 ebuser = EarlyBirdUser.objects.get(phone=userdata.phone)
+#                 ebuser.confirmed = True
+#                 ebuser.save()
+#             except Exception as e:
+#                 logger.warn("EB user {0} not found".format(userdata.phone))
+#                 return redirect('index')
+#             userdata.save()
+#             um = user_handler.UserManager()
+#             # Commenting the below for now, user would be notified of
+#             # their password only after our internal portal is ready
+#             # um.sendPasswordText(userdata.id, password)
+#             msg = messages.USER_WELCOME_MSG
+#             vas = Sparrow()
+#             status = vas.sendMessage(msg, userdata)
+#             logger.warn("Message status \n {0}".format(status))
+#             logger.warn("New user {0} has been created.".format(
+#                 userdata.phone.as_international)
+#             )
+#             return redirect('home')
 
-        if user_form.errors:
-            logger.debug("Login Form has errors, %s ", user_form.errors)
-        pagetitle = "Create a Handymen"
-        return render(request, 'admin/createuser.html', locals())
-    else:
-        user_form = userforms.UserCreationForm(ebuser=None)
-        pagetitle = "Create a Handymen"
-        return render(request, 'admin/createuser.html', locals())
+#         if user_form.errors:
+#             logger.debug("Login Form has errors, %s ", user_form.errors)
+#         pagetitle = "Create a Handymen"
+#         return render(request, 'admin/createuser.html', locals())
+#     else:
+#         user_form = userforms.UserCreationForm(ebuser=None)
+#         pagetitle = "Create a Handymen"
+#         return render(request, 'admin/createuser.html', locals())
 
 
 @is_superuser
@@ -385,15 +385,42 @@ def joinasuser(request):
 
         request_dict['phone'] = phone
         logging.warn(request_dict)
-        user_form = userforms.EBUserPhoneNumberForm(request_dict)
+        user_form = userforms.SMSUserSignupForm(request_dict)
         if user_form.is_valid():
             phone = user_form.cleaned_data['phone']
             userdata = user_form.save(commit=False)
+            userdata.phone_status = True
+            # for password generate a random 6 digit number
+            from random import randint
+            password = randint(109231, 998021)
+            userdata.set_password(password)
+            userdata.user_type = 2
             userdata.save()
-            logger.warn("{0} registered their number as a user".format(phone))
+            logger.warn("{0} just created their account as a user. \
+                [valid entry]".format(phone))
+            msg = messages.USER_WELCOME_MSG
+            # send the password to the user explicitly
             vas = Sparrow()
-            msg = messages.NEW_USER_REG_MSG
-            status = vas.sendDirectMessage(msg, phone)
+            directmsg = messages.NEW_USER_REG_MSG.format(password)
+            vas.sendDirectMessage(
+                directmsg,
+                phone
+            )
+            vas.sendDirectMessage(
+                msg,
+                phone
+            )
+            # send email to admin
+            email_handler.send_newregistration_notif(
+                phone.as_e164
+            )
+            requests.get(
+                request.build_absolute_uri(reverse('gaTracker'))
+            )
+            logger.warn("{0} registered their number as a user".format(phone))
+            # vas = Sparrow()
+            # msg = messages.NEW_USER_REG_MSG
+            # status = vas.sendDirectMessage(msg, phone)
             email_handler.send_newregistration_notif(phone.as_international)
             # requests.get(
             #     request.build_absolute_uri(reverse('gaTracker'))
@@ -404,7 +431,7 @@ def joinasuser(request):
             #     request.build_absolute_uri(reverse('gaTracker'))
             # )
             logger.debug("Login Form has errors, %s ", user_form.errors)
-            return render(request, 'index.html', locals())
+            return render(request, 'register.html', locals())
         return redirect('index')
 
     # disbale GET
