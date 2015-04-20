@@ -8,6 +8,7 @@ from .models import ComplexityRate, HourRate
 # Init Logger
 logger = logging.getLogger(__name__)
 
+
 class PricingManager(object):
     """Handler for Pricing Model
     """
@@ -29,5 +30,6 @@ class PricingManager(object):
         hour_rates = HourRate.objects.all()
         for hour_rate in hour_rates:
             _hour_rates.update(hour_rate.hour_rate)
-        _hour_rates = collections.OrderedDict(sorted(_hour_rates.iteritems(), key=lambda x: int(x[0])))
+        _hour_rates = collections.OrderedDict(
+            sorted(_hour_rates.iteritems(), key=lambda x: int(x[0])))
         return _hour_rates

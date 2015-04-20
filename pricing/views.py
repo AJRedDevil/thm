@@ -3,7 +3,6 @@
 import json
 import logging
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 WORKING_DAY = 8
+
 
 def __get_estimated_price(total_estimated_hours, complexity, discount):
     """Returns the estimated price"""
@@ -31,20 +31,25 @@ def __get_estimated_price(total_estimated_hours, complexity, discount):
         if total_estimated_hours <= key:
             hour_rate = hour_rates[str(key)]
             break
-    total_estimated_price = (complexity_rate + hour_rate) * total_estimated_hours
-    if discount:
-        total_estimated_price *= (1- (discount/100.0))
+    total_estimated_price = (
+        complexity_rate + hour_rate) * total_estimated_hours
 
-    total_estimated_price  = format(total_estimated_price,',.2f')
+    if discount:
+        total_estimated_price *= (1 - (discount / 100.0))
+
+    total_estimated_price = format(total_estimated_price, ',.2f')
     return total_estimated_price
+
 
 @login_required
 @is_superuser
 def viewPricing(request):
     """View to show current rates and calculate estimated Price"""
+    user = request.user
     pf = PricingForm()
-    pricing_estimated = {"estimated_price":0.0}
-    if request.method=='POST':
+    pricing_estimated = {"estimated_price": 0.0}
+    if request.method == 'POST':
+        logger.debug(request.POST)
         time_unit = int(request.POST['time_unit_selection'])
         estimated_time = int(request.POST['estimated_time'])
         complexity_rate = request.POST['complexity']
@@ -57,11 +62,12 @@ def viewPricing(request):
         if pf.errors:
             logger.debug("Form has errors, %s ", pf.errors)
         else:
-            total_estimated_hours = estimated_time if not time_unit else (estimated_time * WORKING_DAY)
-            estimated_price = __get_estimated_price(total_estimated_hours, complexity_rate, discount)
+            total_estimated_hours = estimated_time if not time_unit else (
+                estimated_time * WORKING_DAY)
+            estimated_price = __get_estimated_price(
+                total_estimated_hours, complexity_rate, discount)
             pricing_estimated["estimated_price"] = estimated_price
-            return HttpResponse(json.dumps(pricing_estimated), content_type='application/json')
+            return HttpResponse(
+                json.dumps(pricing_estimated), content_type='application/json')
 
-    # return HttpResponse(json.dumps({"form":pf}), content_type='application/json')
-    # return HttpResponse(json.dumps({"form":pf}), content_type='application/json')
     return render(request, 'pricing.html', locals())

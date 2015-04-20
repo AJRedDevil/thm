@@ -3,7 +3,7 @@
         "model": "pricing.ComplexityRate",
         "pk":1,
         "fields": {
-            "complexity_rate":0.0
+            "complexity_rate":25.0
         }
     },
     {
@@ -24,14 +24,14 @@
         "model": "pricing.ComplexityRate",
         "pk":4,
         "fields": {
-            "complexity_rate":150.0
+            "complexity_rate":200.0
         }
     },
     {
         "model": "pricing.ComplexityRate",
         "pk":5,
         "fields": {
-            "complexity_rate":200.0
+            "complexity_rate":500.0
         }
     }
 ]

@@ -85,7 +85,6 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="link"><a href="{% url 'faq' %}">faq</a></li>
       {% if user.is_superuser %}
-      <li id="pricing" class="link"><a target="_blank" href="{% url 'viewPricing' %}">Pricing</a></li>
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin<span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
@@ -94,6 +93,7 @@
         <li><a href="{% url 'createhandymen' %}">Create Staff</a></li>
         <li><a href="{% url 'viewEBUser' %}">New Users</a></li>
         {% endcomment %}
+          <li><a href="{% url 'viewPricing' %}">Calculate Cost</a></li>
           <li><a href="{% url 'createJob' %}">Create Job</a></li>
           <li><a href="{% url 'createFaq' %}">Create FAQ</a></li>
           <li><a href="{% url 'viewAllFaq' %}">View All FAQ</a></li>
