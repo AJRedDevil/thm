@@ -56,12 +56,6 @@ def viewPricing(request):
         discount = float(request.POST['discount'])
         pf = PricingForm(request.POST)
         if pf.is_valid():
-            pass
-        else:
-            raise Http404
-        if pf.errors:
-            logger.debug("Form has errors, %s ", pf.errors)
-        else:
             total_estimated_hours = estimated_time if not time_unit else (
                 estimated_time * WORKING_DAY)
             estimated_price = __get_estimated_price(
@@ -69,5 +63,6 @@ def viewPricing(request):
             pricing_estimated["estimated_price"] = estimated_price
             return HttpResponse(
                 json.dumps(pricing_estimated), content_type='application/json')
-
+        if pf.errors:
+            logger.debug("Form has errors, %s ", pf.errors)
     return render(request, 'pricing.html', locals())
