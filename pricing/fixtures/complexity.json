@@ -1,0 +1,37 @@
+[
+    {
+        "model": "pricing.ComplexityRate",
+        "pk":1,
+        "fields": {
+            "complexity_rate":25.0
+        }
+    },
+    {
+        "model": "pricing.ComplexityRate",
+        "pk":2,
+        "fields": {
+            "complexity_rate":50.0
+        }
+    },
+    {
+        "model": "pricing.ComplexityRate",
+        "pk":3,
+        "fields": {
+            "complexity_rate":100.0
+        }
+    },
+    {
+        "model": "pricing.ComplexityRate",
+        "pk":4,
+        "fields": {
+            "complexity_rate":200.0
+        }
+    },
+    {
+        "model": "pricing.ComplexityRate",
+        "pk":5,
+        "fields": {
+            "complexity_rate":500.0
+        }
+    }
+]

@@ -418,10 +418,6 @@ def joinasuser(request):
                 request.build_absolute_uri(reverse('gaTracker'))
             )
             logger.warn("{0} registered their number as a user".format(phone))
-            # vas = Sparrow()
-            # msg = messages.NEW_USER_REG_MSG
-            # status = vas.sendDirectMessage(msg, phone)
-            email_handler.send_newregistration_notif(phone.as_international)
             # requests.get(
             #     request.build_absolute_uri(reverse('gaTracker'))
             # )
