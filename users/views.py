@@ -862,3 +862,38 @@ def sendPasswdVrfCode(request):
 
     user_form = userforms.ForgetPasswordForm()
     return render(request, 'forgetpassword.html', locals())
+
+
+@login_required
+@is_superuser
+def editUserDetail(request, userref):
+    """
+    Lets a super user edit details for a user
+    """
+    user = request.user
+    um = user_handler.UserManager()
+    customer = um.getUserDetailsFromRef(userref)
+    customerdata = dict(
+        name=customer.name,
+        phone=customer.phone,
+        city=customer.address['city'],
+        streetaddress=customer.address['streetaddress'],
+        address_coordinates=customer.address_coordinates,
+    )
+    if request.method == "POST":
+        user_form = userforms.HMUserChangeForm(request.POST, instance=customer)
+        if user_form.is_valid():
+            userdata = user_form.save(commit=False)
+            address = {}
+            address['city'] = user_form.cleaned_data['city']
+            address['streetaddress'] = user_form.cleaned_data['streetaddress']
+            userdata.address = address
+            userdata.save()
+            return render(request, 'userdetails.html', locals())
+
+        if user_form.errors:
+            logger.debug("ForgetPassword form has erorrs %s", user_form.errors)
+            return render(request, 'userdetails.html', locals())
+
+    user_form = userforms.HMUserChangeForm(initial=customerdata)
+    return render(request, 'userdetails.html', locals())

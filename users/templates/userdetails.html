@@ -1,61 +1,42 @@
 {% extends "admin/base.html" %}
-{% load staticfiles %}
+{% load staticfiles floppyforms %}
 {% block localhead %}
-
+{{user_form.media}}
 {% endblock localhead %}
 {% block content %}
 <div class='page-container container list-table'>
     <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-    <h1><span class='jobId'>Customer Details</span></h1>
+  <h1><span class='jobId'>Customer Details</span></h1>
 
     <div class="hora-job-form">
-        <div class='row'>
-            <div class="col-md-4">
+    <div class='row'>
+        <div class="col-md-4">
+            <form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
                 <div class="form-group">
-                    <label>Name:</label>
-                    {{customer.name}}
+                  <label>Name</label>
+                  {{user_form.name}}
+                  {{user_form.name.errors}}
                 </div>
-
                 <div class="form-group">
-                    <label>Phone:</label>
-                    {{customer.phone}}
+                  <label>Phone</label>
+                  {{user_form.phone}}
+                  {{user_form.phone.errors}}
                 </div>
-
                 <div class="form-group">
-                    <label>City:</label>
-                    {{customer.address.city}}
+                  <label>City</label>
+                  {{user_form.city}}
                 </div>
-
-            </div>
-            <div class="col-md-8">
-                <label>Location:</label>
-                {{customer.address.streetaddress}}
-                <div id="map" class="map">
+                <div class="form-group">
+                  <label>Streetadddress</label>
+                  {{user_form.streetaddress}}
                 </div>
-            </div>
+                <button type="submit" class="btn btn-default submit">Update</button>
         </div>
-          <!-- eo hora-job-form -->
+        <div class="col-md-8">
+                <label>Exact Location on Map</label>
+               {% widget user_form.address_coordinates %}
+        </div>
     </div>
 </div>
-<script src={% static 'js/OpenLayers.js'%}></script>
-<script src="https://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
-<script type="text/javascript">    
-    var map;
-    map = new OpenLayers.Map({
-        div: "map",
-        allOverlays: true
-    });
-    // customer coordinates
-    var lonLat = new OpenLayers.LonLat({{customer.address_coordinates.get_coords.0}}, {{customer.address_coordinates.get_coords.1}}).transform('EPSG:4326', 'EPSG:3857');
-    // google map layer
-    var gmap = new OpenLayers.Layer.Google("ROADMAP", { type: google.maps.MapTypeId.ROADMAP });
-    map.addLayer(gmap);
-    // marker layer
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
-    map.addLayer(markers);
-    // set marker and center map on  marker
-    markers.addMarker(new OpenLayers.Marker(lonLat));
-    map.setCenter(lonLat, 14);
-</script>
 {% endblock content %}

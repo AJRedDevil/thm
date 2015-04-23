@@ -21,6 +21,11 @@ class UserManager(object):
         user = get_object_or_404(UserProfile, id=user_id, is_active=True)
         return user
 
+    def getUserDetailsFromRef(self, userref):
+        """List user information"""
+        user = get_object_or_404(UserProfile, userref=userref, is_active=True)
+        return user
+
     def getUserDetailsFromPhone(self, phone):
         """List user information from phone number"""
         try:
