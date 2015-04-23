@@ -54,7 +54,10 @@ def userSearchDetail(request):
     if request.method == "POST":
         logger.debug(request.POST)
         phone = request.POST['phone']
-        phone = re.findall('\((.*?)\)', phone)[-1]
+        try:
+            phone = re.findall('\((.*?)\)', phone)[-1]
+        except Exception, e:
+            return redirect('home')
         um = userhandler.UserManager()
         customer = um.getUserDetailsFromPhone(phone)
         return render(request, 'userdetails.html', locals())
