@@ -21,6 +21,11 @@ class UserManager(object):
         user = get_object_or_404(UserProfile, id=user_id, is_active=True)
         return user
 
+    def getUserDetailsFromRef(self, userref):
+        """List user information"""
+        user = get_object_or_404(UserProfile, userref=userref, is_active=True)
+        return user
+
     def getUserDetailsFromPhone(self, phone):
         """List user information from phone number"""
         try:
@@ -108,11 +113,17 @@ class UserManager(object):
         searches via the phone number
         """
         # for users might not want to put a +977
-        phone = '+977'+phone
+        phonenumber = '+977'+phone
         userlist = UserProfile.objects.filter(
-            phone__startswith=phone,
+            phone__startswith=phonenumber,
             user_type='2'
         )
+        logger.warn(len(userlist))
+        if len(userlist) == 0:
+            name = phone
+            userlist = UserProfile.objects.filter(
+                name__istartswith=name,
+                user_type='2')
         return userlist
 
 
