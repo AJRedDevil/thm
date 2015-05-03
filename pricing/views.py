@@ -26,11 +26,15 @@ def __get_estimated_price(total_estimated_hours, complexity, discount):
 
     complexity_rate = float(complexity_rates[int(complexity)])
     hour_rate = hour_rates[hour_rates.keys()[-1]]
-    hour_rate_keys = [int(key) for key in hour_rates.keys()]
+    hour_rate_keys = [float(key) for key in hour_rates.keys()]
     for key in hour_rate_keys:
         if total_estimated_hours <= key:
             hour_rate = hour_rates[str(key)]
             break
+    logging.warn(hour_rates)
+    logging.warn(total_estimated_hours)
+    logging.warn(hour_rate)
+    logging.warn(complexity_rate)
     total_estimated_price = (
         complexity_rate + hour_rate) * total_estimated_hours
 
@@ -51,7 +55,7 @@ def viewPricing(request):
     if request.method == 'POST':
         logger.debug(request.POST)
         time_unit = int(request.POST['time_unit_selection'])
-        estimated_time = int(request.POST['estimated_time'])
+        estimated_time = float(request.POST['estimated_time'])
         complexity_rate = request.POST['complexity']
         discount = float(request.POST['discount'])
         pf = PricingForm(request.POST)
