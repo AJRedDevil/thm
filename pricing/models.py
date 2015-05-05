@@ -71,10 +71,11 @@ class PricingModel(models.Model):
         choices=TIME_UNIT_SELECTION,
         default='0'
     )
-    estimated_time = models.IntegerField(
+    estimated_time = models.DecimalField(
         _('estimated_time'),
-        max_length=3,
-        default=1
+        decimal_places=2,
+        max_digits=100,
+        default=1.0
     )
     complexity = models.CharField(
         _('complexity'),

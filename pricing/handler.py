@@ -31,5 +31,5 @@ class PricingManager(object):
         for hour_rate in hour_rates:
             _hour_rates.update(hour_rate.hour_rate)
         _hour_rates = collections.OrderedDict(
-            sorted(_hour_rates.iteritems(), key=lambda x: int(x[0])))
+            sorted(_hour_rates.iteritems(), key=lambda x: float(x[0])))
         return _hour_rates
