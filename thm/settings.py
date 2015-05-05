@@ -34,7 +34,7 @@ INSTALLED_APPS = (
     'users',
     'jobs',
     'libs',
-    'faq',
+    'apps.faq',
     'south',
     'rest_framework',
     'rest_framework.authtoken',

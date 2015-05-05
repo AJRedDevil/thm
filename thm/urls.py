@@ -29,7 +29,7 @@ urlpatterns = patterns(
     url(r'^forgetpassword/$', userviews.sendPasswdVrfCode, name='sendPasswdVrfCode'),
     url(r'^search/', include('search.urls')),
     url(r'^users/', include('users.urls')),
-    url(r'^faq/', include('faq.urls')),
+    url(r'^faq/', include('apps.faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     url(r'^work/', include('job_gallery.urls')),
     url(r'^pricing/', include('pricing.urls')),
