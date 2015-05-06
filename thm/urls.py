@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-from users import views as userviews
+from apps.users import views as userviews
 from jobs import views as jobviews
 from .views import index
 import logging
@@ -28,7 +28,7 @@ urlpatterns = patterns(
     url(r'^resetpassword/', userviews.resetPasswordToken, name='resetPasswordToken'),
     url(r'^forgetpassword/$', userviews.sendPasswdVrfCode, name='sendPasswdVrfCode'),
     url(r'^search/', include('apps.search.urls')),
-    url(r'^users/', include('users.urls')),
+    url(r'^users/', include('apps.users.urls')),
     url(r'^faq/', include('apps.faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     url(r'^work/', include('apps.job_gallery.urls')),

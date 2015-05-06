@@ -31,7 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'users',
+    'apps.users',
     'jobs',
     'libs',
     'apps.faq',
@@ -196,7 +196,7 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'users': {
+        'apps.users': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',

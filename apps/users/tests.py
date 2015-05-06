@@ -5,9 +5,9 @@ from django.core.urlresolvers import reverse
 
 from phonenumber_field.modelfields import PhoneNumber
 # Create your tests here.
-from users.models import UserProfile, EarlyBirdUser
+from apps.users.models import UserProfile, EarlyBirdUser
 import users.handler as user_handler
-from users.forms import EBUserPhoneNumberForm
+from apps.users.forms import EBUserPhoneNumberForm
 
 import logging
 

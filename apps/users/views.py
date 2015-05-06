@@ -20,7 +20,7 @@ import handler as user_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser, is_verified
 from .models import UserProfile, EarlyBirdUser, UserToken
-import users.forms as userforms
+import apps.users.forms as userforms
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow

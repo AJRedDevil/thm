@@ -1,13 +1,13 @@
 
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
-from users.models import UserProfile, CITY_SELECTION
+from apps.users.models import UserProfile, CITY_SELECTION
 from jobs.models import Jobs
 
 from rest_framework import exceptions, serializers
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
 
-import users.handler as user_handler
+import apps.users.handler as user_handler
 
 import logging
 # Init Logger

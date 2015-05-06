@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 
 from .models import PricingModel, ComplexityRate, HourRate
-from users.models import UserProfile
+from apps.users.models import UserProfile
 
 # Create your tests here.
 

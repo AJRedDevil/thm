@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.gis.db import models
 
-from users.models import UserProfile
+from apps.users.models import UserProfile
 
 import jsonfield
 import uuid
