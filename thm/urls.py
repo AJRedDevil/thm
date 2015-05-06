@@ -27,7 +27,7 @@ urlpatterns = patterns(
     url(r'^settings/changepassword/$', userviews.changePassword, name='changePassword'),
     url(r'^resetpassword/', userviews.resetPasswordToken, name='resetPasswordToken'),
     url(r'^forgetpassword/$', userviews.sendPasswdVrfCode, name='sendPasswdVrfCode'),
-    url(r'^search/', include('search.urls')),
+    url(r'^search/', include('apps.search.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^faq/', include('apps.faq.urls')),
     url(r'^jobs/', include('jobs.urls')),

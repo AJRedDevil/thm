@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'djrill',
     'floppyforms',
     'apps.job_gallery',
-    'search',
+    'apps.search',
     'apps.pricing',
 )
 
@@ -191,7 +191,7 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'search': {
+        'apps.search': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',
