@@ -4,8 +4,8 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from thm.decorators import is_superuser
 
-from users import handler as userhandler
-from users import forms as userforms
+from apps.users import handler as userhandler
+from apps.users import forms as userforms
 from libs.googleapi_handler import GMapPointWidget
 import simplejson as json
 import logging

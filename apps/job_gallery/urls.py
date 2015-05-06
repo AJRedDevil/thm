@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-import job_gallery.views as jgviews
+import apps.job_gallery.views as jgviews
 
 urlpatterns = patterns(
     '',

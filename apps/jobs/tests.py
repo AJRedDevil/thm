@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 
 from .models import Jobs
-from users.models import UserProfile
+from apps.users.models import UserProfile
 import logging
 # Create your tests here.
 

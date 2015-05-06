@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from thm.decorators import is_superuser
 from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
-import job_gallery.forms as jgforms
+import apps.job_gallery.forms as jgforms
 from .handler import JobManager
 from libs.sparrow_handler import Sparrow
 from libs import out_sms as messages

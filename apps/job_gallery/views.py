@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-import job_gallery.forms as jgforms
-from jobs.handler import JobManager
+import apps.job_gallery.forms as jgforms
+from apps.jobs.handler import JobManager
 from thm.decorators import is_superuser
 
 

@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from pricing import views as pricingView
+from apps.pricing import views as pricingView
 
 urlpatterns = patterns(
     '',

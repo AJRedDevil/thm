@@ -2,10 +2,10 @@
 from django.http import Http404
 from django.shortcuts import render, redirect
 
-from users.models import UserProfile
-from users.forms import VerifyPhoneForm
+from apps.users.models import UserProfile
+from apps.users.forms import VerifyPhoneForm
 
-from users import handler as user_handler
+from apps.users import handler as user_handler
 
 
 def is_superuser(a_view):

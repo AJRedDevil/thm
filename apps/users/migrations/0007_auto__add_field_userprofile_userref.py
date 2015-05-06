@@ -3,7 +3,7 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from users.models import getUniqueUUID
+from apps.users.models import getUniqueUUID
 
 
 class Migration(SchemaMigration):

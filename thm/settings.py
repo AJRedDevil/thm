@@ -31,19 +31,19 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'users',
-    'jobs',
+    'apps.users',
+    'apps.jobs',
     'libs',
-    'faq',
+    'apps.faq',
     'south',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'djrill',
     'floppyforms',
-    'job_gallery',
-    'search',
-    'pricing',
+    'apps.job_gallery',
+    'apps.search',
+    'apps.pricing',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -176,7 +176,7 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'jobs': {
+        'apps.jobs': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',
@@ -186,17 +186,17 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'pricing': {
+        'apps.pricing': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'WARN',
         },
-        'search': {
+        'apps.search': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',
         },
-        'users': {
+        'apps.users': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',

@@ -1,6 +1,6 @@
 from django.conf.urls import patterns,include,url
 
-import faq.views as faqview
+import apps.faq.views as faqview
 
 urlpatterns = patterns('',
     url(r'^$', faqview.faq, name='faq'),
