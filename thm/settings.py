@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'rest_framework_swagger',
     'djrill',
     'floppyforms',
-    'job_gallery',
+    'apps.job_gallery',
     'search',
     'pricing',
 )

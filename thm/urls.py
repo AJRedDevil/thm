@@ -31,7 +31,7 @@ urlpatterns = patterns(
     url(r'^users/', include('users.urls')),
     url(r'^faq/', include('apps.faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
-    url(r'^work/', include('job_gallery.urls')),
+    url(r'^work/', include('apps.job_gallery.urls')),
     url(r'^pricing/', include('pricing.urls')),
     url(r'^$', index, name='index'),
 )
