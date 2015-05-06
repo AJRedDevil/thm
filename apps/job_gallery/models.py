@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage as storage
 from django.conf import settings
-from jobs.models import Jobs
+from apps.jobs.models import Jobs
 import os
 import time
 import hashlib

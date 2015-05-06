@@ -1,7 +1,7 @@
 
 
 from apps.users.models import UserProfile, UserToken
-from jobs.models import Jobs
+from apps.jobs.models import Jobs
 from apps.users import handler as user_handler
 
 import serializers

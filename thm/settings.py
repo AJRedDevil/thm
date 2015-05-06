@@ -32,7 +32,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'apps.users',
-    'jobs',
+    'apps.jobs',
     'libs',
     'apps.faq',
     'south',
@@ -176,7 +176,7 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
-        'jobs': {
+        'apps.jobs': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',

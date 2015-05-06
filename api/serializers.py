@@ -2,7 +2,7 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 from apps.users.models import UserProfile, CITY_SELECTION
-from jobs.models import Jobs
+from apps.jobs.models import Jobs
 
 from rest_framework import exceptions, serializers
 from phonenumber_field.phonenumber import PhoneNumber as intlphone

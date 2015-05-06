@@ -24,7 +24,7 @@ import apps.users.forms as userforms
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
-import jobs.handler as jobs_handler
+import apps.jobs.handler as jobs_handler
 from libs import email_handler
 from libs import out_sms as messages
 from ipware.ip import get_real_ip, get_ip
@@ -219,7 +219,7 @@ def home(request):
     """Post login this is returned and displays user's home page"""
     user = request.user
     ##Acquire all the current open jobs related to the user
-    from jobs.handler import JobManager
+    from apps.jobs.handler import JobManager
     jb = JobManager()
     jobs = jb.getAllJobs(user)
     if user.is_staff or user.is_superuser:
