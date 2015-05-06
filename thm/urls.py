@@ -32,7 +32,7 @@ urlpatterns = patterns(
     url(r'^faq/', include('apps.faq.urls')),
     url(r'^jobs/', include('jobs.urls')),
     url(r'^work/', include('apps.job_gallery.urls')),
-    url(r'^pricing/', include('pricing.urls')),
+    url(r'^pricing/', include('apps.pricing.urls')),
     url(r'^$', index, name='index'),
 )
 

@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render
 
 from thm.decorators import is_superuser
-from pricing.forms import PricingForm
+from apps.pricing.forms import PricingForm
 from .handler import PricingManager
 
 logger = logging.getLogger(__name__)
