@@ -4,13 +4,12 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
-AUTH_PROFILE_MODULE = 'users.UserProfile'
-URL='http://localhost:5001'
+URL='http://localhost:5000'
 
 # To check with local DB
 DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'thm',
         'USER': 'thm',
         'PASSWORD': 'thm',
@@ -54,20 +53,50 @@ LOGGING = {
         },
     },
     'loggers': {
-        # 'django': {
-        #     'handlers':['file'],
-        #     'propagate': True,
-        #     'level':'DEBUG',
-        # },
-        'users': {
-            'handlers':['file'],
+        'django': {
+            'handlers': ['file'],
             'propagate': True,
-            'level':'DEBUG',
+            'level': 'WARN',
         },
-        'jobs': {
-            'handlers':['file'],
+        'api': {
+            'handlers': ['file'],
             'propagate': True,
-            'level':'DEBUG',
+            'level': 'DEBUG',
+        },
+        'faq': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'job_gallery': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'apps.jobs': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'libs': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'apps.pricing': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'apps.search': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'apps.users': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
         },
     }
 }
