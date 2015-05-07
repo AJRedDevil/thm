@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'apps.job_gallery',
     'apps.search',
     'apps.pricing',
+    'pipeline',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -269,3 +270,35 @@ except ImportError:
 #     STATICFILES_STORAGE = 'libs.s3utils.StaticRootS3BotoStorage'
 #     MEDIA_ROOT = '/%s/' % DEFAULT_FILE_STORAGE
 #     MEDIA_URL = '//s3.amazonaws.com/%s/' % AWS_MEDIA_BUCKET
+
+
+
+# for static file management
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
+
+PIPELINE_CSS = {
+    'web_yellow': {
+        'source_filenames': (
+          'css/web_yellow.sass',
+          'css/popup.css'
+        ),
+        'output_filename': 'css/web_yellow.css',
+    },
+    'admin': {
+        'source_filenames': (
+          'css/bootstrap.css',
+          'css/admin.sass',
+        ),
+        'output_filename': 'css/admin.css',
+    },
+}

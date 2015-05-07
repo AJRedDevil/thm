@@ -1,0 +1,117 @@
+@import 'colors'
+
+body *
+  font-family: "Montserrat", sans-serif
+  box-sizing: border-box
+
+input::-webkit-input-placeholder
+  color: $third-color
+
+input:-moz-placeholder
+  /* Firefox 18-
+  color: $third-color
+
+input::-moz-placeholder
+  /* Firefox 19+
+  color: $third-color
+
+input:-ms-input-placeholder
+  color: $third-color
+
+a
+  color: $third-color !important
+  &:hover,&:focus
+    background: $third-color !important
+    color: #FFF !important
+
+.link
+  text-transform: uppercase
+  opacity: 1
+  &.main-back
+    color: $first-color !important
+    opacity: .9
+    &:hover
+      text-decoration: none
+      opacity: 1
+
+.btn-default
+  background-color: $first-color
+  font-weight: bold
+  color: $third-color
+  border: none
+  font-size: 16px
+  &:hover
+    background-color: $first-color
+  &.submit
+    padding: 10px 15px
+    margin-bottom: 20px
+
+.hora-nav
+  background: $first-color
+  box-shadow: 1px 0 12px rgba(0, 0, 0, 0.5)
+  color: $third-color
+  border-radius: 0
+  border: none
+  .hora-nav-brand
+    width: 40px
+  .hora-nav-search
+    input[type=text]
+      border: none
+      background: none
+      border-bottom: 1px solid $third-color
+      border-radius: 0
+      box-shadow: none
+      color: $third-color
+    .hora-nav-search-btn
+      background: transparent
+      border: none
+      outline: none
+      cursor: pointer
+
+.page-container
+  h1
+    text-transform: uppercase
+    color: $first-color
+    background: $third-color
+    display: inline-block
+    padding: 5px 10px
+    font-weight: bold
+    font-size: 33px
+  .hora-table
+    margin: 20px 0
+
+table.dataTable.dtr-inline.collapsed tbody td:first-child:before, table.dataTable.dtr-inline.collapsed tbody th:first-child:before
+  background-color: $first-color
+  top: 12px
+  left: 4px
+  height: 20px
+  width: 20px
+  color: #FFF
+  line-height: 20px
+  border: none
+  box-shadow: none
+
+table.dataTable.dtr-inline.collapsed tbody tr.parent td:first-child:before, table.dataTable.dtr-inline.collapsed tbody tr.parent th:first-child:before
+  background-color: $third-color
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover
+  background: $first-color !important
+  border: none
+  background-color: $third-color
+
+.double-input
+  overflow: hidden
+  .ip-form
+    width: 85%
+    float: left
+  .ip-btn
+    width: 10%
+    float: left
+    padding: 4px
+    border-radius: 5px
+    border: none
+    margin-left: 5px
+    background: $first-color
+    font-weight: bold
+    font-size: 20PX
+
