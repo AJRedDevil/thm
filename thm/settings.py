@@ -108,7 +108,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(PROJECT_PATH, 'static'),
 )
 # Use local storage
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
@@ -281,7 +281,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
-
+PIPELINE_SASS_BINARY = "sassc"
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
