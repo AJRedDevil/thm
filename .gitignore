@@ -27,7 +27,7 @@ __pycache__/
 # Local Settings
 local_setting.py
 Procfile.dev
-#staticfiles
+staticfiles/
 .idea
 
 
