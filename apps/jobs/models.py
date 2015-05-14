@@ -100,6 +100,9 @@ class Jobs(models.Model):
         max_length=100,
         blank=True
     )
+    is_paid = models.BooleanField(_('Paid'), default=False)
+    comm_paid = models.BooleanField(_('Commission Paid'), default=False)
+
     objects = models.GeoManager()
 
     def __unicode__(self):

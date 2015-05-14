@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class='page-container container list-table'>
+    <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
+
+    <h1><span class='jobId'>Commission:&nbsp;&nbsp;</span><span id="estimatedCommission" class='jobId'>{{estimatedCommission|default:'0'}}</span></h1>
+
+    <div class="hora-job-form">
+        <div class='row'>
+            <div class="col-md-6">
+
+                <form id="myForm" action="" method="post">{% csrf_token %}
+                    {{commission_form.as_p}}
+            </div>
+        </div>
+    </div>
+        <button id="myFormSubmit" type="submit" class="btn btn-default submit">Calculate</button>
+        <!-- eo price-calculation-form -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+    <script type="text/javascript">
+    $(function(){
+        $('#myFormSubmit').click(function(e){
+            e.preventDefault();
+            $.post('', 
+                $('#myForm').serialize(), 
+                function(data, status, xhr){
+                    document.getElementById("estimatedCommission").innerHTML = data.commission;
+                }, "json");
+        });
+            $('button.closeButton').click(function(e){
+                document.getElementById("estimatedCommission").innerHTML = "";
+        });
+            $('.modal').on("hidden.bs.modal", function() {
+                document.getElementById("estimatedCommission").innerHTML = "";
+        });
+
+    });
+
+    
+    </script>
+{% endblock scripts %}
