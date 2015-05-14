@@ -29,10 +29,12 @@ def viewCommission(request):
             handyman = commission_form.cleaned_data['handyman']
             cm = CommissionManager()
             commission_earned = cm.getCommUser(handyman)
-            commission["commission"] = commission_earned
-            logger.warn(json.dumps(commission))
-            return HttpResponse(
-                json.dumps(commission), content_type='application/json')
+            commissions = commission_earned[1]
+            commission_amount = commission_earned[0]
+            logger.debug(commissions)
+            return render(request, 'commission_details.html', locals())
+            # return HttpResponse(
+            #     json.dumps(commission), content_type='application/json')
         if commission_form.errors:
             logger.debug("Form has errors, %s ", commission_form.errors)
     return render(request, 'commission.html', locals())

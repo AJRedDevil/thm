@@ -8,38 +8,30 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Jobs.is_paid'
-        db.add_column(u'jobs_jobs', 'is_paid',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
-
-        # Adding field 'Jobs.comm_paid'
-        db.add_column(u'jobs_jobs', 'comm_paid',
+        # Adding field 'Commission.is_paid'
+        db.add_column(u'commcalc_commission', 'is_paid',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'Jobs.is_paid'
-        db.delete_column(u'jobs_jobs', 'is_paid')
-
-        # Deleting field 'Jobs.comm_paid'
-        db.delete_column(u'jobs_jobs', 'comm_paid')
+        # Deleting field 'Commission.is_paid'
+        db.delete_column(u'commcalc_commission', 'is_paid')
 
 
     models = {
-        u'jobs.jobevents': {
-            'Meta': {'object_name': 'JobEvents'},
-            'event': ('django.db.models.fields.IntegerField', [], {'default': '1', 'max_length': '2'}),
-            'extrainfo': ('jsonfield.fields.JSONField', [], {'default': "'{}'", 'max_length': '9999'}),
+        u'commcalc.commission': {
+            'Meta': {'object_name': 'Commission'},
+            'amount': ('djmoney.models.fields.MoneyField', [], {'default_currency': "'NPR'", 'null': 'True', 'max_digits': '8', 'decimal_places': '2', 'blank': 'True'}),
+            'amount_currency': ('djmoney.models.fields.CurrencyField', [], {'default': "'NPR'"}),
+            'handyman': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'handyman'", 'to': u"orm['users.UserProfile']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'job': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['jobs.Jobs']"}),
-            'updated_on': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
+            'is_paid': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'jobs': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'commission'", 'to': u"orm['jobs.Jobs']"})
         },
         u'jobs.jobs': {
             'Meta': {'object_name': 'Jobs'},
             'accepted_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'comm_paid': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'completion_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'customer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'jobs'", 'to': u"orm['users.UserProfile']"}),
@@ -50,7 +42,7 @@ class Migration(SchemaMigration):
             'inspection_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'is_paid': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'ishidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'jobref': ('django.db.models.fields.CharField', [], {'default': "'b70bf4b0e0ab4116819332fffa9caecf'", 'unique': 'True', 'max_length': '100'}),
+            'jobref': ('django.db.models.fields.CharField', [], {'default': "'40dc10eb55224649a584282973dde861'", 'unique': 'True', 'max_length': '100'}),
             'jobtype': ('django.db.models.fields.CharField', [], {'default': "'0'", 'max_length': '1'}),
             'location': ('django.contrib.gis.db.models.fields.PointField', [], {'null': 'True', 'blank': 'True'}),
             'location_landmark': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
@@ -76,8 +68,8 @@ class Migration(SchemaMigration):
             'phone_status': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'profile_image': ('django.db.models.fields.files.ImageField', [], {'default': "''", 'max_length': '1024', 'blank': 'True'}),
             'user_type': ('django.db.models.fields.IntegerField', [], {'default': '2'}),
-            'userref': ('django.db.models.fields.CharField', [], {'default': "'33625609169a49c5a908b2d4d3fcbe89'", 'unique': 'True', 'max_length': '100'})
+            'userref': ('django.db.models.fields.CharField', [], {'default': "'c7734cacdd3b44df9b6410afb6416bcd'", 'unique': 'True', 'max_length': '100'})
         }
     }
 
-    complete_apps = ['jobs']
+    complete_apps = ['commcalc']

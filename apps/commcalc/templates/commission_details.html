@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class='page-container container list-table'>
+    <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
+
+    <h1><span class='jobId'>Commission:&nbsp;&nbsp;</span><span id="estimatedCommission" class='jobId'>{{commission_amount|default:'0'}}</span></h1>
+
+    <div class="hora-job-form">
+        <div class='row'>
+            <div class="col-md-6">
+
+                <form id="myForm" action="" method="post">{% csrf_token %}
+                    {{commission_form.as_p}}
+            </div>
+        </div>
+    </div>
+        <button id="myFormSubmit" type="submit" class="btn btn-default submit">Calculate</button>
+        <!-- eo price-calculation-form -->
+</div>
+    <div class='page-container container landing-table'>
+    <div class="hora-table">        
+    <table id="example" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Completion Date</th>
+                    <th>Job Type</th>
+                    <th>Remarks</th>
+                    <th>Commission</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+     
+            <tfoot>
+                <tr>
+                    <th>Customer</th>
+                    <th>Completion Date</th>
+                    <th>Job Type</th>
+                    <th>Remarks</th>
+                    <th>Commission</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+     
+            <tbody>
+
+            {% for commission in commissions %}
+                <tr>
+                    <td>{{commission.job.customer}}</td>
+                    <td>{{commission.job.completion_date}}</td>
+                    <td>{{commission.job.get_jobtype_display}}</td>
+                    <td>{{commission.job.remarks}}</td>
+                    <td>{{commission.amount}}</td>
+                    <td>
+                    <a href="{% url 'viewJob' job_id=commission.job.jobref %}"><button class='table-job-check'>Details</button></a>
+                    </td>
+                </tr>                
+            {% endfor %}                
+            </tbody>
+        </table>
+
+    </div>
+    <!-- eo hora-table -->
+
+    </div>
+{% endblock content %}

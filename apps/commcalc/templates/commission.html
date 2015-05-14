@@ -19,27 +19,3 @@
         <!-- eo price-calculation-form -->
 </div>
 {% endblock content %}
-
-{% block scripts %}
-    <script type="text/javascript">
-    $(function(){
-        $('#myFormSubmit').click(function(e){
-            e.preventDefault();
-            $.post('', 
-                $('#myForm').serialize(), 
-                function(data, status, xhr){
-                    document.getElementById("estimatedCommission").innerHTML = data.commission;
-                }, "json");
-        });
-            $('button.closeButton').click(function(e){
-                document.getElementById("estimatedCommission").innerHTML = "";
-        });
-            $('.modal').on("hidden.bs.modal", function() {
-                document.getElementById("estimatedCommission").innerHTML = "";
-        });
-
-    });
-
-    
-    </script>
-{% endblock scripts %}
