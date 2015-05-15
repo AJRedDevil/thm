@@ -11,6 +11,7 @@ from thm.decorators import is_superuser
 from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
 import apps.job_gallery.forms as jgforms
 from .handler import JobManager
+from apps.commcalc.handler import CommissionManager
 from libs.sparrow_handler import Sparrow
 from libs import out_sms as messages
 import logging
@@ -84,14 +85,17 @@ def viewJob(request, job_id):
             if job.status == '3' and job.completion_date is None:
                 job.completion_date = timezone.now()
                 job.save()
+                # Notify the user that the job is complete here.
                 vas = Sparrow()
                 msg = messages.JOB_COMPLETE_MSG.format(job.id)
                 logger.warn(msg)
                 status = vas.sendMessage(msg, job.customer)
                 logger.warn("Message status \n {0}".format(status))
-                # Notify the user that the job is complete here.
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
+                # Add commission for that job
+                cm = CommissionManager()
+                cm.addCommission(job)
                 return redirect('home')
                 # return render(request, 'jobdetails.html',locals())
             return redirect('home')

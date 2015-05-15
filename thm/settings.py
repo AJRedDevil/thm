@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'apps.job_gallery',
     'apps.search',
     'apps.pricing',
+    'apps.commcalc',
     'pipeline',
 )
 
@@ -198,6 +199,11 @@ LOGGING = {
             'level': 'WARN',
         },
         'apps.users': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'apps.commcalc': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',

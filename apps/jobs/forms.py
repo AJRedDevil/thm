@@ -62,7 +62,7 @@ class JobEditFormAdmin(forms.ModelForm):
 
     class Meta:
         model = Jobs
-        fields = ['jobtype', 'remarks', 'fee', 'status', 'handyman',
+        fields = ['jobtype', 'remarks', 'fee', 'is_paid', 'status', 'handyman',
         'location', 'location_landmark', 'inspection_date']
 
 
