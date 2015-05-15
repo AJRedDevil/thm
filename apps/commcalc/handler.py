@@ -22,5 +22,5 @@ class CommissionManager(object):
     def addCommission(self, job):
         for handyman in job.handyman.all():
             amount = (0.2 * float(job.fee.amount))/job.handyman.count()
-            commission = Commission(job=job, amount=amount)
+            commission = Commission(job=job, amount=amount, handyman=handyman)
             Commission.save(commission)
