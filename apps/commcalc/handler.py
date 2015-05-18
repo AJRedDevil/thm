@@ -1,6 +1,6 @@
 from apps.jobs.models import Jobs
 from .models import Commission
-
+from django.utils import timezone
 
 class CommissionManager(object):
     """
@@ -24,3 +24,13 @@ class CommissionManager(object):
             amount = (0.2 * float(job.fee.amount))/job.handyman.count()
             commission = Commission(job=job, amount=amount, handyman=handyman)
             Commission.save(commission)
+
+    def setCommPaid(self, user):
+        """
+        Sets commission flag as true for the user
+        """
+        Commission.objects.filter(
+            handyman=user,
+            is_paid=False
+        ).update(is_paid=True, paidout_date=timezone.now())
+        return True
