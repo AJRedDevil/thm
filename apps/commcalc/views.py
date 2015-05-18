@@ -22,7 +22,8 @@ def viewCommission(request):
     user = request.user
     commission_form = CommissionForm()
     commission = {"commission": 0.0}
-    if request.method == 'POST':
+
+    if request.method == 'POST' and 'submit' in request.POST:
         logger.debug(request.POST)
         commission_form = CommissionForm(request.POST)
         if commission_form.is_valid():
@@ -37,4 +38,16 @@ def viewCommission(request):
             #     json.dumps(commission), content_type='application/json')
         if commission_form.errors:
             logger.debug("Form has errors, %s ", commission_form.errors)
+
+    if request.method == 'POST' and 'payout' in request.POST:
+        logger.debug(request.POST)
+        commission_form = CommissionForm(request.POST)
+        if commission_form.is_valid():
+            handyman = commission_form.cleaned_data['handyman']
+            cm = CommissionManager()
+            cm.setCommPaid(handyman)
+            return render(request, 'commission.html', locals())
+        if commission_form.errors:
+            logger.debug("Form has errors, %s ", commission_form.errors)
+
     return render(request, 'commission.html', locals())

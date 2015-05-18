@@ -1,6 +1,7 @@
 
 
 from django.db import models
+from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,3 +32,9 @@ class Commission(models.Model):
         related_name='handyman'
     )
     is_paid = models.BooleanField(_('Paid'), default=False)
+    creation_date = models.DateTimeField(
+        _('creation_date'),
+        default=timezone.now)
+    paidout_date = models.DateTimeField(
+        _('paidout_date'),
+        blank=True, null=True)
