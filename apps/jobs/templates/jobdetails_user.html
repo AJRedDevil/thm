@@ -44,7 +44,7 @@
              <label>Location Map:</label>
             <div id="map" class="map"></div>
          </div>
-        </div>       
+        </div>
     </div>
 </div>
 {% endblock content %}
@@ -65,58 +65,58 @@
                     {% if forloop.first %}
                         <div class="item active">
                     {% else %}
-                        <div class="item">                      
+                        <div class="item">
                     {% endif %}
                         <div class="bannerImage">
                             <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
                         </div>
                         <div class="caption row-fluid">
                             <div class="span4"><h3>Before</h3>
-                            </div>                  
+                            </div>
                         </div>
 
-                    </div><!-- /Slide1 --> 
+                    </div><!-- /Slide1 -->
                     {% endfor %}
 
                 </div>
 
-                <div class="control-box">                            
+                <div class="control-box">
                     <a data-slide="prev" href="#myCarouselBefore" class="jcarousel-control-prev">‹</a>
                     <a data-slide="next" href="#myCarouselBefore" class="jcarousel-control-next">›</a>
-                </div><!-- /.control-box -->   
+                </div><!-- /.control-box -->
 
             </div><!-- /#myCarousel -->
         {% endif %}
-        
+
         {% if job_after %}
-            
+
         <div class="carousel slide" id="myCarouselAfter">
             <div class="carousel-inner">
                 {% for img in job_after  %}
                 {% if forloop.first %}
                     <div class="item active">
                 {% else %}
-                    <div class="item">                      
+                    <div class="item">
                 {% endif %}
                     <div class="bannerImage">
                         <a href="#"><img src="{{img.get_img_url}}" alt=""></a>
                     </div>
                     <div class="caption row-fluid">
                         <div class="span4"><h3>After</h3>
-                        </div>                  
+                        </div>
                     </div>
 
-                </div><!-- /Slide1 --> 
+                </div><!-- /Slide1 -->
                 {% endfor %}
 
             </div>
 
-            <div class="control-box">                            
+            <div class="control-box">
                 <a data-slide="prev" href="#myCarouselAfter" class="jcarousel-control-prev">‹</a>
                 <a data-slide="next" href="#myCarouselAfter" class="jcarousel-control-next">›</a>
-            </div><!-- /.control-box -->   
+            </div><!-- /.control-box -->
 
-        </div><!-- /#myCarousel -->            
+        </div><!-- /#myCarousel -->
         {% endif %}
       </div>
       <div class="modal-footer">
@@ -137,8 +137,8 @@
 <script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
 <!-- The main application script -->
 <script src={% static 'js/OpenLayers.js'%}></script>
-<script src="https://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
-<script type="text/javascript">    
+<script src="https://maps.google.com/maps/api/js?v=3.19&sensor=false"></script>
+<script type="text/javascript">
     var map;
     map = new OpenLayers.Map({
         div: "map",
