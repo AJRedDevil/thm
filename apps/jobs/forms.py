@@ -1,12 +1,18 @@
 
 
+import logging
 from django.contrib.gis import forms
 from django.utils.translation import ugettext_lazy as _
-from .models import Jobs, JOBS_SELECTION
-from apps.users.models import UserProfile
 from libs.googleapi_handler import GMapPointWidget
 from moneyed import Money, NPR
-import logging
+
+from .models import Jobs, JOBS_SELECTION
+from apps.subscription.models import Subscriber
+from apps.users.models import UserProfile
+
+
+
+
 logger = logging.getLogger(__name__)
 
 

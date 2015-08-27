@@ -73,7 +73,7 @@ def viewJob(request, job_id):
                         job.handyman.all()[0].phone.as_national
                     )
                     logger.warn(msg)
-                    status = vas.sendMessage(msg, job.customer)
+                    status = vas.sendMessage(msg, job.customer.primary_contact_person)
                     logger.warn("Message status \n {0}".format(status))
                 # Notify the user that the job is accepted here.
                 job = jm.getJobDetails(job_id)
@@ -89,7 +89,7 @@ def viewJob(request, job_id):
                 vas = Sparrow()
                 msg = messages.JOB_COMPLETE_MSG.format(job.id)
                 logger.warn(msg)
-                status = vas.sendMessage(msg, job.customer)
+                status = vas.sendMessage(msg, job.customer.primary_contact_person)
                 logger.warn("Message status \n {0}".format(status))
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
