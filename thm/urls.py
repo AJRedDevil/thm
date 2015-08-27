@@ -34,6 +34,7 @@ urlpatterns = patterns(
     url(r'^work/', include('apps.job_gallery.urls')),
     url(r'^pricing/', include('apps.pricing.urls')),
     url(r'^commission/', include('apps.commcalc.urls')),
+    url(r'^subscription/', include('apps.subscription.urls')),
     url(r'^$', index, name='index'),
 )
 

@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <div class='page-container container landing-table'>
+        <h1>Subscriber List</h1>
+
+        <div class="hora-table">
+            
+            <table id="example" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>SubscriberId</th>
+                        <th>Subscriber Name</th>
+                        <th>Primary Contact Person</th>
+                        <th>Secondary Contact Person</th>
+                        <th>Office Number</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+         
+                <tfoot>
+                    <tr>
+                        <th>SubscriberId</th>
+                        <th>Subscriber Name</th>
+                        <th>Primary Contact Person</th>
+                        <th>Secondary Contact Person</th>
+                        <th>Office Number</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+         
+                <tbody>
+
+                    {% for subscriber in subscribers %}
+                        <tr>
+                            <td>{{subscriber.id}}</td>
+                            <td>{{subscriber.subscriber_name}}</td>
+                            <td>{{subscriber.primary_contact_person}}</td>
+                            <td>{{subscriber.secondary_contact_person}}</td>
+                            <td>{{subscriber.office_number}}</td>
+                            
+                            <td>
+                                <a href="{% url 'subscriber' subscriber_id=subscriber.id %}"><button class='table-job-check'>Details</button></a>
+                            </td>
+                        </tr>                
+                    {% endfor %}                
+                </tbody>
+            </table>
+
+        </div>
+        <!-- eo hora-table -->
+
+    </div>
+{% endblock content %}

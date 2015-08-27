@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'apps.pricing',
     'apps.commcalc',
     'pipeline',
+    'apps.subscription',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -204,6 +205,11 @@ LOGGING = {
             'level': 'WARN',
         },
         'apps.commcalc': {
+            'handlers': ['console', 'mail_admins'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'apps.subscription': {
             'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARN',
