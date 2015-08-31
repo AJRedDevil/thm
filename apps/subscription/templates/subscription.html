@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block localhead %}
+
+{% endblock localhead %}
+{% block content %}
+    <div class='page-container container landing-table'>
+        <h1>Subscription List</h1>
+
+        <div class="hora-table">
+            
+            <table id="example" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>SubscriptionId</th>
+                        <th>Subscriber</th>
+                        <th>Package</th>
+                        <th>End Date</th>
+                        <th>Remaining Repairs</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+         
+                <tfoot>
+                    <tr>
+                        <th>SubscriptionId</th>
+                        <th>Subscriber</th>
+                        <th>Package</th>
+                        <th>End Date</th>
+                        <th>Remaining Repairs</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+         
+                <tbody>
+
+                    {% for subs in subscriptions %}
+                        <tr>
+                            <td>{{subs.id}}</td>
+                            <td>{{subs.subscriber}}</td>
+                            <td>{{subs.package}}</td>
+                            <td>{{subs.end_date}}</td>
+                            <td>{{ subs.remaining_repairs }}</td>
+                            <td>
+                                <a href="{% url 'subscription' subscription_id=subs.id %}"><button class='table-job-check'>Details</button></a>
+                            </td>
+                        </tr>                
+                    {% endfor %}                
+                </tbody>
+            </table>
+
+        </div>
+        <!-- eo hora-table -->
+
+    </div>
+{% endblock content %}

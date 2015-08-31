@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <div class='page-container container landing-table'>
+        <h1>Subscription Package List</h1>
+
+        <div class="hora-table">
+            
+            <table id="example" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>PackageId</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Max Repair</th>
+                        <th>Discount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+         
+                <tfoot>
+                    <tr>
+                        <th>PackageId</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Max Repair</th>
+                        <th>Discount</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+         
+                <tbody>
+
+                    {% for subs_pkg in subscription_pkgs %}
+                        <tr>
+                            <td>{{subs_pkg.id}}</td>
+                            <td>{{subs_pkg.name}}</td>
+                            <td>{{subs_pkg.price}}</td>
+                            <td>{{subs_pkg.max_repair}}</td>
+                            <td>{{subs_pkg.discount}}</td>
+                            
+                            <td>
+                                <a href="{% url 'viewSubscriptionPackage' subscription_pkg_id=subs_pkg.id %}"><button class='table-job-check'>Details</button></a>
+                            </td>
+                        </tr>                
+                    {% endfor %}                
+                </tbody>
+            </table>
+
+        </div>
+        <!-- eo hora-table -->
+
+    </div>
+{% endblock content %}

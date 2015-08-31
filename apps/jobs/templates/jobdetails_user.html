@@ -10,7 +10,7 @@
 <div class='page-container container list-table'>
     <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.name}} ({{job.customer.phone}})
+    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.subscriber_name}} ({{job.customer.primary_contact_person.phone}})
  </span>
     </h1>
     <div class="hora-job-form">

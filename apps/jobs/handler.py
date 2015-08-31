@@ -1,11 +1,14 @@
 
+
+import logging
 from django.core import serializers
-from django.utils import timezone
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .models import Jobs, JobEvents
-import logging
+from apps.subscription.models import Subscriber
+
 # Init Logger
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,10 @@ class JobManager(object):
             jobs = [x for x in alljobs if user in x.handyman.all()]
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
-            jobs = Jobs.objects.filter(customer_id=user.id)
+            jobs=[]
+            subscribers=Subscriber.objects.filter(primary_contact_person=user)
+            for subscriber in subscribers:
+                jobs.extend(Jobs.objects.filter(customer_id=subscriber.id))
         else:
             jobs = []
 
@@ -52,7 +58,10 @@ class JobManager(object):
             jobs = [x for x in alljobs if user in x.handyman.all()]
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
-            jobs = Jobs.objects.filter(customer_id=user.id, creation_date__gte=date)
+            jobs=[]
+            subscribers=Subscriber.objects.filter(primary_contact_person=user)
+            for subscriber in subscribers:
+                jobs.extend(Jobs.objects.filter(customer_id=subscriber.id, creation_date__gte=date))
         else:
             jobs = []
 

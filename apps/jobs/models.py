@@ -1,16 +1,16 @@
 
 
+import jsonfield
+import uuid
+from django.contrib.gis.db import models
+from djmoney.models.fields import MoneyField
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.gis.db import models
-
+from apps.subscription.models import Subscriber
 from apps.users.models import UserProfile
 
-import jsonfield
-import uuid
 
-from djmoney.models.fields import MoneyField
 # Create your models here.
 
 # Job Statuses
@@ -49,10 +49,14 @@ class Jobs(models.Model):
         _('jobref'),
         max_length=100, unique=True, default=getUniqueUUID)
     # Customer's usertype is 2 so limiting the choices
+    # customer = models.ForeignKey(
+    #     UserProfile,
+    #     limit_choices_to={'user_type': '2'},
+    #     related_name='jobs')
     customer = models.ForeignKey(
-        UserProfile,
-        limit_choices_to={'user_type': '2'},
-        related_name='jobs')
+        Subscriber,
+        related_name='jobs_subscriber'
+        )
     fee = MoneyField(
         _('fee'),
         decimal_places=2,
@@ -116,7 +120,7 @@ class Jobs(models.Model):
         # if no location is provided while creating the job
         # user the customer's default home location
         if self.location == '' or self.location is None:
-            self.location = self.customer.address_coordinates
+            self.location = self.customer.primary_contact_person.address_coordinates
 
         super(Jobs, self).save(*args, **kwargs)
 

@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{%block localhead %}
+	{{ subscription_form.media }}
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/
+	jquery-ui.css">
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock localhead %}
+{% block content %}
+	<div class='page-container container list-table'>
+		<h1><a href={% url 'subscriptions' %} class='link main-back'>></a></h1>
+
+		<h1><span class='jobId'>Create a New Subscription</span></h1>
+
+		<div class="hora-job-form">
+			<div class='row'>
+				<div class="col-md-6">
+
+					<form action="" method="post">
+						{% csrf_token %}
+						
+						{{subscription_form.as_p}}
+						
+						<button type="submit" class="btn btn-default submit">Create</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block scripts %}
+	<script type="text/javascript">
+		$(function() {
+		  $( ".datePicker" ).datepicker();
+		});
+	</script>
+{% endblock scripts %}
