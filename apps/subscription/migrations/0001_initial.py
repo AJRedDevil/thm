@@ -4,6 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+from apps.jobs.models import Jobs
 
 class Migration(SchemaMigration):
 
@@ -45,12 +46,14 @@ class Migration(SchemaMigration):
 
         # Create subscriber from current customers
         for obj in orm['users.UserProfile'].objects.filter(user_type=2):
-            subscriber=orm.Subscriber(
-                subscriber_name=obj.name,
-                primary_contact_person=obj,
-                secondary_contact_person=obj
-                )
-            subscriber.save()
+            if Jobs.objects.filter(customer=obj):
+                subscriber=orm.Subscriber(
+                    id=obj.id,
+                    subscriber_name=obj.name,
+                    primary_contact_person=obj,
+                    secondary_contact_person=obj
+                    )
+                subscriber.save()
 
 
     def backwards(self, orm):

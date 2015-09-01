@@ -126,7 +126,11 @@ def createSubscriber(request):
     elif request.method == 'POST':
         subscriber_form = SubscriberCreationForm(request.POST)
         if subscriber_form.is_valid():
-            subscriber_form.save()
+            subscribers=sm.getSubscriberList()
+            last_id=subscribers[len(subscribers)-1].id
+            subscriber=subscriber_form.save(commit=False)
+            subscriber.id=last_id+1
+            subscriber.save()
             return redirect('subscribers')
         if subscriber_form.errors:
             logging.warn("Form has errors, %s", subscriber_form.errors)

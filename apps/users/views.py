@@ -21,7 +21,6 @@ from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser, is_verified
 from .models import UserProfile, EarlyBirdUser, UserToken
 import apps.users.forms as userforms
-from apps.subscription.models import Subscriber
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -422,12 +421,6 @@ def joinasuser(request):
             # requests.get(
             #     request.build_absolute_uri(reverse('gaTracker'))
             # )
-            _registered_user=UserProfile.objects.get(phone=phone)
-            subscriber=Subscriber(
-                                    primary_contact_person=_registered_user,
-                                    secondary_contact_person=_registered_user
-                )
-            subscriber.save()
             return redirect('index')
         if user_form.errors:
             # requests.get(
@@ -897,10 +890,6 @@ def editUserDetail(request, userref):
             userdata.address = address
             userdata.save()
 
-            subscriber=Subscriber.objects.get(primary_contact_person=userdata)
-            if not subscriber.subscriber_name:
-                subscriber.subscriber_name=customer.name
-                subscriber.save()
             return render(request, 'userdetails.html', locals())
 
         if user_form.errors:
