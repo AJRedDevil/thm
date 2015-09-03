@@ -31,7 +31,7 @@ class SubscriptionManager(object):
     def getSubscriberList(self):
         """Return the subscriber list
         """
-        subscribers = Subscriber.objects.all()
+        subscribers = Subscriber.objects.all().order_by('id')
         return subscribers
 
     def getSubscriberDetail(self, subscriber_id):
