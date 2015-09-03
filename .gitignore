@@ -81,6 +81,7 @@ docs/_build/
 ##### thm ####
 localtemplates/
 thm/media/
+media/
 
 beta/static/assets/img/aid.jpg
 #bower

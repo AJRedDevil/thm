@@ -34,6 +34,8 @@ def createSubscription(request):
             logging.warn("Form has errors, %s", subscription_form.errors)
         return render(request, 'createSubscription.html', locals())
 
+@login_required
+@is_superuser
 def editSubscription(request, subscription_id=None):
     """Handles the request for editing Subscrition changes
     """
@@ -47,6 +49,8 @@ def editSubscription(request, subscription_id=None):
         logging.warn("Form has errors, %s", subscription_form.errors)
         return render(request, 'editSubscription.html', locals())
 
+@login_required
+@is_superuser
 def viewSubscription(request, subscription_id=None):
     """Handles the listing or detail view of Subscription
     """
@@ -69,6 +73,8 @@ def viewSubscription(request, subscription_id=None):
 
 
 ### Subscription Package
+@login_required
+@is_superuser
 def createSubscriptionPackage(request):
     """Handles the creation of SubscriptionPackage request
     """
@@ -86,6 +92,8 @@ def createSubscriptionPackage(request):
             logging.warn("Form has errors, %s", subscription_pkg_form.errors)
         return render(request, 'createSubscriptionPackage.html', locals())
 
+@login_required
+@is_superuser
 def editSubscriptionPackage(request, subscription_pkg_id):
     """Handles the request for editing SubscriptionPackage changes
     """
@@ -100,6 +108,8 @@ def editSubscriptionPackage(request, subscription_pkg_id):
         logging.warn("Form has errors, %s", subscription_pkg_form.errors)
         return render(request, 'editSubscriptionPackage.html', locals())
 
+@login_required
+@is_superuser
 def viewSubscriptionPackage(request, subscription_pkg_id=None):
     """Handles the listing or detail view of SubscriptionPackage
     """
@@ -115,6 +125,8 @@ def viewSubscriptionPackage(request, subscription_pkg_id=None):
 
 
 ### Subscriber
+@login_required
+@is_superuser
 def createSubscriber(request):
     """Handles the creation of Subscriber request
     """
@@ -136,6 +148,8 @@ def createSubscriber(request):
             logging.warn("Form has errors, %s", subscriber_form.errors)
         return render(request, 'createSubscriber.html', locals())
 
+@login_required
+@is_superuser
 def editSubscriber(request, subscriber_id):
     """Handles the request for editing Subscriber changes
     """
@@ -150,6 +164,8 @@ def editSubscriber(request, subscriber_id):
         logging.warn("Form has errors, %s", subscriber_form.errors)
         return render(request, 'editSubscriber.html', locals())
 
+@login_required
+@is_superuser
 def viewSubscriber(request, subscriber_id=None):
     """Handles the listing or detail view of Subscriber
     """
