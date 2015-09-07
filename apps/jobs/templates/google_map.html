@@ -45,7 +45,7 @@ var {{ module }}_search = new google.maps.places.Autocomplete(searchInput, searc
   var fromProj = new OpenLayers.Projection("EPSG:4326");
   var map = {{ module }}.map;
   if(place.geometry){
-    var point = new OpenLayers.LonLat(place.geometry.location.lat(), place.geometry.location.lng())
+    var point = new OpenLayers.LonLat(place.geometry.location.lng(), place.geometry.location.lat())
     point.transform(fromProj, map.getProjectionObject());
     map.setCenter(point);
     if(place.geometry.viewport){
