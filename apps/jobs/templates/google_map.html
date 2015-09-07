@@ -45,21 +45,21 @@ var {{ module }}_search = new google.maps.places.Autocomplete(searchInput, searc
   var fromProj = new OpenLayers.Projection("EPSG:4326");
   var map = {{ module }}.map;
   if(place.geometry){
-    var point = new OpenLayers.LonLat(place.geometry.location.D, place.geometry.location.k)
+    var point = new OpenLayers.LonLat(place.geometry.location.lat(), place.geometry.location.lng())
     point.transform(fromProj, map.getProjectionObject());
     map.setCenter(point);
     if(place.geometry.viewport){
       var viewport = {};
-      viewport.sw = [place.geometry.viewport.ua.j,place.geometry.viewport.Ba.k];
-      viewport.ne = [place.geometry.viewport.ua.k,place.geometry.viewport.Ba.j];
+      viewport.sw = [place.geometry.viewport.getSouthWest().lat(),place.geometry.viewport.getSouthWest().lng()];
+      viewport.ne = [place.geometry.viewport.getNorthEast().lat(),place.geometry.viewport.getNorthEast().lng()];
       var bounds = new OpenLayers.Bounds();
-      bounds.extend(new OpenLayers.LonLat(viewport.ne[0], viewport.ne[1]));
-      bounds.extend(new OpenLayers.LonLat(viewport.sw[0],viewport.sw[1]));
+      bounds.extend(new OpenLayers.LonLat(viewport.ne[1], viewport.ne[0]));
+      bounds.extend(new OpenLayers.LonLat(viewport.sw[1],viewport.sw[0]));
       bounds.transform(fromProj, map.getProjectionObject());
       map.zoomToExtent(bounds);
       var newSearchBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(viewport.sw[1], viewport.sw[0]),
-        new google.maps.LatLng(viewport.ne[1], viewport.ne[0])
+        new google.maps.LatLng(viewport.sw[0], viewport.sw[1]),
+        new google.maps.LatLng(viewport.ne[0], viewport.ne[1])
       );
       {{ module }}_search.setBounds(newSearchBounds);
     }else{
