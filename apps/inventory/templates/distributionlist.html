@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <div class='page-container container landing-table'>
+        <div class="hora-table">
+            <a href="{%url 'createInventory'%}">
+                <button class='table-job-check'>Create Inventory</button>
+            </a>
+        </div>
+        <div class="hora-table">
+            <a href="{%url 'distributeTool'%}">
+                <button class='table-job-check'>Distribute Inventory</button>
+            </a>
+        </div>
+
+        <h1>Inventory Distribution List</h1>
+
+        <div class="hora-table">
+            
+            <table id="example" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Handyman</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+         
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Handyman</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+         
+                <tbody>
+
+                    {% for tool in tools %}
+                        <tr>
+                            <td>{{tool.id}}</td>
+                            <td>{{tool.handyman.name}}</td>
+                            
+                            <td>
+                                <a href="{% url 'viewToolDistribution' tool_id=tool.id %}"><button class='table-job-check'>Details</button></a>
+                            </td>
+                        </tr>                
+                    {% endfor %}                
+                </tbody>
+            </table>
+
+        </div>
+        <!-- eo hora-table -->
+
+    </div>
+{% endblock content %}
