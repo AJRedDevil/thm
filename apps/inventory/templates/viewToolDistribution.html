@@ -1,0 +1,172 @@
+{% extends "admin/base.html" %}
+{% load staticfiles floppyforms %}
+{% block localhead %}
+  {{ tool_distribution_form.media }}
+  	<link rel="stylesheet" href={% static "css/jobcarousel.css" %}>
+  	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/dark-hive/jquery-ui.css" id="theme">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href={% static "css/jquery.fileupload.css" %}>
+	<link rel="stylesheet" href={% static "css/jquery.fileupload-ui.css" %}>
+	<!-- CSS adjustments for browsers with JavaScript disabled -->
+	<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-noscript.css" %}></noscript>
+	<noscript><link rel="stylesheet" href={% static "css/jquery.fileupload-ui-noscript.css" %}></noscript>
+{% endblock localhead %}
+{% block content %}
+	<div class='page-container container list-table'>
+		<h1><a href={% url 'viewDistributionList' %} class='link main-back'>></a></h1>
+
+		{% if tool_distributed %}
+			<h1><span class='jobId'>Edit Tool Distribution</span></h1>
+		{% else %}
+			<h1><span class='jobId'>Distribute Tools</span></h1>
+		{% endif %}
+
+		<div class="hora-job-form">
+			<div class='row'>
+				<div class="col-md-6">
+
+					<form action="{% url 'viewToolDistribution' tool_id=tool.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+						{{tool_distribution_form.as_p}}
+						<!-- <a data-toggle="modal" id ="image-modalBefore" href="#myModalUploadPhotos">
+				            <button type="submit" class="btn btn-block btn-default">
+				                <span>Upload Photos</span>
+				            </button>
+				        </a> -->
+						<button type="submit" class="btn btn-default submit">Update</button>
+					</form>
+				</div>
+				<div class="col-md-6">
+					<img src="{{inventory.get_img_url}}" alt=""/>
+       			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" id="myModalUploadPhotos" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+		  		<div class="modal-header">
+		      		<button class="close" type="button" data-dismiss="modal">×</button>
+		      		<h3 class="modal-title"></h3>
+		  		</div>
+		  		<div class="modal-body">
+					<!-- Redirect browsers with JavaScript disabled to the origin page -->
+		         	<noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+					<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+					<div class="fileupload-buttonbar">
+		            	<div>
+		                	{{img_form.img_type}}
+		            	</div><br>
+		            	<div>
+							<!-- The fileinput-button span is used to style the file input field as button -->
+							<span class="btn btn-success btn-block fileinput-button">
+								<i class="glyphicon glyphicon-plus"></i>
+								<span>Add files...</span>
+								<input type="file" name="image" multiple>
+							</span>
+							<button type="submit" class="btn btn-primary btn-block start">
+								<i class="glyphicon glyphicon-upload"></i>
+								<span>Start upload</span>
+							</button>
+							<!-- The global file processing state -->
+							<span class="fileupload-process"></span>
+							<!-- The global progress state -->
+							<div class="fileupload-progress fade">
+								<!-- The global progress bar -->
+								<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+									<div class="progress-bar progress-bar-success" style="width:0%;"></div>
+								</div>
+								<!-- The extended global progress state -->
+								<div class="progress-extended">&nbsp;</div>
+							</div>
+							<!-- The table listing the files available for upload/download -->
+							<table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+
+{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+	<!-- The Templates plugin is included to render the upload/download listings -->
+	<script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+	<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+	<script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+	<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+	<script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+	<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+	<script src={% static "js/jquery.iframe-transport.js" %}></script>
+	<!-- The basic File Upload plugin -->
+	<script src={% static "js/jquery.fileupload.js" %}></script>
+	<!-- The File Upload processing plugin -->
+	<script src={% static "js/jquery.fileupload-process.js" %}></script>
+	<!-- The File Upload image preview & resize plugin -->
+	<script src={% static "js/jquery.fileupload-image.js" %}></script>
+	<!-- The File Upload validation plugin -->
+	<script src={% static "js/jquery.fileupload-validate.js" %}></script>
+	<!-- The File Upload user interface plugin -->
+	<script src={% static "js/jquery.fileupload-ui.js" %}></script>
+	<!-- The main application script -->
+	<script src={% static "js/main.js" %}></script>
+	
+	<script type="text/javascript">
+		$(function() {
+		  $( ".datepicker" ).datepicker();
+		});
+	</script>
+
+	<script type="text/javascript">
+	    // Initialize the jQuery File Upload widget:
+	    $('#fileupload').fileupload({
+	        // Uncomment the following to send cross-domain cookies:
+	        //xhrFields: {withCredentials: true},
+	        url: ""
+    	});
+	</script>
+	<script type="text/javascript">
+	    $('#jobEditForm').submit(function(){
+	       $('input#id_location_landmark').val($('input#id_location_map_search').val());
+	       return true;
+	    });
+	</script>
+	<script type="text/javascript">
+	$(function() {
+	  $( ".{datepicker" ).datepicker();
+	});
+	</script>
+	{% comment %}
+	    <script>
+		    /*jslint unparam: true */
+		    /*global window, $ */
+		    $(function () {
+		        'use strict';
+		        // Change this to the location of your server-side upload handler:
+		        var url = ""//"{% url 'uploadJobPhotos' job_id=job.jobref %}";
+		        $('#fileupload').fileupload({
+		            url: url,
+		            dataType: 'html',
+		            done: function (e, data) {
+		                $.each(data.result.files, function (index, file) {
+		                    $('<p/>').text(file.name).appendTo('#files');
+		                });
+		            },
+		            progressall: function (e, data) {
+		                var progress = parseInt(data.loaded / data.total * 100, 10);
+		                $('#progress .progress-bar').css(
+		                    'width',
+		                    progress + '%'
+		                );
+		            }
+		        }).prop('disabled', !$.support.fileInput)
+		            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+		    });
+    	</script>
+	{% endcomment %}
+{% endblock scripts %}
