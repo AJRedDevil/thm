@@ -15,12 +15,15 @@ from django.shortcuts import render, redirect, Http404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
+
+
 #All local imports (libs, contribs, models)
+import apps.users.forms as userforms
 import handler as user_handler
+from .models import UserProfile, EarlyBirdUser, UserToken
+from apps.commcalc import handler as commcal_handler
 from phonenumber_field.phonenumber import PhoneNumber as intlphone
 from thm.decorators import is_superuser, is_verified
-from .models import UserProfile, EarlyBirdUser, UserToken
-import apps.users.forms as userforms
 
 #All external imports (libs, packages)
 from libs.sparrow_handler import Sparrow
@@ -223,7 +226,13 @@ def home(request):
     jb = JobManager()
     jobs = jb.getAllJobs(user)
     if user.is_staff or user.is_superuser:
+        is_staff=user.is_staff
         return render(request, 'admin/joblist.html', locals())
+
+    is_staff=True if user.user_type==1 else False
+    if is_staff:
+        cm=commcal_handler.CommissionManager()
+        pending_commission = cm.getCommUser(user)[0]
 
     return render(request, 'admin/joblist_user.html', locals())
 

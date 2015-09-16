@@ -32,6 +32,8 @@ class JobManager(object):
             # get the jobs where the handyman is listed
             # as the one chosen for the particular work
             jobs = [x for x in alljobs if user in x.handyman.all()]
+            for job in jobs:
+                setattr(job, 'commission_due', (0.2 * float(job.fee.amount))/job.handyman.count())
         ## If it's a customer only show requests that they created
         elif user.user_type == 2:
             jobs=[]
