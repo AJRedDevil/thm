@@ -1,0 +1,19 @@
+.container {
+    display: inline-block;
+    height: 400px;
+    width: 40%;
+}
+.containerPie {
+    display: inline-block;
+    height: 400px;
+    width: 20%;
+}
+.containerStack {
+    display: inline-block;
+    height: 400px;
+    width: 35%;
+}
+
+td {
+    padding-left: 20px;
+}
