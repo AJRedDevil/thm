@@ -1,6 +1,11 @@
-from apps.jobs.models import Jobs
-from .models import Commission
+
+
+from django.db.models import Sum
 from django.utils import timezone
+
+from .models import Commission
+from apps.jobs.models import Jobs
+
 
 class CommissionManager(object):
     """
@@ -34,3 +39,9 @@ class CommissionManager(object):
             is_paid=False
         ).update(is_paid=True, paidout_date=timezone.now())
         return True
+
+    def getTotalCommUser(self, user):
+        """Returns the total commission paid
+        """
+        commissions=Commission.objects.filter(handyman=user, is_paid=True)
+        return "Rs.{:,.2f}".format(commissions.aggregate(Sum('amount'))['amount__sum'])

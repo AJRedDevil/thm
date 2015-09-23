@@ -10,7 +10,7 @@
 <div class='page-container container list-table'>
     <h1><a href={% url 'home' %} class='link main-back'><</a></h1>
 
-    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.subscriber_name}} ({{job.customer.primary_contact_person.phone}})
+    <h1>Job <span class='jobId'>#{{job.id}} {{job.customer.subscriber_name}}
  </span>
     </h1>
     <div class="hora-job-form">
@@ -35,7 +35,7 @@
              {% if job.completion_date %}
                 <label>Completed On:</label><p class="form-control">{{job.completion_date}}</p>
              {% endif %}
-             <label>Experts:</label><p class="form-group">{{job.handyman.all|join:", "}}</p>
+             <label>Commission Due:</label><p class="form-group">{{job.commission_due}}</p>
          </div>
 
          <div class="col-md-8">
