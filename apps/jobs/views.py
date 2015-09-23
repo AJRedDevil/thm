@@ -110,7 +110,7 @@ def viewJob(request, job_id):
         img_form = jgforms.JobGalleryImageForm()
         return render(request, 'jobdetails.html', locals())
 
-    if user.is_staff:
+    if user.user_type==1:
         return render(request, 'jobdetails_hm.html', locals())
 
     return render(request, 'jobdetails_user.html', locals())

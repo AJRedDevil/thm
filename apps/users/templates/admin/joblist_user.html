@@ -4,7 +4,9 @@
         <h1>Recent Job list</h1>
         {% if is_staff %}
             </br>
-            <h1>Pending Commission : {{ pending_commission }}</h1>
+            <h1>Total Received : {{ total_commission }}</h1>
+            </br>
+            <h1>Total Receivable : {{ pending_commission }}</h1>
         {% endif %}
 
     <div class="hora-table">
@@ -12,12 +14,15 @@
     <table id="example" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
+                    {% if is_staff %}
+                        <th>ID</th>
+                    {% endif %}
                     <th>Date</th>
+                    {% if is_staff %}
+                        <th>Customer Name</th>
+                    {% endif %}
                     <th>Job Type</th>
                     <th>Status</th>
-                    {% if is_staff %}
-                        <th>Commission</th>
-                    {% endif %}
                     <th>Remarks</th>
                     <th>Action</th>
                 </tr>
@@ -25,12 +30,15 @@
      
             <tfoot>
                 <tr>
+                    {% if is_staff %}
+                        <th>ID</th>
+                    {% endif %}
                     <th>Date</th>
+                    {% if is_staff %}
+                        <th>Customer Name</th>
+                    {% endif %}
                     <th>Job Type</th>
                     <th>Status</th>
-                    {% if is_staff %}
-                        <th>Commission</th>
-                    {% endif %}
                     <th>Remarks</th>
                     <th>Action</th>
                 </tr>
@@ -40,10 +48,11 @@
 
             {% for job in jobs %}
                 <tr>
+                    <td>{{job.id}}</td>
                     <td>{{job.creation_date}}</td>
+                    <td>{{job.customer.primary_contact_person.name}}</td>
                     <td>{{job.get_jobtype_display}}</td>
                     <td>{{job.get_status_display}}</td>
-                    <td>{{job.commission_due}}</td>
                     <td>{{job.remarks}}</td>
                     <td>
                         <a href="{% url 'viewJob' job_id=job.jobref %}"><button class='table-job-check'>Details</button></a>

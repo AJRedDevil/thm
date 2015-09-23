@@ -232,7 +232,8 @@ def home(request):
     is_staff=True if user.user_type==1 else False
     if is_staff:
         cm=commcal_handler.CommissionManager()
-        pending_commission = cm.getCommUser(user)[0]
+        pending_commission = "Rs.{:,.2f}".format(cm.getCommUser(user)[0])
+        total_commission = cm.getTotalCommUser(user)
 
     return render(request, 'admin/joblist_user.html', locals())
 
