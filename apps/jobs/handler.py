@@ -18,7 +18,8 @@ class JobManager(object):
     def getJobDetails(self, job_id):
         """List job information"""
         job = get_object_or_404(Jobs, jobref=job_id)
-        setattr(job, 'commission_due', "Rs.{:,.2f}".format((0.2 * float(job.fee.amount))/job.handyman.count()))
+        if job.handyman.count():
+            setattr(job, 'commission_due', "Rs.{:,.2f}".format((0.2 * float(job.fee.amount))/job.handyman.count()))
         return job
 
     # def getJobsForHandyman(self, user):
