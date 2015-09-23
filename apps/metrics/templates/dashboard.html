@@ -1,0 +1,283 @@
+{% extends "admin/base.html" %}
+{% load staticfiles floppyforms %}
+{% block localhead %}
+{% endblock localhead %}
+{% block content %}
+    <div class="panel panel-default">
+      <div id="job_status" class="containerPie"></div>
+      <div id="job_type" class="containerStack"></div>
+      <div id="user_jobs_info" class="container"></div>
+      <div id="job_type_per_year" class="container"></div>
+      <div id="revenue_per_year" class="container"></div>
+      <div class="container">
+        <table id='data-table'>
+          <tr>
+            <th>Total Users</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Total Handymen</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Total Revenue</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Average Reveune per User</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Avg Revenue per Job</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Total Commission Paid</th>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+  <link rel="stylesheet" href={% static "css/metrics.css" %}>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+
+        // Jobs By Status
+        // Completed | Discarded | Rejected | Pending
+        var jobStatusOptions = {
+          chart: {
+            renderTo: 'job_status',
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie',
+          },
+          plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+          title: {'text':"Job By Status"},
+          series: [{}],
+        };
+
+        var chartDataUrl = "{% url 'chart_data_json' %}?name=jobStatus"
+        $.getJSON(chartDataUrl,
+            function(data) {
+              jobStatusOptions.series=[{
+                  name: "Jobs",
+                  colorByPoint: true,
+                  data: data
+                }];
+              var jobStatus = new Highcharts.Chart(jobStatusOptions);
+        });
+
+        // Jobs By Type
+        // Plumbing | Electrical | Furnishing | Construction
+        var jobTypeOptions = {
+          chart: {
+            renderTo: 'job_type',
+            type: 'column',
+          },
+          legend: {
+              align: 'right',
+              x: -30,
+              verticalAlign: 'top',
+              y: 25,
+              floating: true,
+              backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+              borderColor: '#CCC',
+              borderWidth: 1,
+              shadow: false
+          },
+          title: {text: 'Jobs By Type'},
+          xAxis: {categories: ['Type']},
+          yAxis: {
+                  min:0,
+                  title: {text:'Count'},
+                  stackLabels: {
+                      enabled: true,
+                      style: {
+                          fontWeight: 'bold',
+                          color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                      }
+                  }
+                },
+           plotOptions: {
+              column: {
+                  stacking: 'normal',
+                  dataLabels: {
+                      enabled: true,
+                      color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                      style: {
+                          textShadow: '0 0 3px black'
+                      }
+                  }
+              }
+          },
+          series: [{}],
+        };
+
+        var chart1DataUrl = "{% url 'chart_data_json' %}?name=jobType"
+        $.getJSON(chart1DataUrl,
+            function(data) {
+                jobTypeOptions.series=data;
+                var jobType = new Highcharts.Chart(jobTypeOptions);
+        });
+
+        // User Jobs Info
+        //
+        var userJobsOptions = {
+          chart: {
+            renderTo: 'user_jobs_info',
+            type: 'line',
+          },
+          legend: {
+              layout: 'vertical',
+              align: 'right',
+              verticalAlign: 'middle',
+              borderWidth: 0
+          },
+          title: {text: 'User Jobs Info'},
+          subtitle: {text: 'Yearly'},
+          xAxis: {
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+          },
+          yAxis: {
+              title: {
+                  text: 'Count'
+              },
+              plotLines: [{
+                  value: 0,
+                  width: 1,
+                  color: '#808080'
+              }]
+          },
+          series: [{}],
+        };
+
+        var chart2DataUrl = "{% url 'chart_data_json' %}?name=userJobsCount"
+        $.getJSON(chart2DataUrl,
+            function(data) {
+                userJobsOptions.series=data;
+                var userJob = new Highcharts.Chart(userJobsOptions);
+        });
+
+        // User Handyman Jobs
+        var chart3DataUrl = "{% url 'chart_data_json' %}?name=revenue"
+        $.getJSON(chart3DataUrl,
+            function(data) {
+                var myTable = document.getElementById('data-table');
+                for (i=0;i<data.length;i++) {
+                  myTable.rows[i].cells[1].innerHTML=data[i];
+                }
+        });
+
+        // Job Type Per Year
+        var jobTypePerYearOptions = {
+          chart: {
+            renderTo: 'job_type_per_year',
+            type: 'column',
+          },
+          legend: {
+              align: 'right',
+              x: -30,
+              verticalAlign: 'top',
+              y: 25,
+              floating: true,
+              backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+              borderColor: '#CCC',
+              borderWidth: 1,
+              shadow: false
+          },
+          title: {text: 'Job Type per Month'},
+          xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                  },
+          yAxis: {
+                  min:0,
+                  title: {text:'Jobs'},
+                },
+           plotOptions: {
+              column: {
+                  pointPadding: 0.2,
+                  borderWidth: 0
+              }
+          },
+          series: [{}],
+        };
+
+        var chart4DataUrl = "{% url 'chart_data_json' %}?name=jobTypePerYear"
+        $.getJSON(chart4DataUrl,
+            function(data) {
+                jobTypePerYearOptions.series=data;
+                var jobTypePerYear = new Highcharts.Chart(jobTypePerYearOptions);
+        });
+
+        // Revenue per year
+        var revenuePerYearOptions = {
+          chart: {
+            renderTo: 'revenue_per_year',
+            type: 'area',
+          },
+          legend: {
+              align: 'right',
+              x: -30,
+              verticalAlign: 'top',
+              y: 25,
+              floating: true,
+              backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+              borderColor: '#CCC',
+              borderWidth: 1,
+              shadow: false
+          },
+          title: {text: 'Revenue per Month'},
+          xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                  },
+          yAxis: {
+                  min:0,
+                  title: {text:'Revenue (Rs.)'},
+                },
+           plotOptions: {
+              area: {
+                    marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                          }
+                }
+              }
+          },
+          series: [{}],
+        };
+
+        var chart5DataUrl = "{% url 'chart_data_json' %}?name=revenuePerYear"
+        $.getJSON(chart5DataUrl,
+            function(data) {
+                revenuePerYearOptions.series=data;
+                var jobTypePerYear = new Highcharts.Chart(revenuePerYearOptions);
+        });
+    } );
+  </script>
+
+{% endblock scripts %}
