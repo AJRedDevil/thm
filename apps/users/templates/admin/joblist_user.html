@@ -14,13 +14,9 @@
     <table id="example" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    {% if is_staff %}
-                        <th>ID</th>
-                    {% endif %}
+                    <th>ID</th>
                     <th>Date</th>
-                    {% if is_staff %}
-                        <th>Customer Name</th>
-                    {% endif %}
+                    <th>Customer Name</th>
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
@@ -30,13 +26,9 @@
      
             <tfoot>
                 <tr>
-                    {% if is_staff %}
-                        <th>ID</th>
-                    {% endif %}
+                    <th>ID</th>
                     <th>Date</th>
-                    {% if is_staff %}
-                        <th>Customer Name</th>
-                    {% endif %}
+                    <th>Customer Name</th>
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
@@ -48,6 +40,7 @@
 
             {% for job in jobs %}
                 <tr>
+
                     <td>{{job.id}}</td>
                     <td>{{job.creation_date}}</td>
                     <td>{{job.customer.primary_contact_person.name}}</td>
