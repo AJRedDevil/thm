@@ -890,6 +890,9 @@ def editUserDetail(request, userref):
         streetaddress=customer.address['streetaddress'],
         address_coordinates=customer.address_coordinates,
     )
+    from apps.jobs.handler import JobManager
+    jb = JobManager()
+    jobs = jb.getAllJobs(customer)
     if request.method == "POST":
         user_form = userforms.HMUserChangeForm(request.POST, instance=customer)
         if user_form.is_valid():
