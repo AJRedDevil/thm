@@ -39,4 +39,49 @@
         </div>
     </div>
 </div>
+
+<div class="hora-table">
+        
+  <table id="example" class="display" cellspacing="0" width="100%">
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Job Type</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+
+          <tfoot>
+              <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Job Type</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th>Action</th>
+              </tr>
+          </tfoot>
+
+          <tbody>
+
+          {% for job in jobs %}
+              <tr>
+                  <td>{{job.id}}</td>
+                  <td>{{job.creation_date}}</td>
+                  <td>{{job.get_jobtype_display}}</td>
+                  <td>{{job.get_status_display}}</td>
+                  <td>{{job.remarks}}</td>
+                  <td>
+                      <a href="{% url 'viewJob' job_id=job.jobref %}"><button class='table-job-check'>Details</button></a>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+
+  </div>
+  <!-- eo hora-table -->
 {% endblock content %}
