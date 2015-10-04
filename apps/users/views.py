@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 #All local imports (libs, contribs, models)
+
 import apps.users.forms as userforms
 import handler as user_handler
 from .models import UserProfile, EarlyBirdUser, UserToken
@@ -563,9 +564,21 @@ def smsEndpoint(request):
                             request.build_absolute_uri(reverse('gaTracker'))
                         )
                         return HttpResponse(msg, content_type="text/html")
+                    #Check if the user is a subscriber or not?
+                    from apps.subscription.models import Subscriber
+                    try:
+                        subscriber=Subscriber.objects.get(primary_contact_person=userdetails)
+                    except Subscriber.DoesNotExist:
+                        # If subscriber doesn't exist, then create it
+                        subscriber=Subscriber(
+                                                primary_contact_person=userdetails,
+                                                secondary_contact_person=userdetails,
+                                                subscriber_name=userdetails.name
+                                            )
+                        subscriber.save()
                     # if account exists consider this as a new job request
                     jm = jobs_handler.JobManager()
-                    jm.createJob(userdetails)
+                    jm.createJob(subscriber)
                     msg = messages.JOB_REQ_MSG
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
