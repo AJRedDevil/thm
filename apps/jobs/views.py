@@ -82,22 +82,33 @@ def viewJob(request, job_id):
                 # return render(request, 'jobdetails.html',locals())
             # if a job is set as complete , update the completion time
             # only update the completion time once
-            if job.status == '3' and job.completion_date is None:
-                job.completion_date = timezone.now()
-                job.save()
-                # Notify the user that the job is complete here.
-                vas = Sparrow()
-                msg = messages.JOB_COMPLETE_MSG.format(job.id)
-                logger.warn(msg)
-                status = vas.sendMessage(msg, job.customer.primary_contact_person)
-                logger.warn("Message status \n {0}".format(status))
-                job = jm.getJobDetails(job_id)
-                job_form = JobEditFormAdmin(instance=job)
-                # Add commission for that job
+            if job.status == '3':
                 cm = CommissionManager()
-                cm.addCommission(job)
+                if job.completion_date is None:
+                    job.completion_date = timezone.now()
+                    job.save()
+                    # Notify the user that the job is complete here.
+                    vas = Sparrow()
+                    msg = messages.JOB_COMPLETE_MSG.format(job.id)
+                    logger.warn(msg)
+                    status = vas.sendMessage(msg, job.customer.primary_contact_person)
+                    logger.warn("Message status \n {0}".format(status))
+                    job = jm.getJobDetails(job_id)
+                    job_form = JobEditFormAdmin(instance=job)
+                    # Add commission for that job
+                    cm.addCommission(job)
+                else:
+                    job = jm.getJobDetails(job_id)
+                    job_form = JobEditFormAdmin(instance=job)
+                    cm.updateCommission(job)
                 return redirect('home')
                 # return render(request, 'jobdetails.html',locals())
+            # if a job is set as rejected or discarded, remove the comission
+            if job.status == '4' or job.status == '5':
+                job = jm.getJobDetails(job_id)
+                job_form = JobEditFormAdmin(instance=job)
+                cm.removeCommission(job)
+                return redirect('home')
             return redirect('home')
 
         if job_form.errors:
