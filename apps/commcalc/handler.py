@@ -30,6 +30,27 @@ class CommissionManager(object):
             commission = Commission(job=job, amount=amount, handyman=handyman)
             Commission.save(commission)
 
+    def updateCommission(self, job):
+        commissions = Commission.objects.filter(job=job)
+        for commission in commissions:
+            commission.amount=0.0
+            commission.save()
+        for handyman in job.handyman.all():
+            amount = (0.2 * float(job.fee.amount))/job.handyman.count()
+            if Commission.objects.filter(job=job, handyman=handyman):
+                commission=Commission.objects.get(job=job, handyman=handyman)
+                commission.amount=amount
+                commission.save()
+            else:
+                commission = Commission(job=job, amount=amount, handyman=handyman)
+                Commission.save(commission)
+
+    def removeCommission(self, job):
+        commissions = Commission.objects.filter(job=job)
+        for commission in commissions:
+            commission.amount=0.0
+            commission.save()
+
     def setCommPaid(self, user):
         """
         Sets commission flag as true for the user
