@@ -1,10 +1,12 @@
 
 
+import datetime
 import logging
+import pytz
 from django.core import serializers
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from time import mktime
 
 from .models import Jobs, JobEvents
 from apps.subscription.models import Subscriber
@@ -15,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class JobManager(object):
     """docstring for JobManager"""
+
     def getJobDetails(self, job_id):
         """List job information"""
         job = get_object_or_404(Jobs, jobref=job_id)
@@ -78,6 +81,31 @@ class JobManager(object):
         """
         job = Jobs(customer=customer)
         job.save()
+
+    def getJobsInRange(self, _from, _to):
+        """Returns all the job in specified time range
+        """
+        jobs=Jobs.objects.filter(creation_date__range=(_from, _to))
+        return jobs
+
+    @staticmethod
+    def timestamp_to_datetime(timestamp):
+        if isinstance(timestamp, (str, unicode)):
+            tzinfo=pytz.timezone("Asia/Kathmandu")
+            if len(timestamp) == 13:
+                timestamp=int(timestamp)/1000
+            return timezone.make_aware(timezone.datetime.fromtimestamp(timestamp), tzinfo)
+        else:
+            return ''
+
+    @staticmethod
+    def datetime_to_timestamp(_date):
+        if isinstance(_date, datetime.datetime):
+            timestamp=mktime(_date.timetuple())
+            json_timestamp=int(timestamp)*1000
+            return '{0}'.format(json_timestamp)
+        else:
+            return ""
 
 class JobEventManager(object):
     """docstring for UserEventManager"""
