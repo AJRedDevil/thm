@@ -1,5 +1,9 @@
 
 
+import datetime
+import json
+import logging
+
 #All Django Imports
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -14,9 +18,17 @@ from .handler import JobManager
 from apps.commcalc.handler import CommissionManager
 from libs.sparrow_handler import Sparrow
 from libs import out_sms as messages
-import logging
 # Init Logger
 logger = logging.getLogger(__name__)
+
+EVENT_CLASSES = {
+    '0' : 'event-special',
+    '1' : 'event-info',
+    '2' : 'event-important',
+    "3" : 'event-success',
+    '4' : 'event-warning',
+    '5' : 'event-inverse'
+}
 
 
 @login_required
@@ -125,3 +137,36 @@ def viewJob(request, job_id):
         return render(request, 'jobdetails_hm.html', locals())
 
     return render(request, 'jobdetails_user.html', locals())
+
+@login_required
+@is_superuser
+def calendar(request):
+    user = request.user
+    return render(request, 'calendar.html', locals())
+
+@login_required
+@is_superuser
+def events(request):
+    user=request.user
+    events=[]
+    data_get_from=request.GET['from']
+    data_get_to=request.GET['to']
+    _from=JobManager.timestamp_to_datetime(data_get_from)
+    _to=JobManager.timestamp_to_datetime(data_get_to)
+    jm = JobManager()
+    jobs = jm.getJobsInRange(_from, _to)
+    URL=getattr(settings, "URL", "")
+    for job in jobs:
+        event={
+            "id":job.id,
+            "title":job.remarks,
+            "url": URL + "jobs/{0}".format(job.jobref) if URL else "",
+            "class": EVENT_CLASSES[job.status],
+            "start": JobManager.datetime_to_timestamp(job.creation_date),
+            "end": JobManager.datetime_to_timestamp(job.creation_date + datetime.timedelta(hours=1))
+        }
+        events.append(event)
+    data=dict(result=events, success=1)
+    return HttpResponse(
+        json.dumps(data),
+        content_type="application/json")
