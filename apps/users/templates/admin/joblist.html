@@ -14,6 +14,7 @@
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
+                    <th>Scheduling</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -26,6 +27,7 @@
                     <th>Job Type</th>
                     <th>Status</th>
                     <th>Remarks</th>
+                    <th>Scheduling</th>
                     <th>Action</th>
                 </tr>
             </tfoot>
@@ -40,6 +42,11 @@
                     <td>{{job.get_jobtype_display}}</td>
                     <td>{{job.get_status_display}}</td>
                     <td>{{job.remarks}}</td>
+                    {% if not job.is_scheduled %}
+                        <td>Inactive</td>
+                    {% else %}
+                        <td><a href="{% url 'jobScheduler' job_scheduler_id=job.scheduler_id %}"><button class='table-job-check'>Schedule</button></a></td>
+                    {% endif %}
                     <td>
                         <a href="{% url 'viewJob' job_id=job.jobref %}"><button class='table-job-check'>Details</button></a>
                     </td>

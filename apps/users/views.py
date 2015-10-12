@@ -226,6 +226,7 @@ def home(request):
     from apps.jobs.handler import JobManager
     jb = JobManager()
     jobs = jb.getAllJobs(user)
+    # job_schedulers = jb.getAllJobSchedulers(user)
     if user.is_staff or user.is_superuser:
         is_staff=user.is_staff
         return render(request, 'admin/joblist.html', locals())
@@ -395,7 +396,6 @@ def joinasuser(request):
             return redirect('index')
 
         request_dict['phone'] = phone
-        logging.warn(request_dict)
         user_form = userforms.SMSUserSignupForm(request_dict)
         if user_form.is_valid():
             phone = user_form.cleaned_data['phone']
