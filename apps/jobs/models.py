@@ -125,6 +125,32 @@ class Jobs(models.Model):
         super(Jobs, self).save(*args, **kwargs)
 
 
+class JobScheduler(models.Model):
+    """Model for Job Scheduling
+    """
+    job = models.ForeignKey(Jobs)
+    inspection_start_date = models.DateTimeField(
+        _('inspection_start_date'),
+        blank=True, null=True
+        )
+    inspection_end_date = models.DateTimeField(
+        _('inspection_end_date'),
+        blank=True, null=True
+        )
+    job_start_date = models.DateTimeField(
+        _('job_start_date'),
+        blank=True, null=True
+        )
+    job_end_date = models.DateTimeField(
+        _('job_end_date'),
+        blank=True, null=True
+        )
+    active = models.BooleanField(
+        _('active'),
+        default=False
+        )
+
+
 class JobEvents(models.Model):
     """Models for JobEvents"""
 

@@ -1,18 +1,16 @@
 
 
-import datetime
 import json
 import logging
 
 #All Django Imports
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from thm.decorators import is_superuser
-from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin
+from .forms import JobCreationForm, JobCreationFormAdmin, JobEditFormAdmin, JobSchedulerCompleteForm, JobSchedulerInspectionForm
 import apps.job_gallery.forms as jgforms
 from .handler import JobManager
 from apps.commcalc.handler import CommissionManager
@@ -21,21 +19,12 @@ from libs import out_sms as messages
 # Init Logger
 logger = logging.getLogger(__name__)
 
-EVENT_CLASSES = {
-    '0' : 'event-special',
-    '1' : 'event-info',
-    '2' : 'event-important',
-    "3" : 'event-success',
-    '4' : 'event-warning',
-    '5' : 'event-inverse'
-}
-
-
 @login_required
 @is_superuser
 def createJob(request):
     user = request.user
-
+    jm = JobManager()
+    
     if request.method == "GET":
         job_form = JobCreationFormAdmin()
         return render(request, 'createjob.html', locals())
@@ -43,7 +32,8 @@ def createJob(request):
         logger.debug(request.POST)
         job_form = JobCreationFormAdmin(request.POST)
         if job_form.is_valid():
-            job_form.save()
+            job=job_form.save()
+            jm.createJobScheduler(job)
             return redirect('home')
         if job_form.errors:
             logger.debug("Form has errors, %s ", job_form.errors)
@@ -75,6 +65,8 @@ def viewJob(request, job_id):
             job = jm.getJobDetails(job_id)
             # if a job is set as accepted , update the accepted time
             # only update the accepted time once
+            if job.status == '1' and job.inspection_date:
+                jm.activateJobScheduler(job)
             if job.status == '2' and job.accepted_date is None:
                 job.accepted_date = timezone.now()
                 job.save()
@@ -89,6 +81,7 @@ def viewJob(request, job_id):
                     logger.warn("Message status \n {0}".format(status))
                 # Notify the user that the job is accepted here.
                 job = jm.getJobDetails(job_id)
+                jm.addCompletionToJobScheduler(job)
                 job_form = JobEditFormAdmin(instance=job)
                 return redirect('home')
                 # return render(request, 'jobdetails.html',locals())
@@ -117,9 +110,11 @@ def viewJob(request, job_id):
                 # return render(request, 'jobdetails.html',locals())
             # if a job is set as rejected or discarded, remove the comission
             if job.status == '4' or job.status == '5':
+                cm = CommissionManager()
                 job = jm.getJobDetails(job_id)
                 job_form = JobEditFormAdmin(instance=job)
                 cm.removeCommission(job)
+                jm.deactivateJobScheduler(job)
                 return redirect('home')
             return redirect('home')
 
@@ -148,25 +143,43 @@ def calendar(request):
 @is_superuser
 def events(request):
     user=request.user
-    events=[]
     data_get_from=request.GET['from']
     data_get_to=request.GET['to']
-    _from=JobManager.timestamp_to_datetime(data_get_from)
-    _to=JobManager.timestamp_to_datetime(data_get_to)
     jm = JobManager()
-    jobs = jm.getJobsInRange(_from, _to)
-    URL=getattr(settings, "URL", "")
-    for job in jobs:
-        event={
-            "id":job.id,
-            "title":job.remarks,
-            "url": URL + "jobs/{0}".format(job.jobref) if URL else "",
-            "class": EVENT_CLASSES[job.status],
-            "start": JobManager.datetime_to_timestamp(job.creation_date),
-            "end": JobManager.datetime_to_timestamp(job.creation_date + datetime.timedelta(hours=1))
-        }
-        events.append(event)
+    events = jm.get_jobs_for_calendar(data_get_from, data_get_to)
     data=dict(result=events, success=1)
     return HttpResponse(
         json.dumps(data),
         content_type="application/json")
+
+@login_required
+@is_superuser
+def viewJobScheduler(request, job_scheduler_id):
+    user=request.user
+    jm = JobManager()
+    job_scheduler = jm.getJobScheduler(job_scheduler_id)
+    job = job_scheduler.job
+    job_status = job.status
+    if job_status == '1':
+        job_scheduler_form = JobSchedulerInspectionForm(instance=job_scheduler)
+    elif job_status in ['2', '3']:
+        job_scheduler_form = JobSchedulerCompleteForm(instance=job_scheduler)
+    return render(request, 'job_scheduler.html', locals())
+
+@login_required
+@is_superuser
+def updateJobScheduler(request, job_scheduler_id):
+    user = request.user
+    jm = JobManager()
+    job_scheduler = jm.getJobScheduler(job_scheduler_id)
+    if request.method == 'POST':
+        job = job_scheduler.job
+        if job.status == '1':
+            job_scheduler_form = JobSchedulerInspectionForm(request.POST, instance=job_scheduler)
+        elif job.status in ['2', '3']    :
+            job_scheduler_form = JobSchedulerCompleteForm(request.POST, instance=job_scheduler)
+        if job_scheduler_form.is_valid():
+            job_scheduler_form.save()
+        if job_scheduler_form.errors:
+            return render(request, 'job_scheduler.html', locals())
+    return redirect('home')

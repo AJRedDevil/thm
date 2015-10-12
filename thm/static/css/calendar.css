@@ -495,7 +495,7 @@ span[data-cal-date]:hover {
   background-color: transparent;
 }
 #cal-slide-content a.event-item {
-  color: #ffffff;
+  color: white;
   font-weight: normal;
   line-height: 22px;
 }
@@ -512,4 +512,7 @@ a.cal-event-week {
 }
 .badge-important {
   background-color: #b94a48;
+}
+ul.job-status li {
+  color:white;
 }
