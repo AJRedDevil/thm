@@ -56,34 +56,52 @@ class Migration(SchemaMigration):
             except orm.JobScheduler.DoesNotExist, err:
                 status = False if obj.status in ['0', '4', '5'] else True
                 if obj.status == '1':
-                    job_scheduler = orm.JobScheduler(
-                    job=obj,
-                    active=status,
-                    inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
-                    inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1)
-                    )
+                    if obj.inspection_date:
+                        job_scheduler = orm.JobScheduler(
+                        job=obj,
+                        active=status,
+                        inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
+                        inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1)
+                        )
+                    else:
+                        job_scheduler = orm.JobScheduler(
+                            job=obj,
+                            active=status
+                            )
                 elif obj.status == '2':
-                    job_scheduler = orm.JobScheduler(
-                        job=obj,
-                        active=status,
-                        inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
-                        inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1),
-                        job_start_date=get_timezone_aware(obj.accepted_date),
-                        job_end_date=get_accepted_ending_date(obj.accepted_date, 4)
-                        )
+                    if obj.accepted_date and obj.inspection_date:
+                        job_scheduler = orm.JobScheduler(
+                            job=obj,
+                            active=status,
+                            inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
+                            inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1),
+                            job_start_date=get_timezone_aware(obj.accepted_date),
+                            job_end_date=get_accepted_ending_date(obj.accepted_date, 4)
+                            )
+                    else:
+                        job_scheduler = orm.JobScheduler(
+                            job=obj,
+                            active=status
+                            )
                 elif obj.status == '3':
-                    job_scheduler = orm.JobScheduler(
-                        job=obj,
-                        active=status,
-                        inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
-                        inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1),
-                        job_start_date=get_completion_starting_date(obj.completion_date, 4),
-                        job_end_date=get_timezone_aware(obj.completion_date)
-                        )
+                    if obj.accepted_date and obj.inspection_date:
+                        job_scheduler = orm.JobScheduler(
+                            job=obj,
+                            active=status,
+                            inspection_start_date=get_inspection_starting_datetime(obj.inspection_date),
+                            inspection_end_date=get_inspection_ending_date(get_inspection_starting_datetime(obj.inspection_date), 1),
+                            job_start_date=get_completion_starting_date(obj.completion_date, 4),
+                            job_end_date=get_timezone_aware(obj.completion_date)
+                            )
+                    else:
+                        job_scheduler = orm.JobScheduler(
+                            job=obj,
+                            active=status
+                            )
                 else:
                     job_scheduler = orm.JobScheduler(
-                    job=obj,
-                    active=status
+                        job=obj,
+                        active=status
                     )
                 job_scheduler.save()
 
