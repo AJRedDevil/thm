@@ -176,7 +176,7 @@ class JobManager(object):
             event = {
                 "id":job.id,
                 "title":"{0} : {1} - {2} ~~ {3}".format(job.id, job.customer, job.remarks, handymen),
-                "url": URL + "jobs/{0}".format(job.jobref) if URL else "",
+                "url": URL + "/jobs/{0}".format(job.jobref) if URL else "",
                 "class": EVENT_CLASSES[job.status],
                 "start": JobManager.datetime_to_timestamp(start),
                 "end": JobManager.datetime_to_timestamp(end)
