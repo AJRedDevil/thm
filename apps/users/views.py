@@ -498,9 +498,21 @@ def smsEndpoint(request):
                             request.build_absolute_uri(reverse('gaTracker'))
                         )
                         return HttpResponse(msg, content_type="text/html")
+                    #Check if the user is a subscriber or not?
+                    from apps.subscription.models import Subscriber
+                    try:
+                        _subscriber = Subscriber.objects.get(primary_contact_person=userdetails)
+                    except Subscriber.DoesNotExist:
+                        # If subscriber doesn't exist, then create it
+                        subscriber=Subscriber(
+                                                primary_contact_person=userdetails,
+                                                secondary_contact_person=userdetails,
+                                                subscriber_name=userdetails.name
+                                            )
+                        _subscriber = subscriber.save()
                     # if account exists consider this as a new job request
                     jm = jobs_handler.JobManager()
-                    jm.createJob(userdetails)
+                    jm.createJob(_subscriber)
                     msg = messages.JOB_REQ_MSG
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
@@ -567,7 +579,7 @@ def smsEndpoint(request):
                     #Check if the user is a subscriber or not?
                     from apps.subscription.models import Subscriber
                     try:
-                        subscriber=Subscriber.objects.get(primary_contact_person=userdetails)
+                        _subscriber = Subscriber.objects.get(primary_contact_person=userdetails)
                     except Subscriber.DoesNotExist:
                         # If subscriber doesn't exist, then create it
                         subscriber=Subscriber(
@@ -575,10 +587,10 @@ def smsEndpoint(request):
                                                 secondary_contact_person=userdetails,
                                                 subscriber_name=userdetails.name
                                             )
-                        subscriber.save()
+                        _subscriber = subscriber.save()
                     # if account exists consider this as a new job request
                     jm = jobs_handler.JobManager()
-                    jm.createJob(subscriber)
+                    jm.createJob(_subscriber)
                     msg = messages.JOB_REQ_MSG
                     logger.warn("{0} just requested for a service. \
                     [valid user]".format(phone))
