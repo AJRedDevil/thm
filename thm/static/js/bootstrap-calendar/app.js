@@ -7,7 +7,7 @@
 		view: 'month',
 		tmpl_path: '/static/tmpls/',
 		tmpl_cache: false,
-		day: '2015-10-06',
+		day: new Date().toISOString().slice(0,10),
 		onAfterEventsLoad: function(events) {
 			if(!events) {
 				return;
