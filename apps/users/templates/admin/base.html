@@ -37,8 +37,10 @@
                 filter: function (users) {
                     // Map the remote source JSON array to a JavaScript object array
                     return $.map(users.detail, function (user) {
+                        var address = JSON.parse(user['address'] || null) || {};
                         return {
-                            value: user.name.concat(' ('+user.phone+')')
+                            value: user.name.concat(' ('+user.phone+')\n') +
+                              "<br/><span style='font-size: 75%'>" + (address['streetaddress'] || '') + "</span>"
                         };
                     });
                 }
@@ -157,7 +159,7 @@
     <script type="text/javascript">
         // Instantiate the Typeahead UI
         $('.typeahead').typeahead(null, {
-            displayKey: 'value',
+            display: 'value',
             source: users.ttAdapter()
         });
     </script>

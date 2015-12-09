@@ -28,7 +28,7 @@ def userSearch(request, phone=None):
         querystring = request.GET['user']
         um = userhandler.UserManager()
         result = um.getUserList(querystring)
-        data = result.values('phone', 'name')
+        data = result.values('phone', 'name', 'address')
         data = json.loads(json.dumps(list(data)))
         responsedata = dict(detail=data)
         return HttpResponse(
