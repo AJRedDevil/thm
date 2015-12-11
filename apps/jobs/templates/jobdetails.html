@@ -33,7 +33,11 @@
              {{job_form.remarks.label_tag}} {{job_form.remarks}}
              {{job_form.is_paid.label_tag}} {{job_form.is_paid}}<br>
              {{job_form.fee.label_tag}} {{job_form.fee}}
-             {{job_form.status.label_tag}} {{job_form.status}}
+             {{job_form.status.label_tag}} 
+             {% if status_error %} 
+                <br/><p style="color:red">{{ status_error }}</p>
+            {% endif %}
+             {{job_form.status}}
              <label>Inspection Date</label> {{job_form.inspection_date}}             
              {% if job.accepted_date %}
                 <label>Accepted On:</label><p class="form-control">{{job.accepted_date}}</p>

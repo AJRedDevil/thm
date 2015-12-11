@@ -60,6 +60,9 @@ def viewJob(request, job_id):
             if int(job_form.cleaned_data['status']) < int(job.status):
                 job_form = JobEditFormAdmin(instance=job)
                 return render(request, 'jobdetails.html', locals())
+            if request.POST.get('status') == '3' and job.accepted_date is None:
+                status_error = "Accept the job before completing it"
+                return render(request, 'jobdetails.html', locals())
             # save the job with the details provided
             job_form.save()
             job = jm.getJobDetails(job_id)
