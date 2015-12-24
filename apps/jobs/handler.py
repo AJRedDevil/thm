@@ -106,8 +106,8 @@ class JobManager(object):
         Creates a job request with default params
         """
         job = Jobs(customer=customer)
-        job.save()
-        job = self.getJobDetails(job.id)
+        saved_job = job.save()
+        job = self.getJobDetails(saved_job.id)
         self.createJobScheduler(job)
 
     def getJobsInRange(self, _from, _to):
