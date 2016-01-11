@@ -171,7 +171,8 @@
         var chart2DataUrl = "{% url 'chart_data_json' %}?name=userJobsCount"
         $.getJSON(chart2DataUrl,
             function(data) {
-                userJobsOptions.series=data;
+                userJobsOptions.series=data['data'];
+                userJobsOptions.xAxis=data['xaxis'];
                 var userJob = new Highcharts.Chart(userJobsOptions);
         });
 
@@ -223,7 +224,8 @@
         var chart4DataUrl = "{% url 'chart_data_json' %}?name=jobTypePerYear"
         $.getJSON(chart4DataUrl,
             function(data) {
-                jobTypePerYearOptions.series=data;
+                jobTypePerYearOptions.series=data['data'];
+                jobTypePerYearOptions.xAxis=data['xaxis'];
                 var jobTypePerYear = new Highcharts.Chart(jobTypePerYearOptions);
         });
 
@@ -273,7 +275,8 @@
         var chart5DataUrl = "{% url 'chart_data_json' %}?name=revenuePerYear"
         $.getJSON(chart5DataUrl,
             function(data) {
-                revenuePerYearOptions.series=data;
+                revenuePerYearOptions.series=data['data'];
+                revenuePerYearOptions.xAxis=data['xaxis'];
                 var jobTypePerYear = new Highcharts.Chart(revenuePerYearOptions);
         });
     } );
