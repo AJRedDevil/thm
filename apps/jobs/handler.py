@@ -107,8 +107,7 @@ class JobManager(object):
         """
         job = Jobs(customer=customer)
         saved_job = job.save()
-        job = self.getJobDetails(saved_job.id)
-        self.createJobScheduler(job)
+        self.createJobScheduler(saved_job)
 
     def getJobsInRange(self, _from, _to):
         """Returns all the job in specified time range

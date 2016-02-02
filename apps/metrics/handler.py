@@ -24,11 +24,14 @@ class MetricManager(object):
     def __convert_naive_to_aware(self, _date):
         return datetime.datetime.combine(_date,datetime.time(0,0))
 
-    def __get_start_end_date(self):
-        current_date=timezone.now().date()
-        end_year = current_date.replace(day = calendar.monthrange(current_date.year, current_date.month)[1])
+def __get_start_end_date():
+    current_date=timezone.now().date()
+    end_year = current_date.replace(day = calendar.monthrange(current_date.year, current_date.month)[1])
+    if calendar.isleap():
+        start_year = end_year.replace(year = current_date.year - 1, day = current_date.day - 1)
+    else:
         start_year = end_year.replace(year = current_date.year - 1) + datetime.timedelta(days=1)
-        return (start_year, end_year)
+    return (start_year, end_year)
 
     def __get_year_month_abbr(self):
         month_abbrv = {k:v  for k,v in enumerate(calendar.month_abbr)}
