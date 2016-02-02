@@ -27,7 +27,7 @@ class MetricManager(object):
     def __get_start_end_date(self):
         current_date=timezone.now().date()
         end_year = current_date.replace(day = calendar.monthrange(current_date.year, current_date.month)[1])
-        if calendar.isleap(end_year):
+        if calendar.isleap(current_date.year):
             start_year = end_year.replace(year = current_date.year - 1, day = current_date.day - 1)
         else:
             start_year = end_year.replace(year = current_date.year - 1) + datetime.timedelta(days=1)
