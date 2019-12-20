@@ -1,4 +1,4 @@
-Django==1.6
+Django==1.11.23
 Markdown==2.5.1
 Pillow==6.2.0
 PyYAML==5.1
