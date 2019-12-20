@@ -18,7 +18,7 @@ django-phonenumber-field==0.6
 django-pipeline==1.5.0
 django-rest-swagger==0.2.1
 django-sass-processor==0.2.2
-djangorestframework==2.4.4
+djangorestframework==3.9.1
 djrill==1.2.0
 futures==3.0.1
 gunicorn==19.1.1
