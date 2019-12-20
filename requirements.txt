@@ -21,7 +21,7 @@ django-sass-processor==0.2.2
 djangorestframework==2.4.4
 djrill==1.2.0
 futures==3.0.1
-gunicorn==19.1.1
+gunicorn==19.5.0
 jsonfield==1.0.0
 libsass==0.8.0
 oauthlib==0.7.1
