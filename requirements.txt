@@ -33,5 +33,5 @@ requests==2.20.0
 simplejson==3.6.5
 six==1.8.0
 static3==0.5.1
-waitress==0.8.9
+waitress==1.4.0
 wsgiref==0.1.2
